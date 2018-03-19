@@ -1,9 +1,24 @@
-CC = icc
-CFLAGS = -Iinclude/Random123 -fpic -ipo -O2
-F90 = ifort
-FFLAGS = -fpic -module lib64 -ipo -O2
-LD = ifort
-LDFLAGS = -shared -ipo -O2
+#########################
+#### Intel Compilers ####
+#########################
+#CC = icc
+#CFLAGS = -Iinclude/Random123 -fpic -ipo -O2
+#F90 = ifort
+#FFLAGS = -fpic -module lib64 -ipo -O2
+#LD = ifort
+#LDFLAGS = -shared -ipo -O2
+#######################
+#### GNU Compilers ####
+#######################
+CC = gcc
+CFLAGS = -Iinclude/Random123 -fPIC -flto -O3
+F90 = gfortran
+FFLAGS = -fPIC -J lib64 -flto -O3
+LD = gcc
+LDFLAGS = -shared -fPIC -flto -O2
+############################
+#### For static library ####
+############################
 AR = ar
 ARFLAGS = rc
 
