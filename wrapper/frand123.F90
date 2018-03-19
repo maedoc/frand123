@@ -1,6 +1,9 @@
 module frand123
    use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
    implicit none
+
+   private
+
    integer, parameter, public :: state_kind = c_int64_t
    integer, parameter, public :: state_size = 4
    integer, parameter, public :: res_kind   = c_double
@@ -27,6 +30,8 @@ module frand123
    end interface
 #endif
 
+   public :: frand123Dble, init_rand
+
 contains
    ! generate size(res) random numbers using ARS
    subroutine frand123Dble( state, res )
@@ -52,7 +57,7 @@ contains
 #endif
       enddo
       ! finish in case of odd number of random numbers
-      if ( i .lt. len_res ) then
+      if ( 2*i .lt. len_res ) then
 #ifdef USE_ARS
          call ars2x64_u01( state, buffer )
 #else
@@ -60,7 +65,7 @@ contains
 #endif
          res( len_res ) = buffer( 1 )
       endif
-   end subroutine
+   end subroutine frand123Dble
       ! interface for C implementation
 
    ! initialize the state as follows:
@@ -68,19 +73,21 @@ contains
    !          second 64 bits: second entry of seed
    ! key:     first 64 bits:  rank
    !          second 64 bits: threadID
-   subroutine seed_rand( state, rank, threadID, seed )
+   subroutine init_rand( state, rank, threadID, seed )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       integer, intent( in ) :: rank
       integer, intent( in ) :: threadID
-      integer( kind = state_kind ), dimension( 2 ), intent( in ) :: seed
+      integer( kind = state_kind ), dimension( 2 ), intent( in ), optional :: seed
 
-      ! set state
-      state( 1 ) = seed( 1 )
-      state( 2 ) = seed( 2 )
-      
+      ! set counter if present
+      if(present(seed)) then
+         state( 1 ) = seed( 1 )
+         state( 2 ) = seed( 2 )
+      end if
+
       ! set key
       state( 3 ) = rank
       state( 4 ) = threadID
-   end subroutine
+   end subroutine init_rand
 end module
