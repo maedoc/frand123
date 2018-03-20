@@ -9,18 +9,25 @@ module frand123
    integer, parameter, public :: res_kind   = c_double
       
 #ifdef USE_ARS
-   ! ARS based on ars4x32_R with 5 rounds
    interface
+      ! ARS for 2 double precision based on ars4x32_R with 6 rounds
       subroutine ars2x64_u01( state, res ) bind( C, name='ars2x64_u01' )
          use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
          implicit none
          integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
          real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
       end subroutine
+      ! ARS for 4 single precision based directly on ars1xm128i_R
+      subroutine ars4x32_u01( state, res ) bind( C, name='ars4x32_u01' )
+         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         real( kind = c_float ), dimension( 4 ), intent( inout ) :: res
+      end subroutine
    end interface
 #else
-   ! Threefry based on threefry2x64_R with 13 rounds
    interface
+      ! Threefry based on threefry2x64_R with 13 rounds
       subroutine threefry2x64_u01( state, res ) bind( C, name='threefry2x64_u01')
          use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
          implicit none
