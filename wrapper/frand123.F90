@@ -4,9 +4,10 @@ module frand123
 
    private
 
-   integer, parameter, public :: state_kind = c_int64_t
-   integer, parameter, public :: state_size = 4
-   integer, parameter, public :: res_kind   = c_double
+   integer, parameter, public :: state_kind      = c_int64_t
+   integer, parameter, public :: state_size      = 4
+   integer, parameter, public :: res_kind_double = c_double
+   integer, parameter, public :: res_kind_float  = c_float
       
 #ifdef USE_ARS
    interface
@@ -41,13 +42,13 @@ module frand123
 
 contains
    ! generate size(res) random numbers using ARS
-   subroutine frand123Dble( state, res )
+   subroutine frand123Double( state, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind ), dimension(:), intent( inout ) :: res
+      real( kind = res_kind_double ), dimension(:), intent( inout ) :: res
 
       integer :: len_res, safe_it, i
-      real( kind = res_kind ), dimension( 2 ) :: buffer
+      real( kind = res_kind_double ), dimension( 2 ) :: buffer
 
       ! get length of res
       len_res = size( res )
@@ -72,7 +73,7 @@ contains
 #endif
          res( len_res ) = buffer( 1 )
       endif
-   end subroutine frand123Dble
+   end subroutine frand123Double
       ! interface for C implementation
 
    ! initialize the state as follows:
