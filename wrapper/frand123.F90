@@ -1,5 +1,5 @@
 module frand123
-   use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
+   use, intrinsic :: iso_c_binding, only: c_float, c_double, c_int64_t
    implicit none
 
    private
@@ -38,7 +38,7 @@ module frand123
    end interface
 #endif
 
-   public :: frand123Dble, init_rand
+   public :: frand123Double, init_rand
 
 contains
    ! generate size(res) random numbers using ARS
