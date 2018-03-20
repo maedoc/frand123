@@ -35,6 +35,13 @@ module frand123
          integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
          real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
       end subroutine
+      ! Threefry based on threefry4x32_R with 12 rounds
+      subroutine threefry4x32_u01( state, res ) bind( C, name='threefry4x32_u01')
+         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         real( kind = c_float ), dimension( 2 ), intent( inout )  :: res
+      end subroutine
    end interface
 #endif
 
@@ -90,11 +97,14 @@ contains
       ! calc numver of safe iterations
       safe_it = len_res / 4
 
+      res = 0
+
       ! generate sufficient number of random numbers
       do i = 1, safe_it
 #ifdef USE_ARS
          call ars4x32_u01( state, res( 4*i-3:4*i ) )
 #else
+         call threefry4x32_u01( state, res( 4*i-3:4*i ) )
 #endif
       enddo
       ! finish remaining random numbers
@@ -102,6 +112,7 @@ contains
 #ifdef USE_ARS
          call ars4x32_u01( state, buffer )
 #else
+         call threefry4x32_u01( state, buffer )
 #endif
          ! calc number of remaining random numbers
          remaining = len_res - 4 * i

@@ -1,12 +1,13 @@
-#include <limits.h>
+#include <stdint.h>
 
 #if USE_ARS
    #include <ars.h>
 
+   /*
+    * Constants used to first map onto interval [0,1) and then onto (0,1)
+    */
    static const double factor_double  = 1.  / ( (double)UINT64_MAX + 1. );
    static const double summand_double = 0.5 / ( (double)UINT64_MAX + 1. );
-   static const float  factor_float   = 1.  / ( (double)UINT32_MAX + 1. );
-   static const float  summand_float  = 0.5 + 0.5 / ( (double)UINT32_MAX + 1. );
 
    /*
     * Function ars2x64_u01 calculates two double precision random numbers
@@ -15,7 +16,7 @@
     * Arguments: state: four elements holding
     *                   counter: first  128 bit
     *                   key:     second 128 bit
-    *            res:   adress to storage for 2 double precision reals
+    *            res:   address to storage for 2 double precision reals
     */
    void ars2x64_u01( int64_t *state, double *res )
    {
@@ -55,13 +56,25 @@
    }
 
    /*
+    * Constants used to first map onto (-0.5,0.5) and then (0,1)
+    *
+    * *******************
+    * **** IMPORTANT ****
+    * *******************
+    * The addition of 400.f is experimental and should be validated/replaced with correct
+    * value to ensure mapping onto (-0.5,0.5)
+    */
+   static const float  factor_float   = 1.f  / ( (float)UINT32_MAX + 400.f );
+   static const float  summand_float  = 0.5f;
+
+   /*
     * Function ars4x32_u01 calculates for single precision random numbers
     * uniformly distributed in [0,1].
     *
     * Arguments: state: four elements holding
     *                   counter: first  128 bit
     *                   key:     second 128 bit
-    *            res:   adress to storage for 4 single precision reals
+    *            res:   address to storage for 4 single precision reals
     */
    void ars4x32_u01( int64_t *state, float *res )
    {
@@ -107,15 +120,30 @@
    }
 #else
    #include <threefry.h>
+
+   /*
+    * Union conv_union_t simplifies access to bits generated using threefry2x64
+    */
    typedef union
    {
       threefry2x64_ctr_t ctr;
       uint64_t ints[2];
    } conv_union_t;
 
-   static const double factor  = 1.  / ( (double)UINT64_MAX + 1. );
-   static const double summand = 0.5 / ( (double)UINT64_MAX + 1. );
+   /*
+    * Constants used to first map onto interval [0,1) and then onto (0,1)
+    */
+   static const double factor_double  = 1.  / ( (double)UINT64_MAX + 1. );
+   static const double summand_double = 0.5 / ( (double)UINT64_MAX + 1. );
 
+   /*
+    * Function threefry2x64 returns 2 double precision reals
+    *
+    * Arguments: state: four elements holding
+    *                   counter: first  128 bit
+    *                   key:     second 128 bit
+    *            res:   address to storage for 2 double precision reals
+    */
    void threefry2x64_u01( int64_t *state, double *res )
    {
       // extract counter and key from state
@@ -125,8 +153,8 @@
       conv_union_t resInt;
       resInt.ctr = threefry2x64_R( 13, *ctr_threefry, *key_threefry );
       // convert to uniformly distributed doubles in (0,1)
-      res[0] = (double)resInt.ints[0] * factor + summand;
-      res[1] = (double)resInt.ints[1] * factor + summand;
+      res[0] = (double)resInt.ints[0] * factor_double + summand_double;
+      res[1] = (double)resInt.ints[1] * factor_double + summand_double;
       // advance counter
       if( ctr_threefry->v[0] < UINT64_MAX )
          ctr_threefry->v[0]++;
@@ -137,4 +165,42 @@
       }
       return;
    }
+
+   /*
+    * Constants used to first map onto interval [0,1) and then onto (0,1)
+    */
+   static const float factor_float   = 1.  / ( (float)UINT32_MAX + 400.f );
+   static const float summand_float  = 0.5 / ( (float)UINT32_MAX + 400.f );
+
+   /*
+    * Function threefry4x32 returns 4 single precision reals
+    *
+    * Arguments: state: four elements holding
+    *                   counter: first  128 bit
+    *                   key:     second 128 bit
+    *                   res:     address to storage for 4 single precision reals
+    */
+   void threefry4x32_u01( int64_t *state, float *res )
+   {
+      // extract counter and key from state
+      threefry4x32_ctr_t *ctr_threefry = (threefry4x32_ctr_t*)&state[0];
+      threefry4x32_key_t *key_threefry = (threefry4x32_key_t*)&state[2];
+      // calc uniformly distributed integers
+      threefry4x32_ctr_t resInt = threefry4x32_R( 12, *ctr_threefry, *key_threefry );
+      // convert to uniformly distributed floats in (0,1)
+      res[0] = (float)resInt.v[0] * factor_float + summand_float;
+      res[1] = (float)resInt.v[1] * factor_float + summand_float;
+      res[2] = (float)resInt.v[2] * factor_float + summand_float;
+      res[3] = (float)resInt.v[3] * factor_float + summand_float;
+      // advance counter
+      if( ctr_threefry->v[0] < UINT64_MAX )
+         ctr_threefry->v[0]++;
+      else
+      {
+         ctr_threefry->v[0] = 0;
+         ctr_threefry->v[1]++;
+      }
+      return;
+   }
+
 #endif

@@ -1,7 +1,6 @@
 program testRandSingle
    use frand123
    implicit none
-
    integer, parameter :: numRndNbrs = 1000 * 1000 * 1000
 
    integer( kind = state_kind ), dimension( state_size ) :: state
@@ -19,8 +18,6 @@ program testRandSingle
    call cpu_time(stopTime)
 
    write(*,'("time elapsed: ", e13.6)') stopTime - startTime
-
-   !write(*,*) res
 
    open( newunit = out_unit, file = './tests/rand_single.out', access = 'stream', status = 'old' )
    write( out_unit ) res
