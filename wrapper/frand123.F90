@@ -7,7 +7,7 @@ module frand123
    integer, parameter, public :: state_kind      = c_int64_t
    integer, parameter, public :: state_size      = 4
    integer, parameter, public :: res_kind_double = c_double
-   integer, parameter, public :: res_kind_float  = c_float
+   integer, parameter, public :: res_kind_single = c_float
       
 #ifdef USE_ARS
    interface
@@ -38,10 +38,10 @@ module frand123
    end interface
 #endif
 
-   public :: frand123Double, init_rand
+   public :: frand123Double, frand123Single, init_rand
 
 contains
-   ! generate size(res) random numbers using ARS
+   ! generate size(res) random double precision numbers using ARS
    subroutine frand123Double( state, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
@@ -74,7 +74,41 @@ contains
          res( len_res ) = buffer( 1 )
       endif
    end subroutine frand123Double
-      ! interface for C implementation
+
+   ! generate size(res) random single precision numbers using ARS
+   subroutine frand123Single( state, res )
+      implicit none
+      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
+      real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
+
+      integer :: len_res, safe_it, i, remaining
+      real( kind = res_kind_single ), dimension( 4 ) :: buffer
+
+      ! get length of res
+      len_res = size( res )
+
+      ! calc numver of safe iterations
+      safe_it = len_res / 4
+
+      ! generate sufficient number of random numbers
+      do i = 1, safe_it
+#ifdef USE_ARS
+         call ars4x32_u01( state, res( 4*i-3:4*i ) )
+#else
+#endif
+      enddo
+      ! finish remaining random numbers
+      if( 4*i .lt. len_res ) then
+#ifdef USE_ARS
+         call ars4x32_u01( state, buffer )
+#else
+#endif
+         ! calc number of remaining random numbers
+         remaining = len_res - 4 * i
+         ! store calculated random numbers in res
+         res( 4*i+1:len_res ) = buffer( 1:remaining )
+      endif
+   end subroutine frand123Single
 
    ! initialize the state as follows:
    ! counter: first 64 bits:  first entry of seed

@@ -5,9 +5,18 @@
 
    static const double factor_double  = 1.  / ( (double)UINT64_MAX + 1. );
    static const double summand_double = 0.5 / ( (double)UINT64_MAX + 1. );
-   static const float  factor_float   = 1.  / ( (float)UINT32_MAX + 1. );
-   static const float  summand_float  = 0.5 + 0.5 / ( (float)UINT32_MAX + 1. );
+   static const float  factor_float   = 1.  / ( (double)UINT32_MAX + 1. );
+   static const float  summand_float  = 0.5 + 0.5 / ( (double)UINT32_MAX + 1. );
 
+   /*
+    * Function ars2x64_u01 calculates two double precision random numbers
+    * uniformly distributed in (0,1).
+    *
+    * Arguments: state: four elements holding
+    *                   counter: first  128 bit
+    *                   key:     second 128 bit
+    *            res:   adress to storage for 2 double precision reals
+    */
    void ars2x64_u01( int64_t *state, double *res )
    {
       // extract counter and key from state
@@ -45,6 +54,15 @@
       return;
    }
 
+   /*
+    * Function ars4x32_u01 calculates for single precision random numbers
+    * uniformly distributed in [0,1].
+    *
+    * Arguments: state: four elements holding
+    *                   counter: first  128 bit
+    *                   key:     second 128 bit
+    *            res:   adress to storage for 4 single precision reals
+    */
    void ars4x32_u01( int64_t *state, float *res )
    {
       // extract counter and key from state
@@ -59,7 +77,7 @@
       c128 = ars1xm128i_R( 6, c128, k128 );
       // convert signed integers to signed floats
       __m128 asSignedFloats = _mm_cvtepi32_ps( c128.v[0].m );
-      // normalize to (-0.5,0.5) and add shift to end in (0,1)
+      // normalize to [-0.5,0.5] and add shift to end in [0,1]
       __m128 normFactor = _mm_load_ps1( &factor_float );
       __m128 summand    = _mm_load_ps1( &summand_float );
       __m128 restrictedToUnitCircle = _mm_fmadd_ps( asSignedFloats, normFactor, summand );
