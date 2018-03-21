@@ -1,5 +1,5 @@
 # have a compiler suffix if necessary
-SUFFIX ?= ""
+SUFFIX ?=
 
 #########################
 #### Intel Compilers ####
@@ -22,7 +22,7 @@ FC = gfortran$(SUFFIX)
 FFLAGS = -fPIC -J lib64 -flto -O3
 LD = gcc$(SUFFIX)
 LDFLAGS = -shared -fPIC -flto -O2
-AR = gcc-ar
+AR = gcc-ar$(SUFFIX)
 ARFLAGS = rc
 endif
 ############################
