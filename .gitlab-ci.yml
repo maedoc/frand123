@@ -8,8 +8,6 @@ before_script:
 #   - zypper --non-interactive in octave
    - zypper --non-interactive in octave-cli
    - zypper --non-interactive in octave-forge-statistics
-   - rpm -ql gcc7-fortran
-   - gfortran7 -v
 
 # a job with two stages: compile and test
 test_build:
@@ -17,7 +15,7 @@ test_build:
    tags:
       - linux
    script:
-      - make gcc=y lib64/frand123.so lib64/frand123.a
+      - SUFFIX=-7 make gcc=y lib64/frand123.so lib64/frand123.a
   
 run_test: 
    stage: test
@@ -25,7 +23,7 @@ run_test:
       - linux
 #  variables:
    script:
-      - make gcc=y tests
+      - SUFFIX=-7 make gcc=y tests
 #  coverage: '/regex/'
 #  artifacts:
 #    when: on_success

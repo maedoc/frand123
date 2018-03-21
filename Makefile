@@ -1,21 +1,24 @@
+# have a compiler suffix if necessary
+SUFFIX ?= ""
+
 #########################
 #### Intel Compilers ####
 #########################
-CC = icc
+CC = icc$(SUFFIX)
 CFLAGS = -Iinclude/Random123 -fpic -ipo -O2
-FC = ifort
+FC = ifort$(SUFFIX)
 FFLAGS = -fpic -module lib64 -ipo -O2
-LD = ifort
+LD = ifort$(SUFFIX)
 LDFLAGS = -shared -ipo -O2
 #######################
 #### GNU Compilers ####
 #######################
 ifeq ($(gcc),y)
-CC = gcc
+CC = gcc$(SUFFIX)
 CFLAGS = -Iinclude/Random123 -fPIC -flto -O3
-FC = gfortran
+FC = gfortran$(SUFFIX)
 FFLAGS = -fPIC -J lib64 -flto -O3
-LD = gcc
+LD = gcc$(SUFFIX)
 LDFLAGS = -shared -fPIC -flto -O2
 endif
 ############################
