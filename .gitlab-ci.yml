@@ -1,0 +1,31 @@
+# this is supposed to run from a plain opensuse container
+
+# global before_script to always install required packages
+before_script:
+   - zypper --non-interactive in make
+   - zypper --non-interactive in gcc6
+   - zypper --non-interactive in gcc6-fortran
+   - zypper --non-interactive in octave
+   - zypper --non-interactive in octave-cli
+   - zypper --non-interactive in octave-forge-statistics
+
+# a job with two stages: compile and test
+build_n_test:
+   stage: compile
+   tags:
+      - linux
+   script:
+      - make lib64/frand123.so lib64/frand123.a
+   
+   stage: test
+   tags:
+      - linux
+#  variables:
+   script:
+      - make tests
+#  coverage: '/regex/'
+#  artifacts:
+#    when: on_success
+#    name: ...
+#    paths:
+#       - "*. ..."
