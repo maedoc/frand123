@@ -1,4 +1,4 @@
-# have a compiler suffix if necessary
+# have a compiler suffix if necessary to pick specific version number
 SUFFIX ?=
 
 #########################
