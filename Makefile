@@ -17,9 +17,9 @@ ARFLAGS = rc
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes -mfma
+CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes
 FC = gfortran$(SUFFIX)
-FFLAGS = -fPIC -J lib64 -flto -O3 -maes -mfma
+FFLAGS = -fPIC -J lib64 -flto -O3 -maes
 LD = gcc$(SUFFIX)
 LDFLAGS = -shared -fPIC -flto -O2
 AR = gcc-ar$(SUFFIX)
@@ -37,7 +37,8 @@ endif
 
 # decide whether to use FMA instructions (requires Intel FMA3 support)
 ifeq ($(fma),y)
-	CFLAGS += -DUSE_FMA
+	CFLAGS += -DUSE_FMA -mfma
+	FFLAGS += -mfma
 endif
 
 .PHONY: all clean tests testRandSingle testRandDouble

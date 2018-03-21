@@ -48,20 +48,17 @@ run_test:
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
       #
-      - echo "Running test testRandSingle with ARS RNG"
-      - make clean
-      - SUFFIX=-7 make gcc=y ars=y testRandSingle && CV="$((CV + 1))"
-      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
-      - echo $CV_S "$CV_R"
+      #- echo "Running test testRandSingle with ARS RNG"
+      #- make clean
+      #- SUFFIX=-7 make gcc=y ars=y testRandSingle && CV="$((CV + 1))"
+      #- CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      #- echo $CV_S "$CV_R"
       #
       - echo "Running test testRandDouble with ARS RNG"
       - make clean
       - SUFFIX=-7 make gcc=y ars=y testRandDouble && CV="$((CV + 1))"
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
-      #
-      - echo "Running cat /proc/cpuinfo"
-      - cat /proc/cpuinfo
    coverage: '/coverage: \d+\.\d+/'
    allow_failure: true
 #  artifacts:
