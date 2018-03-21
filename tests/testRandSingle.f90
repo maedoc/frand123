@@ -19,7 +19,7 @@ program testRandSingle
 
    write(*,'("time elapsed: ", e13.6)') stopTime - startTime
 
-   open( newunit = out_unit, file = './tests/rand_single.out', access = 'stream', status = 'old' )
+   open( newunit = out_unit, file = './tests/rand_single.out', access = 'stream' )
    write( out_unit ) res
    close( out_unit )
 end program

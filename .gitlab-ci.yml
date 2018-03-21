@@ -20,6 +20,7 @@ run_test:
       - zypper --non-interactive in gcc7
       - zypper --non-interactive in gcc7-fortran
       - zypper --non-interactive in octave-cli
+      - zypper --non-interactive in octave-forge-nan
       - zypper --non-interactive in octave-forge-statistics
    stage: test
    tags:
