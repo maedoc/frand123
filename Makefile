@@ -10,6 +10,8 @@ FC = ifort$(SUFFIX)
 FFLAGS = -fpic -module lib64 -ipo -O2
 LD = ifort$(SUFFIX)
 LDFLAGS = -shared -ipo -O2
+AR = ar
+ARFLAGS = rc
 #######################
 #### GNU Compilers ####
 #######################
@@ -20,12 +22,12 @@ FC = gfortran$(SUFFIX)
 FFLAGS = -fPIC -J lib64 -flto -O3
 LD = gcc$(SUFFIX)
 LDFLAGS = -shared -fPIC -flto -O2
+AR = gcc-ar
+ARFLAGS = rc
 endif
 ############################
 #### For static library ####
 ############################
-AR = ar
-ARFLAGS = rc
 
 # decide whether to use ARS or not (requires Intel AES-NI support)
 ifeq ($(ars),y)
