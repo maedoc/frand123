@@ -25,10 +25,19 @@ run_test:
    stage: test
    tags:
       - linux
-#  variables:
+   variables:
+      CV: '0'
+      CV_S: 'coverage:'
+      N_TESTS: '2.' # FLOAT NUMBER!
    script:
-      - SUFFIX=-7 make gcc=y tests
-#  coverage: '/regex/'
+      - SUFFIX=-7 make gcc=y testRandSingle && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{print $1/$2}'`
+      - echo $CV_S "$CV_R"
+      - SUFFIX=-7 make gcc=y testRandDouble && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{print $1/$2}'`
+      - echo $CV_S "$CV_R"
+   coverage: '/coverage: \d+\.\d+/'
+   allow_failure: true
 #  artifacts:
 #    when: on_success
 #    name: ...
