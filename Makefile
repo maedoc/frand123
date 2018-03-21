@@ -55,16 +55,14 @@ tests: testRandSingle testRandDouble
 
 testRandSingle: tests/testRandSingle.x
 	rm -f tests/rand_single.out
-	mkfifo tests/rand_single.out
-	./tests/testRandSingle.x & octave-cli --path ~/Downloads/statistics-1.3.0/inst/ --path tests --eval testRandSingle
-	wait
+	./tests/testRandSingle.x
+	octave-cli --path ~/Downloads/statistics-1.3.0/inst/ --path tests --eval testRandSingle
 	rm -f tests/rand_single.out
 
 testRandDouble: tests/testRandDouble.x
 	rm -f tests/rand_double.out
-	mkfifo tests/rand_double.out
-	./tests/testRandDouble.x & octave-cli --path ~/Downloads/statistics-1.3.0/inst/ --path tests --eval testRandDouble
-	wait
+	./tests/testRandDouble.x
+	octave-cli --path ~/Downloads/statistics-1.3.0/inst/ --path tests --eval testRandDouble
 	rm -f tests/rand_double.out
 
 build/rand123wrapper.o: build wrapper/rand123wrapper.c Makefile
