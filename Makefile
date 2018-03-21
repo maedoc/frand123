@@ -17,9 +17,9 @@ ARFLAGS = rc
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fPIC -flto -O3
+CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes -mfma
 FC = gfortran$(SUFFIX)
-FFLAGS = -fPIC -J lib64 -flto -O3
+FFLAGS = -fPIC -J lib64 -flto -O3 -maes -mfma
 LD = gcc$(SUFFIX)
 LDFLAGS = -shared -fPIC -flto -O2
 AR = gcc-ar$(SUFFIX)
