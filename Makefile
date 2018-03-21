@@ -35,6 +35,11 @@ ifeq ($(ars),y)
 	FFLAGS += -DUSE_ARS
 endif
 
+# decide whether to use FMA instructions (requires Intel FMA3 support)
+ifeq ($(fma),y)
+	CFLAGS += -DUSE_FMA
+endif
+
 .PHONY: all clean tests testRandSingle testRandDouble
 
 all: lib64/frand123.a lib64/frand123.so

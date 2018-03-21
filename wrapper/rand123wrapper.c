@@ -93,9 +93,14 @@
       // normalize to [-0.5,0.5] and add shift to end in [0,1]
       __m128 normFactor = _mm_load_ps1( &factor_float );
       __m128 summand    = _mm_load_ps1( &summand_float );
-      __m128 restrictedToUnitCircle = _mm_fmadd_ps( asSignedFloats, normFactor, summand );
+#ifdef USE_FMA
+      __m128 restrictedToUnitInterval = _mm_fmadd_ps( asSignedFloats, normFactor, summand );
+#else
+      __m128 restrictedToUnitCircle = _mm_mul_ps( asSignedFloats, normFactor );
+      __m128 restrictedToUnitInterval = _mm_add_ps( restrictedToUnitCircle, summand );
+#endif
       // store result in memory
-      _mm_storeu_ps( res, restrictedToUnitCircle );
+      _mm_storeu_ps( res, restrictedToUnitInterval );
       // advance counter
       if( ctr_ars->v[0] < UINT32_MAX )
          ctr_ars->v[0]++;
