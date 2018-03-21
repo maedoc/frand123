@@ -3,10 +3,9 @@ function testRandSingle()
    a = fread( f, Inf, 'single' );
    fclose( f );
    h = runstest( a, 'Method', 'exact' );
-   disp(h)
-   %if( runstest( a, 'Method', 'exact' ) == 0 )
-   %   disp('Test passed' )
-   %else
-   %   disp('Test tests/testRandSingle.x failed' )
-   %end
+   if( runstest( a, 'Method', 'exact' ) == 0 )
+      disp('Test passed' )
+   else
+      disp('Test tests/testRandSingle.x failed' )
+   end
 end

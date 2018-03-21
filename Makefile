@@ -28,7 +28,9 @@ ifeq ($(ars),y)
 	FFLAGS += -DUSE_ARS
 endif
 
-.PHONY: clean tests testRandSingle testRandDouble
+.PHONY: all clean tests testRandSingle testRandDouble
+
+all: lib64/frand123.a lib64/frand123.so
 
 build:
 	mkdir build/

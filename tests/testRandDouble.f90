@@ -10,7 +10,7 @@ program testRandDouble
    integer :: out_unit
    real :: startTime, stopTime
 
-   call init_rand( state, 0, 0 )
+   call frand123Init( state, 0, 0 )
    
    allocate( res( numRndNbrs ) )
 
