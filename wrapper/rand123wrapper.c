@@ -148,7 +148,7 @@
     *                   key:     second 128 bit
     *            res:   adress to storage for 4 32 bit signed integers
     */
-   void ars4x32( int64_t *state, int32_t *res )
+   void ars4x32_int( int64_t *state, int32_t *res )
    {
       // extract counter and key from state
       ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
