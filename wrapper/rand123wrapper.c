@@ -33,17 +33,17 @@
       res[0] = (double)resInts[0] * factor_double + summand_double;
       res[1] = (double)resInts[1] * factor_double + summand_double;
       // advance counter
-      if( ctr_ars->v[0] < UINT64_MAX )
+      if( ctr_ars->v[0] < UINT32_MAX )
          ctr_ars->v[0]++;
       else
       {
          ctr_ars->v[0] = 0;
-         if( ctr_ars->v[1] < UINT64_MAX )
+         if( ctr_ars->v[1] < UINT32_MAX )
             ctr_ars->v[1]++;
          else
          {
             ctr_ars->v[1] = 0;
-            if( ctr_ars->v[2] < UINT64_MAX )
+            if( ctr_ars->v[2] < UINT32_MAX )
                ctr_ars->v[2]++;
             else
             {
@@ -97,17 +97,17 @@
       // store result in memory
       _mm_storeu_ps( res, restrictedToUnitCircle );
       // advance counter
-      if( ctr_ars->v[0] < UINT64_MAX )
+      if( ctr_ars->v[0] < UINT32_MAX )
          ctr_ars->v[0]++;
       else
       {
          ctr_ars->v[0] = 0;
-         if( ctr_ars->v[1] < UINT64_MAX )
+         if( ctr_ars->v[1] < UINT32_MAX )
             ctr_ars->v[1]++;
          else
          {
             ctr_ars->v[1] = 0;
-            if( ctr_ars->v[2] < UINT64_MAX )
+            if( ctr_ars->v[2] < UINT32_MAX )
                ctr_ars->v[2]++;
             else
             {
@@ -137,6 +137,26 @@
       // store in res and reinterpret as int64_t
       res[0] = *((int64_t*)&resArs.v[0]);
       res[1] = *((int64_t*)&resArs.v[2]);
+      // advance counter
+      if( ctr_ars->v[0] < UINT32_MAX )
+         ctr_ars->v[0]++;
+      else
+      {
+         ctr_ars->v[0] = 0;
+         if( ctr_ars->v[1] < UINT32_MAX )
+            ctr_ars->v[1]++;
+         else
+         {
+            ctr_ars->v[1] = 0;
+            if( ctr_ars->v[2] < UINT32_MAX )
+               ctr_ars->v[2]++;
+            else
+            {
+               ctr_ars->v[2] = 0;
+               ctr_ars->v[3]++;
+            }
+         }
+      }
       return;
    }
    
@@ -160,6 +180,26 @@
       res[1] = *((int32_t*)&resArs.v[1]);
       res[2] = *((int32_t*)&resArs.v[2]);
       res[3] = *((int32_t*)&resArs.v[3]);
+      // advance counter
+      if( ctr_ars->v[0] < UINT32_MAX )
+         ctr_ars->v[0]++;
+      else
+      {
+         ctr_ars->v[0] = 0;
+         if( ctr_ars->v[1] < UINT32_MAX )
+            ctr_ars->v[1]++;
+         else
+         {
+            ctr_ars->v[1] = 0;
+            if( ctr_ars->v[2] < UINT32_MAX )
+               ctr_ars->v[2]++;
+            else
+            {
+               ctr_ars->v[2] = 0;
+               ctr_ars->v[3]++;
+            }
+         }
+      }
       return;
    }
 #else
@@ -237,12 +277,24 @@
       res[2] = (float)resInt.v[2] * factor_float + summand_float;
       res[3] = (float)resInt.v[3] * factor_float + summand_float;
       // advance counter
-      if( ctr_threefry->v[0] < UINT64_MAX )
+      if( ctr_threefry->v[0] < UINT32_MAX )
          ctr_threefry->v[0]++;
       else
       {
          ctr_threefry->v[0] = 0;
-         ctr_threefry->v[1]++;
+         if( ctr_threefry->v[1] < UINT32_MAX )
+            ctr_threefry->v[1]++;
+         else
+         {
+            ctr_threefry->v[1] = 0;
+            if( ctr_threefry->v[2] < UINT32_MAX )
+               ctr_threefry->v[2]++;
+            else
+            {
+               ctr_threefry->v[2] = 0;
+               ctr_threefry->v[3]++;
+            }
+         }
       }
       return;
    }
@@ -297,14 +349,25 @@
       res[2] = *((int32_t*)&resInt.v[2]);
       res[3] = *((int32_t*)&resInt.v[3]);
       // advance counter
-      if( ctr_threefry->v[0] < UINT64_MAX )
+      if( ctr_threefry->v[0] < UINT32_MAX )
          ctr_threefry->v[0]++;
       else
       {
          ctr_threefry->v[0] = 0;
-         ctr_threefry->v[1]++;
+         if( ctr_threefry->v[1] < UINT32_MAX )
+            ctr_threefry->v[1]++;
+         else
+         {
+            ctr_threefry->v[1] = 0;
+            if( ctr_threefry->v[2] < UINT32_MAX )
+               ctr_threefry->v[2]++;
+            else
+            {
+               ctr_threefry->v[2] = 0;
+               ctr_threefry->v[3]++;
+            }
+         }
       }
-      return;
    }
 
 #endif
