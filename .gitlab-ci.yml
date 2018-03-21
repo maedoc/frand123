@@ -3,14 +3,13 @@
 # global before_script to always install required packages
 before_script:
    - zypper --non-interactive in make
-   - zypper --non-interactive in gcc6
-   - zypper --non-interactive in gcc6-fortran
+   - zypper --non-interactive in gcc7
+   - zypper --non-interactive in gcc7-fortran
 #   - zypper --non-interactive in octave
    - zypper --non-interactive in octave-cli
    - zypper --non-interactive in octave-forge-statistics
-   - zypper se gcc
-   - gfortran -v
-   - gfortran6 -v
+   - rpm -ql gcc7-fortran
+   - gfortran7 -v
 
 # a job with two stages: compile and test
 test_build:
