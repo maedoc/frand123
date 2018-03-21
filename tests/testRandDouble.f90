@@ -22,7 +22,7 @@ program testRandDouble
 
    !write(*,*) res
 
-   open( newunit = out_unit, file = './tests/rand_double.out', access = 'stream', status = 'old' )
+   open( newunit = out_unit, file = './tests/rand_double.out', access = 'stream' )
    write( out_unit ) res
    close( out_unit )
 end program

@@ -1,4 +1,5 @@
 function testRandSingle()
+   pkg load statistics
    f = fopen( './tests/rand_single.out' );
    a = fread( f, Inf, 'single' );
    fclose( f );

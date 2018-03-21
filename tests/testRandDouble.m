@@ -1,4 +1,5 @@
 function testRandDouble()
+   pkg load statistics
    f = fopen( 'tests/rand_double.out' );
    a = fread( f, Inf, 'double' );
    fclose( f );
