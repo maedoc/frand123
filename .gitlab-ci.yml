@@ -8,6 +8,9 @@ before_script:
 #   - zypper --non-interactive in octave
    - zypper --non-interactive in octave-cli
    - zypper --non-interactive in octave-forge-statistics
+   - zypper se gcc
+   - gfortran -v
+   - gfortran6 -v
 
 # a job with two stages: compile and test
 test_build:
