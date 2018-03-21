@@ -5,13 +5,13 @@
 # with each passed test, and printing the fraction w.r.t. number of tests. This is
 # ugly but works.
 
-# global before_script to always install required packages
+# Global before_script to always install required packages
 before_script:
    - zypper --non-interactive in make
    - zypper --non-interactive in gcc7
    - zypper --non-interactive in gcc7-fortran
 
-# a job with two stages: compile and test
+# Two jobs with two stages: 'build' and 'test'
 test_build:
    stage: build
    tags:
@@ -35,11 +35,15 @@ run_test:
       CV_S: 'coverage:'
       N_TESTS: '2' # the number of tests we will be running
    script:
+      #
+      - echo "Running test 1"
       - SUFFIX=-7 make gcc=y testRandSingle && CV="$((CV + 1))"
-      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.2f\n", $1/$2)}'`
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
+      #
+      - echo "Running test 2"
       - SUFFIX=-7 make gcc=y testRandDouble && CV="$((CV + 1))"
-      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.2f\n", $1/$2)}'`
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
    coverage: '/coverage: \d+\.\d+/'
    allow_failure: true
