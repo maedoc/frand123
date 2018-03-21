@@ -33,7 +33,7 @@ run_test:
    variables:
       CV: '0'
       CV_S: 'coverage:'
-      N_TESTS: '4' # the number of tests we will be running
+      N_TESTS: '5' # the number of tests we will be running
    script:
       #
       - echo "Running test testRandSingle with Threefry RNG"
@@ -59,6 +59,9 @@ run_test:
       - SUFFIX=-7 make gcc=y ars=y testRandDouble && CV="$((CV + 1))"
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
+      #
+      - echo "Running cat /proc/cpuinfo"
+      - cat /proc/cpuinfo
    coverage: '/coverage: \d+\.\d+/'
    allow_failure: true
 #  artifacts:
