@@ -15,7 +15,7 @@ test_build:
    tags:
       - linux
    script:
-      - make lib64/frand123.so lib64/frand123.a
+      - make gcc=y lib64/frand123.so lib64/frand123.a
   
 run_test: 
    stage: test
@@ -23,7 +23,7 @@ run_test:
       - linux
 #  variables:
    script:
-      - make tests
+      - make gcc=y tests
 #  coverage: '/regex/'
 #  artifacts:
 #    when: on_success

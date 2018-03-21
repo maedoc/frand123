@@ -10,12 +10,14 @@ LDFLAGS = -shared -ipo -O2
 #######################
 #### GNU Compilers ####
 #######################
-#CC = gcc
-#CFLAGS = -Iinclude/Random123 -fPIC -flto -O3
-#FC = gfortran
-#FFLAGS = -fPIC -J lib64 -flto -O3
-#LD = gcc
-#LDFLAGS = -shared -fPIC -flto -O2
+ifeq ($(gcc),y)
+CC = gcc
+CFLAGS = -Iinclude/Random123 -fPIC -flto -O3
+FC = gfortran
+FFLAGS = -fPIC -J lib64 -flto -O3
+LD = gcc
+LDFLAGS = -shared -fPIC -flto -O2
+endif
 ############################
 #### For static library ####
 ############################
