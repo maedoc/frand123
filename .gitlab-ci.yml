@@ -5,18 +5,19 @@ before_script:
    - zypper --non-interactive in make
    - zypper --non-interactive in gcc6
    - zypper --non-interactive in gcc6-fortran
-   - zypper --non-interactive in octave
+#   - zypper --non-interactive in octave
    - zypper --non-interactive in octave-cli
    - zypper --non-interactive in octave-forge-statistics
 
 # a job with two stages: compile and test
-build_n_test:
+test_build:
    stage: compile
    tags:
       - linux
    script:
       - make lib64/frand123.so lib64/frand123.a
-   
+  
+run_test: 
    stage: test
    tags:
       - linux
