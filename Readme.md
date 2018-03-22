@@ -8,6 +8,7 @@ The Random123 C library (see [publication](http://dx.doi.org/10.1145/2063384.206
 * Resistent to the BigCrush randomness test in TestU01 (see [publication](http://dx.doi.org/10.1145/1268776.1268777) and [code](http://simul.iro.umontreal.ca/testu01/tu01.html))
 * High-performance ARS RNG implemented using Intel AES-NI instructions
 * High-performance Threefry RNG implemented in plain C
+* Permissive 3-clause BSD-type license (see file "License")
 
 The frand123 Fortran wrapper provides the following capabilities:
 * Perfect parallelization due to counter-based design with minimal state
