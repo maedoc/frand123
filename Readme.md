@@ -133,5 +133,5 @@ The Makefile was tested with:
 * use FMA3 in ARS: add _ars=y fma=y_ to _make_ command
 * use gcc: add _gcc=y_ to _make_ command
 
-#### Examples
+## Examples
 For examples, please consult the tests subdirectory
