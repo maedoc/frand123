@@ -43,7 +43,7 @@ endif
 
 .PHONY: all clean tests testRandSingle testRandDouble
 
-all: lib64/frand123.a lib64/frand123.so
+all: lib64/libfrand123.a lib64/libfrand123.so
 
 build:
 	mkdir build/
@@ -77,14 +77,14 @@ build/rand123wrapper.o: build wrapper/rand123wrapper.c Makefile
 build/frand123.o lib64/frand123.mod: build lib64 wrapper/frand123.F90 Makefile
 	$(FC) $(FFLAGS) -c wrapper/frand123.F90 -o build/frand123.o 
 
-lib64/frand123.so: build/frand123.o build/rand123wrapper.o Makefile
-	$(LD) $(LDFLAGS) -o lib64/frand123.so build/frand123.o build/rand123wrapper.o
+lib64/libfrand123.so: build/frand123.o build/rand123wrapper.o Makefile
+	$(LD) $(LDFLAGS) -o lib64/libfrand123.so build/frand123.o build/rand123wrapper.o
 
-lib64/frand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o Makefile
-	$(AR) $(ARFLAGS) lib64/frand123.a build/frand123.o build/rand123wrapper.o
+lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o Makefile
+	$(AR) $(ARFLAGS) lib64/libfrand123.a build/frand123.o build/rand123wrapper.o
 
-tests/testRandDouble.x: lib64/frand123.a tests/testRandDouble.f90
-	$(FC) $(FFLAGS) -o tests/testRandDouble.x tests/testRandDouble.f90 lib64/frand123.a
+tests/testRandDouble.x: lib64/libfrand123.a tests/testRandDouble.f90
+	$(FC) $(FFLAGS) -o tests/testRandDouble.x tests/testRandDouble.f90 lib64/libfrand123.a
 
-tests/testRandSingle.x: lib64/frand123.a tests/testRandSingle.f90
-	$(FC) $(FFLAGS) -o tests/testRandSingle.x tests/testRandSingle.f90 lib64/frand123.a
+tests/testRandSingle.x: lib64/libfrand123.a tests/testRandSingle.f90
+	$(FC) $(FFLAGS) -o tests/testRandSingle.x tests/testRandSingle.f90 lib64/libfrand123.a
