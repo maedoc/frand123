@@ -119,17 +119,17 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 ## Installation
 The Makefile was tested with:
-    * gcc + gfortran 7.3.0
-    * icc + ifortran 17.0.2
-Build options:
-    * static library only: _make lib64/libfrand123.a_
-    * dynamic library only: _make lib64/libfrand123.so_
-    * static and dynamic libraries: _make all_
-    * run tests: _make tests_
-Enabling features:
-    * use ARS: add _ars=y_ to _make_ command
-    * use FMA3 in ARS: add _ars=y fma=y_ to _make_ command
-    * use gcc: add _gcc=y_ to _make_ command
+* gcc + gfortran 7.3.0
+* icc + ifortran 17.0.2
+### Build options
+* static library only: _make lib64/libfrand123.a_
+* dynamic library only: _make lib64/libfrand123.so_
+* static and dynamic libraries: _make all_
+* run tests: _make tests_
+### Enabling features
+* use ARS: add _ars=y_ to _make_ command
+* use FMA3 in ARS: add _ars=y fma=y_ to _make_ command
+* use gcc: add _gcc=y_ to _make_ command
 
 #### Examples
 For examples, please consult the tests subdirectory
