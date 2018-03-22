@@ -41,7 +41,7 @@ ifeq ($(fma),y)
 	FFLAGS += -mfma
 endif
 
-.PHONY: all clean tests testRandSingle testRandDouble
+.PHONY: all clean tests testAccuracyFloats testRandSingle testRandDouble
 
 all: lib64/libfrand123.a lib64/libfrand123.so
 
@@ -57,7 +57,10 @@ clean:
 	rm -f tests/*.x
 	rm -rf tests/output
 
-tests: testRandSingle testRandDouble
+tests: testAccuracyFloats testRandSingle testRandDouble
+
+testAccuracyFloats: tests/testAccuracyFloats.x
+	set -e ./tests/testAccuracyFloats.x
 
 testRandSingle: tests/testRandSingle.x
 	rm -f tests/rand_single.out
@@ -82,6 +85,9 @@ lib64/libfrand123.so: build/frand123.o build/rand123wrapper.o Makefile
 
 lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o Makefile
 	$(AR) $(ARFLAGS) lib64/libfrand123.a build/frand123.o build/rand123wrapper.o
+
+tests/testAccuracyFloats.x: tests/testAccuracyFloats.c
+	$(CC) $(CFLAGS) -o tests/testAccuracyFloats.x tests/testAccuracyFloats.c
 
 tests/testRandDouble.x: lib64/libfrand123.a tests/testRandDouble.f90
 	$(FC) $(FFLAGS) -o tests/testRandDouble.x tests/testRandDouble.f90 lib64/libfrand123.a

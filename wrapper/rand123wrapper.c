@@ -61,10 +61,11 @@
     * *******************
     * **** IMPORTANT ****
     * *******************
-    * The addition of 400.f is experimental and should be validated/replaced with correct
-    * value to ensure mapping onto (-0.5,0.5)
+    * The value of enlarger was determined experimentally to ensure mapping onto (0,-1).
+    * Its value is validated in test testAccuracyFloats
     */
-   static const float  factor_float   = 1.f  / ( (float)UINT32_MAX + 400.f );
+   static const float  enlarger       = 257.f;
+   static const float  factor_float   = 1.f  / ( (float)UINT32_MAX + enlarger );
    static const float  summand_float  = 0.5f;
 
    /*
