@@ -38,7 +38,7 @@ run_test:
       #
       - echo "Running test testAccuracyFloats"
       - make clean
-      - SUFFIX=-7 make gcc=y testAccuracyFloats && CV="$((CV + 1 ))"
+      - SUFFIX=-7 make gcc=y testAccuracyFloats && CV="$((CV + 1))"
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
       #
