@@ -17,7 +17,7 @@ test_build:
    tags:
       - linux
    script:
-      - SUFFIX=-7 make gcc=y lib64/frand123.so lib64/frand123.a
+      - SUFFIX=-7 make gcc=y lib64/libfrand123.so lib64/libfrand123.a
   
 run_test: 
    before_script:
