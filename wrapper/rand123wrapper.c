@@ -64,8 +64,8 @@
     * The value of enlarger was determined experimentally to ensure mapping onto (0,-1).
     * Its value is validated in test testAccuracyFloats
     */
-   static const float  enlarger       = 257.f;
-   static const float  factor_float   = 1.f  / ( (float)UINT32_MAX + enlarger );
+#define enlarger 257.f;
+   static const float  factor_float   = 1.f / ( (float)UINT32_MAX + 257.f );
    static const float  summand_float  = 0.5f;
 
    /*

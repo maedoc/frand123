@@ -10,7 +10,7 @@ static const float enlarger = 257.f;
 
 int main()
 {
-   float rec = 1.f / ( (float)UINT32_MAX + enlarger );
+   const float rec = 1.f / ( (float)UINT32_MAX + enlarger );
    float res_max = (float)INT32_MAX * rec;
    float res_min = (float)INT32_MIN * rec;
    printf( "enlarger=%f\n", enlarger );
