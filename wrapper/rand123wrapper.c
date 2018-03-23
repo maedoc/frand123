@@ -62,9 +62,10 @@
     * **** IMPORTANT ****
     * *******************
     * The value of enlarger was determined experimentally to ensure mapping onto (0,-1).
-    * Its value is validated in test testAccuracyFloats
+    * It is included from frand123enlarger.h to allow validation
+    * of the choice in testAccuracyFloats
     */
-#define enlarger 257.f;
+#include "frand123enlarger.h"
    static const float  factor_float   = 1.f / ( (float)UINT32_MAX + 257.f );
    static const float  summand_float  = 0.5f;
 
