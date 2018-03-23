@@ -21,7 +21,7 @@ function testMomentsSingle()
       % compare difference (1/(i+1) is the analytical value for the i-th moment
       relativeError = ( analyticalMoment - sum( b ) ) / analyticalMoment;
 
-      if( abs( relativeError ) > 1e-3 )
+      if( abs( relativeError ) > 2e-3 )
          disp( sprintf( 'Failure un testMomentsSingle' ) )
          disp( sprintf( 'relative error for %d-th moment is larger than 1e-3.', i ) )
          exit( 1 )
