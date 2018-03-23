@@ -159,16 +159,23 @@ This test assesses that the value added onto UINT32_MAX in the mapping onto the 
 ### testMomentsSingle
 #### Description
 This test compares the first 75 moments of the generated single precision real random numbers uniformly distributed in (0,1) to the respective moments of the uniform distribution.
-The test is passed if the relative error is below 10^{-3}
+The test is passed if the relative error is below 10^-3
 
 ### testMomentsDouble
 #### Description
 This test compares the first 75 moments of the generated double precision real random numbers uniformly distributed in (0,1) to the respective moments of the uniform distribution.
-The test is passed if the relative error is below 10^{-3}
+The test is passed if the relative error is below 10^-3
 
 ### testCentralMomentsSingle
 #### Description
 This test compares the first 75 central moments of the generated single precision real random numbers uniformly distributed in (0,1) to the respective central moments of the uniform distibution in (0,1).
 The test is passed if:
-* for even moments, the relative error is below 10^{-3}
-* for odd moments, the error of the central moment is below 10^{-3}
+* for even moments, the relative error is below 10^-3
+* for odd moments, the error of the central moment is below 10^-3
+
+### testCentralMomentsDouble
+#### Description
+This test compares the first 75 central moments of the generated double precision real random numbers uniformly distributed in (0,1) to the respective central moments of the uniform distibution in (0,1).
+The test is passed if:
+* for even moments, the relative error is below 10^-3
+* for odd moments, the error of the central moment is below 10^-3
