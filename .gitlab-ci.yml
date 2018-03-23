@@ -33,7 +33,7 @@ run_test:
    variables:
       CV: '0'
       CV_S: 'coverage:'
-      N_TESTS: '5' # the number of tests we will be running
+      N_TESTS: '13' # the number of tests we will be running
    script:
       #
       - echo "Running test testAccuracyFloats"
@@ -59,10 +59,58 @@ run_test:
       - SUFFIX=-7 make gcc=y ars=y testRandSingle && CV="$((CV + 1))"
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
-      
+      #
       - echo "Running test testRandDouble with ARS RNG"
       - make clean
       - SUFFIX=-7 make gcc=y ars=y testRandDouble && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testMomentsSingle with ARS RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y ars=y testMomentsSingle && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testMomentsDouble with ARS RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y ars=y testMomentsDouble && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testCentralMomentsSingle with ARS RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y ars=y testCentralMomentsSingle && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testCentralMomentsDouble with ARS RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y ars=y testCentralMomentsDouble && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testMomentsSingle with Threefry RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y testMomentsSingle && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testMomentsDouble with Threefry RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y testMomentsDouble && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testCentralMomentsSingle with Threefry RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y testCentralMomentsSingle && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testCentralMomentsDouble with Threefry RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y testCentralMomentsDouble && CV="$((CV + 1))"
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
    coverage: '/coverage: \d+\.\d+/'
