@@ -136,3 +136,22 @@ The Makefile was tested with:
 
 ## Examples
 For examples, please consult the tests subdirectory
+
+## Tests
+### testRandSingle.f90
+#### Description
+This test consists of three stages:
+1. Write out an array of 10^8 single precision uniformly distributed real random numbers to disk
+2. Read random numbers into octave
+3. Test the null hypothesis on randomness of the numbers against the alternative hypothesis that they are not random with significance level 10^{-5} (runstest, cf. MATLAB documentation)
+
+### testRandDouble.f90
+#### Description
+This test consists of three stages:
+1. Write out an array of 10^8 double precision uniformly distributed real random numbers to disk
+2. Read random numbers into octave
+3. Test the null hypothesis on randomness of the numbers against the alternative hypothesis that they are not random with significance level 10^{-5} (runstest, cf. MATLAB documentation)
+
+### testAccuracyFloats.f90
+#### Description
+This test assesses that the value added onto UINT32_MAX in the mapping onto the interval (0,1) is sufficiently large.
