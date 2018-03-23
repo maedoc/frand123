@@ -1,7 +1,7 @@
 program testRandSingle
    use frand123
    implicit none
-   integer, parameter :: numRndNbrs = 1000 * 1000
+   integer, parameter :: numRndNbrs = 1000 * 1000 * 100
 
    integer( kind = state_kind ), dimension( state_size ) :: state
    real( kind = res_kind_single ), dimension(:), allocatable :: res

@@ -55,7 +55,7 @@ clean:
 	rm -rf build/
 	rm -rf lib64/
 	rm -f tests/*.x
-	rm -rf tests/output
+	rm -f tests/rand_*.out
 
 tests: testAccuracyFloats testRandSingle testRandDouble
 
@@ -74,7 +74,7 @@ testRandDouble: tests/testRandDouble.x
 	set -e; octave-cli --path ~/Downloads/statistics-1.3.0/inst/ --path tests --eval testRandDouble
 	rm -f tests/rand_double.out
 
-build/rand123wrapper.o: build wrapper/rand123wrapper.c Makefile
+build/rand123wrapper.o: build wrapper/rand123wrapper.c wrapper/frand123enlarger.h Makefile
 	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
 
 build/frand123.o lib64/frand123.mod: build lib64 wrapper/frand123.F90 Makefile
@@ -86,11 +86,11 @@ lib64/libfrand123.so: build/frand123.o build/rand123wrapper.o Makefile
 lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o Makefile
 	$(AR) $(ARFLAGS) lib64/libfrand123.a build/frand123.o build/rand123wrapper.o
 
-tests/testAccuracyFloats.x: tests/testAccuracyFloats.c
+tests/testAccuracyFloats.x: tests/testAccuracyFloats.c wrapper/frand123enlarger.h Makefile
 	$(CC) $(CFLAGS) -o tests/testAccuracyFloats.x tests/testAccuracyFloats.c
 
-tests/testRandDouble.x: lib64/libfrand123.a tests/testRandDouble.f90
+tests/testRandDouble.x: lib64/libfrand123.a tests/testRandDouble.f90 Makefile
 	$(FC) $(FFLAGS) -o tests/testRandDouble.x tests/testRandDouble.f90 lib64/libfrand123.a
 
-tests/testRandSingle.x: lib64/libfrand123.a tests/testRandSingle.f90
+tests/testRandSingle.x: lib64/libfrand123.a tests/testRandSingle.f90 Makefile
 	$(FC) $(FFLAGS) -o tests/testRandSingle.x tests/testRandSingle.f90 lib64/libfrand123.a
