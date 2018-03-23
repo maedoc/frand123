@@ -41,7 +41,7 @@ ifeq ($(fma),y)
 	FFLAGS += -mfma
 endif
 
-.PHONY: all clean tests testAccuracyFloats testRandSingle testRandDouble
+.PHONY: all clean tests testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble
 
 all: lib64/libfrand123.a lib64/libfrand123.so
 
@@ -57,21 +57,45 @@ clean:
 	rm -f tests/*.x
 	rm -f tests/rand_*.out
 
-tests: testAccuracyFloats testRandSingle testRandDouble
+tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble
 
 testAccuracyFloats: tests/testAccuracyFloats.x
 	set -e ./tests/testAccuracyFloats.x
 
-testRandSingle: tests/testRandSingle.x
+testRandSingle: tests/testRandSingle.x tests/testRandSingle.m
 	rm -f tests/rand_single.out
 	./tests/testRandSingle.x
 	set -e; octave-cli --path ~/Downloads/statistics-1.3.0/inst/ --path tests --eval testRandSingle
 	rm -f tests/rand_single.out
 
-testRandDouble: tests/testRandDouble.x
+testRandDouble: tests/testRandDouble.x tests/testRandDouble.m
 	rm -f tests/rand_double.out
 	./tests/testRandDouble.x
 	set -e; octave-cli --path ~/Downloads/statistics-1.3.0/inst/ --path tests --eval testRandDouble
+	rm -f tests/rand_double.out
+
+testMomentsSingle: tests/testRandSingle.x tests/testMomentsSingle.m
+	rm -f tests/rand_single.out
+	./tests/testRandSingle.x
+	set -e; octave-cli --path tests --eval testMomentsSingle
+	rm -f tests/rand_single.out
+
+testMomentsDouble: tests/testRandDouble.x tests/testMomentsDouble.m
+	rm -f tests/rand_double.out
+	./tests/testRandDouble.x
+	set -e; octave-cli --path tests --eval testMomentsDouble
+	rm -f tests/rand_double.out
+
+testCentralMomentsSingle: tests/testRandSingle.x tests/testCentralMomentsSingle.m
+	rm -f tests/rand_single.out
+	./tests/testRandSingle.x
+	set -e; octave-cli --path tests --eval testCentralMomentsSingle
+	rm -f tests/rand_single.out
+
+testCentralMomentsDouble: tests/testRandDouble.x tests/testCentralMomentsDouble.m
+	rm -f tests/rand_double.out
+	./tests/testRandDouble.x
+	set -e; octave-cli --path tests --eval testCentralMomentsDouble
 	rm -f tests/rand_double.out
 
 build/rand123wrapper.o: build wrapper/rand123wrapper.c wrapper/frand123enlarger.h Makefile
