@@ -6,7 +6,7 @@ function testCentralMomentsDouble()
    a = fread( f, Inf, 'double' );
    fclose( f );
 
-   % comute the mean
+   % compute the mean
    mu = mean( a );
 
    % shift a by mean (building block of central moments)
@@ -20,10 +20,10 @@ function testCentralMomentsDouble()
       % calculate b = a^i
       b = b .* a;
 
-      % compute analytic central moment (2^(-i-1)((-1)^i+1)/(i+1) is the analytical value for the i-th central moment)
+      % compute analytical central moment (2^(-i-1)((-1)^i+1)/(i+1) is the analytical value for the i-th central moment)
       analyticalCentralMoment = ( 2^(-i-1) * ( (-1)^i + 1 ) ) / ( i + 1 );
 
-      % compute numic central moment
+      % compute numeric central moment
       numericCentralMoment = sum( b );
 
       % compare even and odd central moments as odd central moments should be zero
