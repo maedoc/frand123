@@ -84,9 +84,9 @@ module frand123
 #endif
    interface
       ! compute two double precision normally distributed random variables with
-      ! expectation mu and variance sigma
-      ! based appropriate functions using ARS or threefry
-      subroutine norm2x64( state, mu, sigma, res ) bind( C, name='norm2x64')
+      ! expectation mu and variance sigma using Box-Muller algorithm
+      ! use ARS or threefry based uniform random number generators
+      subroutine boxmuller2x64( state, mu, sigma, res ) bind( C, name='boxmuller2x64')
          use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
          implicit none
          integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
@@ -94,23 +94,23 @@ module frand123
          real( kind = c_double ), value, intent( in ) :: sigma
          real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
       end subroutine
-      ! compute four single precision normally distributed random variables with
-      ! expectation mu and variance sigma
-      ! based appropriate functions using ARS or threefry
-      subroutine norm4x32( state, mu, sigma, res ) bind( C, name='norm4x32')
-         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t
+      ! compute two double precision normally distributed random variables with
+      ! expectation mu and variance sigma using inverse transform sampling using
+      ! the algorithm proposed by Hastings 1955
+      ! use ARS or threefry based uniform random number generators
+      subroutine hastings2x64( state, mu, sigma, res ) bind( C, name='hastings2x64')
+         use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
          implicit none
          integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
-         real( kind = c_float ), value, intent( in ) :: mu
-         real( kind = c_float ), value, intent( in ) :: sigma
-         real( kind = c_float ), dimension( 4 ), intent( inout )  :: res
+         real( kind = c_double ), value, intent( in ) :: mu
+         real( kind = c_double ), value, intent( in ) :: sigma
+         real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
       end subroutine
    end interface
 
    public :: frand123Double
    public :: frand123Single
    public :: frand123NormDouble
-   public :: frand123NormSingle
    public :: frand123Integer32
    public :: frand123Integer64
    public :: frand123Init
@@ -144,7 +144,7 @@ contains
 #endif
       enddo
       ! finish in case of odd number of random numbers
-      if ( 2*i .lt. len_res ) then
+      if ( mod( len_res, 2 ) .eq. 1 ) then
 #ifdef USE_ARS
          call ars2x64_u01( state, buffer )
 #else
@@ -182,7 +182,7 @@ contains
 #endif
       enddo
       ! finish remaining random numbers
-      if( 4*i .lt. len_res ) then
+      if( mod( len_res, 4 ) .ne. 0 ) then
 #ifdef USE_ARS
          call ars4x32_u01( state, buffer )
 #else
@@ -215,56 +215,177 @@ contains
       ! get length of res
       len_res = size( res )
       
+#if defined(USE_HASTINGS)
+      write(*,*) 'Hastings'
+      ! calc number of sage iterations
+      safe_it = len_res / 2
+  
+      ! generate sufficient number of random numbers
+      do i = 1, safe_it
+         call hastings2x64( state, mu, sigma, res( 2*i-1:2*i ) )
+      enddo
+      ! finish in case of odd number of random numbers
+      if( mod( len_res, 2 ) .eq. 1 ) then
+         call hastings2x64( state, mu, sigma, buffer )
+         res( len_res ) = buffer( 1 )
+      endif
+#elif defined(USE_POLAR)
+      write(*,*) 'Polar'
+      block
+         real( kind = res_kind_double ) :: r2, f
+         real( kind = res_kind_double ), dimension( 2 ) :: x
+         safe_it = len_res / 2
+         do i = 1, safe_it
+            r2 = 0.d0
+            do while( ( r2 >= 1.d0 ) .or. ( r2 == 0.d0 ) )
+               call frand123Double( state, buffer )
+               x( 1 ) = 2.d0 * buffer( 1 ) - 1.d0
+               x( 2 ) = 2.d0 * buffer( 2 ) - 1.d0
+               r2 = sum( x ** 2 )
+            enddo
+            f = sqrt( -2.d0 * log( r2 ) / r2 )
+            res( 2*i-1 ) = mu + sigma * f * x( 1 )
+            res( 2*i   ) = mu + sigma * f * x( 2 )
+         enddo
+         if( mod( len_res, 2 ) .eq. 1 ) then
+            do while( ( r2 >= 1.d0 ) .or. ( r2 == 0.d0 ) )
+               call frand123Double( state, buffer )
+               x( 1 ) = 2.d0 * buffer( 1 ) - 1.d0
+               x( 2 ) = 2.d0 * buffer( 2 ) - 1.d0
+               r2 = sum( x ** 2 )
+            enddo
+            f = sqrt( -2.d0 * log( r2 ) / r2 )
+            res( len_res ) = mu + sigma * f * x( 1 )
+         endif
+      end block
+#elif defined(USE_WICHURA)
+      write(*,*) 'Wichura'
+      block
+         ! Coefficients for the polynomial approximations
+         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: A = (/ &
+            3.3871328727963666080d0, &
+            1.3314166789178437745d2, &
+            1.9715909503065514427d3, &
+            1.3731693765509461125d4, &
+            4.5921953931549871457d4, &
+            6.7265770927008700853d4, &
+            3.3430575583588128105d4, &
+            2.5090809287301226727d3 /)
+         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: B = (/ &
+            1.d0, &
+            4.2313330701600911252d1, &
+            6.8718700749205790830d2, &
+            5.3941960214247511077d3, &
+            2.1213794301586595867d4, &
+            3.9307895800092710610d4, &
+            2.8729085735721942674d4, &
+            5.2264952788528545610d3 /)
+         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: C = (/ &
+            1.42343711074968357734d0, &
+            4.63033784615654529590d0, &
+            5.76949722146069140550d0, &
+            3.64784832476320460504d0, &
+            1.27045825245236838258d0, &
+            2.41780725177450611770d-1, &
+            2.27238449892691845833d-2, &
+            7.74545014278341407640d-4 /)
+         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: D = (/ &
+            1.d0, &
+            2.05319162663775882187d0, &
+            1.67638483018380384940d0, &
+            6.89767334985100004550d-1, &
+            1.48103976427480074590d-1, &
+            1.51986665636164571966d-2, &
+            5.47593808499534494600d-4, &
+            1.05075007164441684324d-9 /)
+         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: E = (/ &
+            6.65790464350110377720d0, &
+            5.46378491116411436990d0, &
+            1.78482653991729133580d0, &
+            2.96560571828504891230d-1, &
+            2.65321895265761230930d-2, &
+            1.24266094738807843860d-3, &
+            2.71155556874348757815d-5, &
+            2.01033439929228813265d-7 /)
+         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: F = (/ &
+            1.d0, &
+            5.99832206555887937690d-1, &
+            1.36929880922735805310d-1, &
+            1.48753612908506148525d-2, &
+            7.86869131145613259100d-4, &
+            1.84631831751005468180d-5, &
+            1.42151175831644588870d-7, &
+            2.04426310338993978564d-15 /)
+         ! local variables
+         real( kind = res_kind_double ), dimension( 1 ) :: p
+         real( kind = res_kind_double ) :: prodA, prodB, prodC, prodD, prodE, prodF
+         real( kind = res_kind_double ) :: q, r
+         integer :: i, j
+         do i = 1, len_res
+            call frand123Double( state, p )
+            ! compute quantity q
+            q = p( 1 ) - 0.5d0
+            ! main case
+            if( abs( q ) .le. 0.425d0 ) then
+               r = 0.180625d0 - q ** 2
+               prodA = A(7)
+               prodB = B(7)
+               ! hopefully unrolled
+               do j = 6, 0, -1
+                  prodA = prodA * r + A(j)
+                  prodB = prodB * r + B(j)
+               enddo
+               ! compute result
+               res( i ) = q * prodA / prodB
+            else
+               if( q .lt. 0.d0 ) then
+                  r = p( 1 )
+               else
+                  r = 1.d0 - p( 1 )
+               endif
+               r = sqrt( -log( r ) )
+               if( r .le. 5.d0 ) then
+                  r = r - 1.6d0
+                  prodC = C(7)
+                  prodD = D(7)
+                  ! hopefully unrolled
+                  do j = 6, 0, -1
+                     prodC = prodC * r + C(j)
+                     prodD = prodD * r + D(j)
+                  enddo
+                  res( i ) = prodC / prodD
+               else
+                  r = r - 1.6d0
+                  prodE = E(7)
+                  prodF = F(7)
+                  ! hopefully unrolled
+                  do j = 6, 0, -1
+                     prodE = prodE * r + E(j)
+                     prodF = prodF * r + F(j)
+                  enddo
+                  res( i ) = prodE / prodF
+               endif
+               if( q .lt. 0.d0 ) then
+                  res( i ) = -res( i )
+               endif
+            endif
+         enddo
+      end block
+#else
       ! calc number of safe iterations
       safe_it = len_res / 2
 
       ! generate sufficient number of random numbers
       do i = 1, safe_it
-         call norm2x64( state, mu, sigma, res( 2*i-1:2*i ) )
+         call boxmuller2x64( state, mu, sigma, res( 2*i-1:2*i ) )
       enddo
       ! finish in case of odd number of random numbers
-      if ( 2*i .lt. len_res ) then
-         call norm2x64( state, mu, sigma, buffer )
+      if ( mod( len_res, 2 ) .eq. 1 ) then
+         call boxmuller2x64( state, mu, sigma, buffer )
          res( len_res ) = buffer( 1 )
       endif
+#endif
    end subroutine frand123NormDouble
-
-   ! generate size(res) normally distributedrandom single precision numbers
-   !
-   ! Arguments: state: state of the random number generator
-   !                   the counter in the state is incremented in every call
-   !            mu:    expected value
-   !            sigma: variance
-   !            res:   array to be filled with random single precision reals
-   subroutine frand123NormSingle( state, mu, sigma, res )
-      implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_single ), intent( in ) :: mu
-      real( kind = res_kind_single ), intent( in ) :: sigma
-      real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
-
-      integer :: len_res, safe_it, i, remaining
-      real( kind = res_kind_single ), dimension( 4 ) :: buffer
-
-      ! get length of res
-      len_res = size( res )
-      
-      ! calc number of safe iterations
-      safe_it = len_res / 4
-
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
-         call norm4x32( state, mu, sigma, res( 4*i-3:4*i ) )
-      enddo
-      ! finish in case of odd number of random numbers
-      if ( 4*i .lt. len_res ) then
-         call norm4x32( state, mu, sigma, buffer )
-         ! calc number of remaining random numbers
-         remaining = len_res - 4 * i
-         ! store calculated random numbers in res
-         res( 4*i+1:len_res ) = buffer( 1:remaining )
-      endif
-   end subroutine frand123NormSingle
 
    ! generate size(res) random 64 bit signed integers
    !
@@ -294,7 +415,7 @@ contains
 #endif
       enddo
       ! finish remaining random numbers
-      if( 2*i .lt. len_res ) then
+      if( mod( len_res, 2 ) .eq. 1 ) then
 #ifdef USE_ARS
          call ars2x64_int( state, buffer )
 #else
@@ -332,7 +453,7 @@ contains
 #endif
       enddo
       ! finish remaining random numbers
-      if( 4*i .lt. len_res ) then
+      if( mod( len_res, 4 ) .ne. 0 ) then
 #ifdef USE_ARS
          call ars4x32_int( state, buffer )
 #else

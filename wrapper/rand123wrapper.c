@@ -381,8 +381,9 @@
 #endif
 
    /*
-    * Function norm2x64 calculates two double precision random numbers
-    * normally distributed with expectation mu and variance sigma
+    * Function boxmuller2x64 calculates two double precision random numbers
+    * normally distributed with expectation mu and variance sigma using the
+    * Box-Muller transformation
     *
     * Arguments: state: four elements holding
     *                   counter: first  128 bit
@@ -391,7 +392,7 @@
     *            sigma: variance
     *            res:   address to storage for 2 double precision reals
     */
-   void norm2x64( int64_t *state, const double mu, const double sigma, double *res )
+   void boxmuller2x64( int64_t *state, const double mu, const double sigma, double *res )
    {
       // compute two uniformly distributed random numbers
       double uniform[ 2 ];
@@ -415,40 +416,45 @@
    }
 
    /*
-    * Function norm4x32 calculates four single precision random numbers
-    * normally distributed with expectation mu and variance sigma
+    * Function hastings2x64 calculates two double precision random numbers
+    * normally distributed with expectation mu and variance sigma using the
+    * inverse transform sampling introduced by Hastings 1955
     *
     * Arguments: state: four elements holding
     *                   counter: first  128 bit
     *                   key:     second 128 bit
     *            mu:    expectation
     *            sigma: variance
-    *            res:   address to storage for 4 single precision reals
+    *            res:   address to storage for 2 double precision reals
     */
-   void norm4x32( int64_t *state, const float mu, const float sigma, float *res )
+   void hastings2x64( int64_t *state, const double mu, const double sigma, double *res )
    {
-      // compute four uniformly distributed random numbers
-      float uniform[ 4 ];
-#ifdef USE_ARS
-      ars4x32_u01( state, &uniform[ 0 ] );
+      // constants
+      const double a0 = 2.515517;
+      const double a1 = 0.802853;
+      const double a2 = 0.010328;
+      const double b0 = 1.;
+      const double b1 = 1.432788;
+      const double b2 = 0.189269;
+      const double b3 = 0.001308;
+      // buffer
+      double u[ 2 ];
+      // local variables
+      double w;
+      double factor;
+      int i;
+      // generate two uniformly distributed random numbers
+#if USE_ARS
+      ars2x64_u01( state, u );
 #else
-      threefry4x32_u01( statem &uniform[ 0 ] );
+      threefry2x64_u01( state, u );
 #endif
-      // compute sine and cosine
-      float sine[ 2 ];
-      float cosine[ 2 ];
-      sine[ 0 ]   = sin( 2. * M_PI * uniform[ 0 ] );
-      cosine[ 0 ] = cos( 2. * M_PI * uniform[ 0 ] );
-      sine[ 1 ]   = sin( 2. * M_PI * uniform[ 1 ] );
-      cosine[ 1 ] = cos( 2. * M_PI * uniform[ 1 ] );
-      // compute radius
-      float radius[ 2 ];
-      radius[ 0 ] = sqrt( -2. * log( uniform[ 2 ] ) );
-      radius[ 1 ] = sqrt( -2. * log( uniform[ 3 ] ) );
-      // compute standard normal distribyted variables
-      res[ 0 ] = mu + sigma * radius[ 0 ] * cosine[ 0 ];
-      res[ 1 ] = mu + sigma * radius[ 0 ] * sine[ 0 ];
-      res[ 2 ] = mu + sigma * radius[ 1 ] * cosine[ 1 ];
-      res[ 3 ] = mu + sigma * radius[ 1 ] * sine[ 1 ];
+      #pragma omp simd private( w, factor ) linear( res )
+      for( i = 0; i < 2; i++ )
+      {
+         w = sqrt( -2. * log( 0.5 - fabs( u[ i ] - 0.5 ) ) );
+         factor = 1. - 2. * ( u[ i ] > 0.5 );
+         res[ i ] = mu + sigma * factor * ( -w + ( a0 + w * ( a1 + a2 * w ) ) / ( b0 + w * ( b1 + w * ( b2 + b3 * w ) ) ) );
+      }
       return;
    }

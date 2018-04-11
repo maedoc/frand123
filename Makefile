@@ -5,11 +5,11 @@ SUFFIX ?=
 #### Intel Compilers ####
 #########################
 CC = icc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fpic -ipo -O2
+CFLAGS = -Iinclude/Random123 -fpic -ipo -O2 -xHost -qopenmp
 FC = ifort$(SUFFIX)
-FFLAGS = -fpic -module lib64 -ipo -O2
+FFLAGS = -fpic -module lib64 -ipo -O2 -xHost
 LD = ifort$(SUFFIX)
-LDFLAGS = -shared -ipo -O2
+LDFLAGS = -shared -ipo -O2 -xHost
 AR = ar
 ARFLAGS = rc
 #######################
@@ -17,11 +17,11 @@ ARFLAGS = rc
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes
+CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp
 FC = gfortran$(SUFFIX)
-FFLAGS = -fPIC -J lib64 -flto -O3 -maes
+FFLAGS = -fPIC -J lib64 -flto -O3 -maes -mtune=native -march=native
 LD = gcc$(SUFFIX)
-LDFLAGS = -shared -fPIC -flto -O2
+LDFLAGS = -shared -fPIC -flto -O2 -mtune=native -march=native
 AR = gcc-ar$(SUFFIX)
 ARFLAGS = rc
 endif
@@ -39,6 +39,21 @@ endif
 ifeq ($(fma),y)
 	CFLAGS += -DUSE_FMA -mfma
 	FFLAGS += -mfma
+endif
+
+# decide whether to use Hastings' inversion
+ifeq ($(hastings),y)
+	FFLAGS += -DUSE_HASTINGS
+endif
+
+# decide whether to use the Polar method
+ifeq ($(polar),y)
+	FFLAGS += -DUSE_POLAR
+endif
+
+# decide whether to use Wichura's AS241
+ifeq ($(wichura),y)
+	FFLAGS += -DUSE_WICHURA
 endif
 
 .PHONY: all clean tests testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble
@@ -118,3 +133,6 @@ tests/testRandDouble.x: lib64/libfrand123.a tests/testRandDouble.f90 Makefile
 
 tests/testRandSingle.x: lib64/libfrand123.a tests/testRandSingle.f90 Makefile
 	$(FC) $(FFLAGS) -o tests/testRandSingle.x tests/testRandSingle.f90 lib64/libfrand123.a
+
+tests/testRandNormDouble.x: lib64/libfrand123.a tests/testRandNormDouble.f90 Makefile
+	$(FC) $(FFLAGS) -o tests/testRandNormDouble.x tests/testRandNormDouble.f90 lib64/libfrand123.a
