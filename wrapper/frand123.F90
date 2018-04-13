@@ -106,6 +106,18 @@ module frand123
          real( kind = c_double ), value, intent( in ) :: sigma
          real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
       end subroutine
+      ! compute two double precision normally distributed random variables with
+      ! expectation mu and variance sigma using inverse transform sampling using
+      ! the algorithm AS241 proposed by Wichura 1988
+      ! use ARS or threefry based uniform random number generators
+      subroutine wichura2x64( state, mu, sigma, res ) bind( C, name='wichura2x64')
+         use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         real( kind = c_double ), value, intent( in ) :: mu
+         real( kind = c_double ), value, intent( in ) :: sigma
+         real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
+      end subroutine
    end interface
 
    public :: frand123Double
@@ -260,117 +272,125 @@ contains
       end block
 #elif defined(USE_WICHURA)
       write(*,*) 'Wichura'
-      block
-         ! Coefficients for the polynomial approximations
-         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: A = (/ &
-            3.3871328727963666080d0, &
-            1.3314166789178437745d2, &
-            1.9715909503065514427d3, &
-            1.3731693765509461125d4, &
-            4.5921953931549871457d4, &
-            6.7265770927008700853d4, &
-            3.3430575583588128105d4, &
-            2.5090809287301226727d3 /)
-         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: B = (/ &
-            1.d0, &
-            4.2313330701600911252d1, &
-            6.8718700749205790830d2, &
-            5.3941960214247511077d3, &
-            2.1213794301586595867d4, &
-            3.9307895800092710610d4, &
-            2.8729085735721942674d4, &
-            5.2264952788528545610d3 /)
-         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: C = (/ &
-            1.42343711074968357734d0, &
-            4.63033784615654529590d0, &
-            5.76949722146069140550d0, &
-            3.64784832476320460504d0, &
-            1.27045825245236838258d0, &
-            2.41780725177450611770d-1, &
-            2.27238449892691845833d-2, &
-            7.74545014278341407640d-4 /)
-         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: D = (/ &
-            1.d0, &
-            2.05319162663775882187d0, &
-            1.67638483018380384940d0, &
-            6.89767334985100004550d-1, &
-            1.48103976427480074590d-1, &
-            1.51986665636164571966d-2, &
-            5.47593808499534494600d-4, &
-            1.05075007164441684324d-9 /)
-         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: E = (/ &
-            6.65790464350110377720d0, &
-            5.46378491116411436990d0, &
-            1.78482653991729133580d0, &
-            2.96560571828504891230d-1, &
-            2.65321895265761230930d-2, &
-            1.24266094738807843860d-3, &
-            2.71155556874348757815d-5, &
-            2.01033439929228813265d-7 /)
-         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: F = (/ &
-            1.d0, &
-            5.99832206555887937690d-1, &
-            1.36929880922735805310d-1, &
-            1.48753612908506148525d-2, &
-            7.86869131145613259100d-4, &
-            1.84631831751005468180d-5, &
-            1.42151175831644588870d-7, &
-            2.04426310338993978564d-15 /)
-         ! local variables
-         real( kind = res_kind_double ), dimension( 1 ) :: p
-         real( kind = res_kind_double ) :: prodA, prodB, prodC, prodD, prodE, prodF
-         real( kind = res_kind_double ) :: q, r
-         integer :: i, j
-         do i = 1, len_res
-            call frand123Double( state, p )
-            ! compute quantity q
-            q = p( 1 ) - 0.5d0
-            ! main case
-            if( abs( q ) .le. 0.425d0 ) then
-               r = 0.180625d0 - q ** 2
-               prodA = A(7)
-               prodB = B(7)
-               ! hopefully unrolled
-               do j = 6, 0, -1
-                  prodA = prodA * r + A(j)
-                  prodB = prodB * r + B(j)
-               enddo
-               ! compute result
-               res( i ) = q * prodA / prodB
-            else
-               if( q .lt. 0.d0 ) then
-                  r = p( 1 )
-               else
-                  r = 1.d0 - p( 1 )
-               endif
-               r = sqrt( -log( r ) )
-               if( r .le. 5.d0 ) then
-                  r = r - 1.6d0
-                  prodC = C(7)
-                  prodD = D(7)
-                  ! hopefully unrolled
-                  do j = 6, 0, -1
-                     prodC = prodC * r + C(j)
-                     prodD = prodD * r + D(j)
-                  enddo
-                  res( i ) = prodC / prodD
-               else
-                  r = r - 1.6d0
-                  prodE = E(7)
-                  prodF = F(7)
-                  ! hopefully unrolled
-                  do j = 6, 0, -1
-                     prodE = prodE * r + E(j)
-                     prodF = prodF * r + F(j)
-                  enddo
-                  res( i ) = prodE / prodF
-               endif
-               if( q .lt. 0.d0 ) then
-                  res( i ) = -res( i )
-               endif
-            endif
-         enddo
-      end block
+      safe_it = len_res / 2
+      do i = 1, safe_it
+         call wichura2x64( state, mu, sigma, res( 2*i-1:2*i ) )
+      enddo
+      if( mod( len_res, 2 ) .eq. 1 ) then
+         call wichura2x64( state, mu, sigma, buffer )
+         res( len_res ) = buffer( 1 )
+      endif
+!      block
+!         ! Coefficients for the polynomial approximations
+!         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: A = (/ &
+!            3.3871328727963666080d0, &
+!            1.3314166789178437745d2, &
+!            1.9715909503065514427d3, &
+!            1.3731693765509461125d4, &
+!            4.5921953931549871457d4, &
+!            6.7265770927008700853d4, &
+!            3.3430575583588128105d4, &
+!            2.5090809287301226727d3 /)
+!         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: B = (/ &
+!            1.d0, &
+!            4.2313330701600911252d1, &
+!            6.8718700749205790830d2, &
+!            5.3941960214247511077d3, &
+!            2.1213794301586595867d4, &
+!            3.9307895800092710610d4, &
+!            2.8729085735721942674d4, &
+!            5.2264952788528545610d3 /)
+!         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: C = (/ &
+!            1.42343711074968357734d0, &
+!            4.63033784615654529590d0, &
+!            5.76949722146069140550d0, &
+!            3.64784832476320460504d0, &
+!            1.27045825245236838258d0, &
+!            2.41780725177450611770d-1, &
+!            2.27238449892691845833d-2, &
+!            7.74545014278341407640d-4 /)
+!         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: D = (/ &
+!            1.d0, &
+!            2.05319162663775882187d0, &
+!            1.67638483018380384940d0, &
+!            6.89767334985100004550d-1, &
+!            1.48103976427480074590d-1, &
+!            1.51986665636164571966d-2, &
+!            5.47593808499534494600d-4, &
+!            1.05075007164441684324d-9 /)
+!         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: E = (/ &
+!            6.65790464350110377720d0, &
+!            5.46378491116411436990d0, &
+!            1.78482653991729133580d0, &
+!            2.96560571828504891230d-1, &
+!            2.65321895265761230930d-2, &
+!            1.24266094738807843860d-3, &
+!            2.71155556874348757815d-5, &
+!            2.01033439929228813265d-7 /)
+!         real( kind = res_kind_double ), dimension( 0:7 ), parameter :: F = (/ &
+!            1.d0, &
+!            5.99832206555887937690d-1, &
+!            1.36929880922735805310d-1, &
+!            1.48753612908506148525d-2, &
+!            7.86869131145613259100d-4, &
+!            1.84631831751005468180d-5, &
+!            1.42151175831644588870d-7, &
+!            2.04426310338993978564d-15 /)
+!         ! local variables
+!         real( kind = res_kind_double ), dimension( 1 ) :: p
+!         real( kind = res_kind_double ) :: prodA, prodB, prodC, prodD, prodE, prodF
+!         real( kind = res_kind_double ) :: q, r
+!         integer :: i, j
+!         do i = 1, len_res
+!            call frand123Double( state, p )
+!            ! compute quantity q
+!            q = p( 1 ) - 0.5d0
+!            ! main case
+!            if( abs( q ) .le. 0.425d0 ) then
+!               r = 0.180625d0 - q ** 2
+!               prodA = A(7)
+!               prodB = B(7)
+!               ! hopefully unrolled
+!               do j = 6, 0, -1
+!                  prodA = prodA * r + A(j)
+!                  prodB = prodB * r + B(j)
+!               enddo
+!               ! compute result
+!               res( i ) = q * prodA / prodB
+!            else
+!               if( q .lt. 0.d0 ) then
+!                  r = p( 1 )
+!               else
+!                  r = 1.d0 - p( 1 )
+!               endif
+!               r = sqrt( -log( r ) )
+!               if( r .le. 5.d0 ) then
+!                  r = r - 1.6d0
+!                  prodC = C(7)
+!                  prodD = D(7)
+!                  ! hopefully unrolled
+!                  do j = 6, 0, -1
+!                     prodC = prodC * r + C(j)
+!                     prodD = prodD * r + D(j)
+!                  enddo
+!                  res( i ) = prodC / prodD
+!               else
+!                  r = r - 5.d0
+!                  prodE = E(7)
+!                  prodF = F(7)
+!                  ! hopefully unrolled
+!                  do j = 6, 0, -1
+!                     prodE = prodE * r + E(j)
+!                     prodF = prodF * r + F(j)
+!                  enddo
+!                  res( i ) = prodE / prodF
+!               endif
+!               if( q .lt. 0.d0 ) then
+!                  res( i ) = -res( i )
+!               endif
+!            endif
+!         enddo
+!      end block
 #else
       ! calc number of safe iterations
       safe_it = len_res / 2

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <math.h>
+#include <stdbool.h>
 
 #if USE_ARS
    #include <ars.h>
@@ -456,5 +457,190 @@
          factor = 1. - 2. * ( u[ i ] > 0.5 );
          res[ i ] = mu + sigma * factor * ( -w + ( a0 + w * ( a1 + a2 * w ) ) / ( b0 + w * ( b1 + w * ( b2 + b3 * w ) ) ) );
       }
+      return;
+   }
+   
+   /*
+    * Function wichura2x64kernel represents the kernel of the AS 241 algorithm extracted for testing
+    */
+   void wichura2x64kernel( const double *p, const double mu, const double sigma, double *res )
+   {
+      // constants for the polynomials
+      const double A[ 8 ] = 
+      { 
+         3.3871328727963666080e0,
+         1.3314166789178437745e2,
+         1.9715909503065514427e3,
+         1.3731693765509461125e4,
+         4.5921953931549871457e4,
+         6.7265770927008700853e4,
+         3.3430575583588128105e4,
+         2.5090809287301226727e3
+      };
+      const double B[ 8 ] =
+      {
+         1.0E0,
+         4.2313330701600911252e1,
+         6.8718700749205790830e2,
+         5.3941960214247511077e3,
+         2.1213794301586595867e4,
+         3.9307895800092710610e4,
+         2.8729085735721942674e4,
+         5.2264952788528545610e3
+      };
+      const double C[ 8 ] =
+      {
+         1.42343711074968357734e0,
+         4.63033784615654529590e0,
+         5.76949722146069140550e0,
+         3.64784832476320460504e0,
+         1.27045825245236838258e0,
+         2.41780725177450611770e-1,
+         2.27238449892691845833e-2,
+         7.74545014278341407640e-4
+      };
+      const double D[ 8 ] = 
+      {
+         1.0E0,
+         2.05319162663775882187e0,
+         1.67638483018380384940e0,
+         6.89767334985100004550e-1,
+         1.48103976427480074590e-1,
+         1.51986665636164571966e-2,
+         5.47593808499534494600e-4,
+         1.05075007164441684324e-9
+      };
+      const double E[ 8 ] =
+      {
+         6.65790464350110377720e0,
+         5.46378491116411436990e0,
+         1.78482653991729133580e0,
+         2.96560571828504891230e-1,
+         2.65321895265761230930e-2,
+         1.24266094738807843860e-3,
+         2.71155556874348757815e-5,
+         2.01033439929228813265e-7
+      };
+      const double F[ 8 ] =
+      {
+         1.0E0,
+         5.99832206555887937690e-1,
+         1.36929880922735805310e-1,
+         1.48753612908506148525e-2,
+         7.86869131145613259100e-4,
+         1.84631831751005468180e-5,
+         1.42151175831644588870e-7,
+         2.04426310338993978564e-15
+      };
+      // algorithmic constants
+      const double split1 = 0.425;
+      const double split2 = 5.;
+      const double const1 = 0.180625;
+      const double const2 = 1.6;
+      // variables
+      double q[ 2 ], r, prodA[ 2 ], prodB[ 2];
+      int i, j;
+      bool cond[ 2 ];
+      // compute both q at once
+      q[ 0 ] = p[ 0 ] - 0.5;
+      q[ 1 ] = p[ 1 ] - 0.5;
+      // compute abs eval
+      cond[ 0 ] = ( fabs( q[ 0 ] ) <= split1 );
+      cond[ 1 ] = ( fabs( q[ 1 ] ) <= split1 );
+      // run vectorized version of the main route
+      // in the following cases
+      // both values of |q| <= split1: probability ~72%
+      // one |q| <= split1, one |q| > split1: probability ~26%
+      if( cond[ 0 ] || cond[ 1 ] )
+      {
+         #pragma omp simd private( r )
+         for( i = 0; i <= 1; i++ )
+         {
+            r = const1 - q[ i ] * q[ i ];
+            prodA[ i ] = A[7];
+            prodB[ i ] = B[7];
+            for( j = 6; j >= 0; j-- )
+            {
+               prodA[ i ] = prodA[ i ] * r + A[ j ];
+               prodB[ i ] = prodB[ i ] * r + B[ j ];
+            }
+            res[ i ] = mu + sigma * q[ i ] * prodA[ i ] / prodB[ i ];
+         }
+      }
+      // return in 72.25% of calls
+      if( cond[ 0 ] && cond[ 1 ] )
+      {
+         return;
+      }
+      // handle first non-standard case
+      // probability for need to handle single case: ~13%
+      // probability for need to handle both cases: ~2%
+      for( i = 0; i <= 1; i++ )
+      {
+         if( q[ i ] < 0 )
+         {
+            r = p[ i ];
+         }
+         else
+         {
+            r = 1. - p[ i ];
+         }
+         r = sqrt( -log( r ) );
+         // not too far within the tail
+         if( r <= split2 )
+         {
+            r = r - const2;
+            double prodC = C[ 7 ];
+            double prodD = D[ 7 ];
+            for( j = 6; j >= 0; j-- )
+            {
+               prodC = prodC * r + C[ j ];
+               prodD = prodD * r + D[ j ];
+            }
+            res[ i ] = prodC / prodD;
+         }
+         // far within the tail
+         else
+         {
+            r = r - split2;
+            double prodE = E[ 7 ];
+            double prodF = F[ 7 ];
+            for( j = 6; j >= 0; j-- )
+            {
+               prodE = prodE * r + E[ j ];
+               prodF = prodF * r + F[ j ];
+            }
+            res[ i ] = prodE / prodF;
+         }
+         if( q[ i ] < 0. )
+         {
+            res[ i ] = -res[ i ];
+         }
+      }
+   }
+
+   /*
+    * Function wichura2x64 calculates two double precision random numbers
+    * normally distributed with expectation mu and variance sigma using the
+    * inverse transform sampling introduced by Wichura 1988 in algorithm AS241 (PPND16)
+    *
+    * Arguments: state: four elements holding
+    *                   counter: first  128 bit
+    *                   key:     second 128 bit
+    *            mu:    expectation
+    *            sigma: variance
+    *            res:   address to storage for 2 double precision reals
+    */
+   void wichura2x64( int64_t *state, const double mu, const double sigma, double *res )
+   {
+      // get uniform random numbers
+      double p[ 2 ];
+#ifdef USE_ARS
+      ars2x64_u01( state, p );
+#else
+      threefry2x64_u01( state, p );
+#endif
+      // rest is computed within the kernel
+      wichura2x64kernel( p, mu, sigma, res );
       return;
    }
