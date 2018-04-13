@@ -577,44 +577,47 @@
       // probability for need to handle both cases: ~2%
       for( i = 0; i <= 1; i++ )
       {
-         if( q[ i ] < 0 )
+         if( ! cond[ i ] )
          {
-            r = p[ i ];
-         }
-         else
-         {
-            r = 1. - p[ i ];
-         }
-         r = sqrt( -log( r ) );
-         // not too far within the tail
-         if( r <= split2 )
-         {
-            r = r - const2;
-            double prodC = C[ 7 ];
-            double prodD = D[ 7 ];
-            for( j = 6; j >= 0; j-- )
+            if( q[ i ] < 0 )
             {
-               prodC = prodC * r + C[ j ];
-               prodD = prodD * r + D[ j ];
+               r = p[ i ];
             }
-            res[ i ] = prodC / prodD;
-         }
-         // far within the tail
-         else
-         {
-            r = r - split2;
-            double prodE = E[ 7 ];
-            double prodF = F[ 7 ];
-            for( j = 6; j >= 0; j-- )
+            else
             {
-               prodE = prodE * r + E[ j ];
-               prodF = prodF * r + F[ j ];
+               r = 1. - p[ i ];
             }
-            res[ i ] = prodE / prodF;
-         }
-         if( q[ i ] < 0. )
-         {
-            res[ i ] = -res[ i ];
+            r = sqrt( -log( r ) );
+            // not too far within the tail
+            if( r <= split2 )
+            {
+               r = r - const2;
+               double prodC = C[ 7 ];
+               double prodD = D[ 7 ];
+               for( j = 6; j >= 0; j-- )
+               {
+                  prodC = prodC * r + C[ j ];
+                  prodD = prodD * r + D[ j ];
+               }
+               res[ i ] = prodC / prodD;
+            }
+            // far within the tail
+            else
+            {
+               r = r - split2;
+               double prodE = E[ 7 ];
+               double prodF = F[ 7 ];
+               for( j = 6; j >= 0; j-- )
+               {
+                  prodE = prodE * r + E[ j ];
+                  prodF = prodF * r + F[ j ];
+               }
+               res[ i ] = prodE / prodF;
+            }
+            if( q[ i ] < 0. )
+            {
+               res[ i ] = -res[ i ];
+            }
          }
       }
    }
