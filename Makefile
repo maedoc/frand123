@@ -7,11 +7,12 @@ SUFFIX ?=
 CC = icc$(SUFFIX)
 CFLAGS = -Iinclude/Random123 -fpic -ipo -O2 -xHost -qopenmp
 FC = ifort$(SUFFIX)
-FFLAGS = -fpic -module lib64 -ipo -O2 -xHost
+FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp
 LD = ifort$(SUFFIX)
-LDFLAGS = -shared -ipo -O2 -xHost
+LDFLAGS = -shared -ipo -O2 -xHost -qopenmp
 AR = ar
 ARFLAGS = rc
+CMAINFLAGS = -nofor_main
 #######################
 #### GNU Compilers ####
 #######################
@@ -24,6 +25,7 @@ LD = gcc$(SUFFIX)
 LDFLAGS = -shared -fPIC -flto -O2 -mtune=native -march=native
 AR = gcc-ar$(SUFFIX)
 ARFLAGS = rc
+CMAINFLAGS =
 endif
 ############################
 #### For static library ####
@@ -72,7 +74,7 @@ clean:
 	rm -f tests/*.x
 	rm -f tests/rand_*.out
 
-tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble
+tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel
 
 testAccuracyFloats: tests/testAccuracyFloats.x
 	set -e ./tests/testAccuracyFloats.x
@@ -113,6 +115,14 @@ testCentralMomentsDouble: tests/testRandDouble.x tests/testCentralMomentsDouble.
 	set -e; octave-cli --path tests --eval testCentralMomentsDouble
 	rm -f tests/rand_double.out
 
+testWichura2x64Kernel: tests/testWichura2x64Kernel.x tests/as241.x tests/testRandDouble.x
+	rm -rf tests/rand_double.out
+	./tests/testRandDouble.x
+	./tests/as241.x
+	set -e; ./tests/testWichura2x64Kernel.x
+	rm -rf tests/rand_double.out
+	rm -rf tests/input_testWichura2x64Kernel.in
+
 build/rand123wrapper.o: build wrapper/rand123wrapper.c wrapper/frand123enlarger.h Makefile
 	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
 
@@ -136,3 +146,9 @@ tests/testRandSingle.x: lib64/libfrand123.a tests/testRandSingle.f90 Makefile
 
 tests/testRandNormDouble.x: lib64/libfrand123.a tests/testRandNormDouble.f90 Makefile
 	$(FC) $(FFLAGS) -o tests/testRandNormDouble.x tests/testRandNormDouble.f90 lib64/libfrand123.a
+
+tests/testWichura2x64Kernel.x: lib64/libfrand123.a tests/testWichura2x64Kernel.c Makefile
+	$(CC) $(CFLAGS) -o tests/testWichura2x64Kernel.x tests/testWichura2x64Kernel.c lib64/libfrand123.a
+
+tests/as241.x: tests/as241.c Makefile
+	$(CC) $(CFLAGS) -lm -o tests/as241.x tests/as241.c
