@@ -18,7 +18,7 @@ CMAINFLAGS = -nofor_main
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp
+CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm
 FC = gfortran$(SUFFIX)
 FFLAGS = -fPIC -J lib64 -flto -O3 -maes -mtune=native -march=native
 LD = gcc$(SUFFIX)
