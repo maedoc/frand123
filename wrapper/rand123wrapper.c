@@ -564,6 +564,7 @@
                prodA[ i ] = prodA[ i ] * r + A[ j ];
                prodB[ i ] = prodB[ i ] * r + B[ j ];
             }
+            // transform to required mean and variance
             res[ i ] = mu + sigma * q[ i ] * prodA[ i ] / prodB[ i ];
          }
       }
@@ -618,6 +619,8 @@
             {
                res[ i ] = -res[ i ];
             }
+            // transform to required mean and variance
+            res[ i ] = mu + sigma * res[ i ];
          }
       }
    }
