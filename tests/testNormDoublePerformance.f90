@@ -6,7 +6,7 @@ program testNormDoublePerformance
    integer( kind = state_kind ), dimension( state_size ) :: state
    integer( kind = state_kind ), dimension( 2 ) :: seed
    integer, parameter :: ctr_kind = selected_int_kind( 14 )
-   integer( kind = ctr_kind ), parameter :: rounds = 1000 * 1000 * 1000
+   integer( kind = ctr_kind ), parameter :: rounds = 1000 * 1000 * 100
    integer( kind = ctr_kind ) :: i
    real( kind = res_kind_double ), parameter :: mu = 0.d0
    real( kind = res_kind_double ), parameter :: sigma = 1.d0
