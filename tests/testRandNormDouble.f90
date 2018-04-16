@@ -7,12 +7,14 @@ program testRandNormDouble
    real( kind = res_kind_double ), parameter :: sigma = 1.d0
 
    integer( kind = state_kind ), dimension( state_size ) :: state
+   integer( kind = state_kind ), dimension( 2 ) :: seed
    real( kind = res_kind_double ), dimension(:), allocatable :: res
 
    integer :: out_unit
    real :: startTime, stopTime
 
-   call frand123Init( state, 0, 0 )
+   seed = (/ 0, 0 /)
+   call frand123Init( state, 0, 0, seed )
    
    allocate( res( numRndNbrs ) )
 
