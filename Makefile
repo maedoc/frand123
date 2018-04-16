@@ -13,6 +13,7 @@ LDFLAGS = -shared -ipo -O2 -xHost -qopenmp
 AR = ar
 ARFLAGS = rc
 CMAINFLAGS = -nofor_main
+OPENMPFLAGS = -qopenmp
 #######################
 #### GNU Compilers ####
 #######################
@@ -26,6 +27,7 @@ LDFLAGS = -shared -fPIC -flto -O2 -mtune=native -march=native
 AR = gcc-ar$(SUFFIX)
 ARFLAGS = rc
 CMAINFLAGS =
+OPENMPFLAGS = -fopenmp
 endif
 ############################
 #### For static library ####
@@ -43,19 +45,25 @@ ifeq ($(fma),y)
 	FFLAGS += -mfma
 endif
 
+# standard choice atm: Box-Muller
+TESTNORMDOUBLEPYFLAGS = --boxmuller
+
 # decide whether to use Hastings' inversion
 ifeq ($(hastings),y)
 	FFLAGS += -DUSE_HASTINGS
+	TESTNORMDOUBLEPYFLAGS = --hastings
 endif
 
 # decide whether to use the Polar method
 ifeq ($(polar),y)
 	FFLAGS += -DUSE_POLAR
+	TESTNORMDOUBLEPYFLAGS = --polar
 endif
 
 # decide whether to use Wichura's AS241
 ifeq ($(wichura),y)
 	FFLAGS += -DUSE_WICHURA
+	TESTNORMDOUBLEPYFLAGS = --wichura
 endif
 
 .PHONY: all clean tests testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble
@@ -74,7 +82,7 @@ clean:
 	rm -f tests/*.x
 	rm -f tests/rand_*.out
 
-tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel
+tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython
 
 testAccuracyFloats: tests/testAccuracyFloats.x
 	set -e ./tests/testAccuracyFloats.x
@@ -123,6 +131,15 @@ testWichura2x64Kernel: tests/testWichura2x64Kernel.x tests/as241.x tests/testRan
 	rm -rf tests/rand_double.out
 	rm -rf tests/input_testWichura2x64Kernel.in
 
+testRandNormDoublePython: tests/testSkewKurtosisNormDouble.py tests/testRandNormDouble.x
+	rm -rf tests/rand_norm_double.out
+	./tests/testRandNormDouble.x
+	set -e; python3 tests/testSkewKurtosisNormDouble.py $(TESTNORMDOUBLEPYFLAGS)
+	rm -rf tests/rand_norm_double.out
+
+testNormDoublePerformance: tests/testNormDoublePerformance.x
+	./tests/testNormDoublePerformance.x
+
 build/rand123wrapper.o: build wrapper/rand123wrapper.c wrapper/frand123enlarger.h Makefile
 	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
 
@@ -152,3 +169,6 @@ tests/testWichura2x64Kernel.x: lib64/libfrand123.a tests/testWichura2x64Kernel.c
 
 tests/as241.x: tests/as241.c Makefile
 	$(CC) $(CFLAGS) -lm -o tests/as241.x tests/as241.c
+
+tests/testNormDoublePerformance.x: tests/testNormDoublePerformance.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) $(OPENMPFLAGS) -o tests/testNormDoublePerformance.x tests/testNormDoublePerformance.f90 lib64/libfrand123.a
