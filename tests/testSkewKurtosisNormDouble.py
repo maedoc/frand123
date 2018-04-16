@@ -1,49 +1,62 @@
+import sys
 import numpy as np
 import scipy.stats as stats
 import argparse
 
 # parse arguments
 parser = argparse.ArgumentParser(description='Carry out statistical tests for skew and kurtosis' )
-parser.add_argument( '--hastings', action = 'store_true', help = 'use values for inverse transformation sampling by Hasting. Otherwise, Box-Muller transformation is assumed.' )
+parser.add_argument( '--polar', action = 'store_true', help = 'use values for polar version of Box-Muller transformation.' )
+parser.add_argument( '--wichura', action = 'store_true', help = 'use values for inverse transformation sampling by Wichura.' )
 parser.add_argument( '--mu', help = 'expectation. default: 0', default = 0, type = float )
 parser.add_argument( '--sigma', help = 'variance. default: 1', default = 1, type = float )
 args = parser.parse_args()
 
-# read data from file
-rnd_var = np.fromfile( 'tests/rand_norm_double.out', 'double' )
+# check at least one is set
+if( not ( args.polar or args.wichura ) ):
+   print( 'No information on transformation used provided.' )
+   sys.exit( 1 )
 
-# choose appropriate upper limits
-if( args.hastings ):
-   pLimSkew = 0.8
-   pLimKurtosis = 0.02
-else:
-   pLimSkew = 0.8
-   pLimKurtosis = 0.1
+# Do we use polar Box-Muller's transformation?
+if( args.polar ):
+   # check that no other is set
+   if( args.hastings or args.wichura ):
+      print( 'Provide one transformation only.' )
+      sys.exit( 1 )
+   # set values
+   transformation = 'Polar Box-Muller'
+   pLimSkew = 0.27
+   pLimKurtosis = 0.7
+   pLimNormal = 0.5
+
+# Do we use Wichura's transformation?
+if( args.wichura ):
+   # set values
+   transformation = 'Wichura'
+   pLimSkew = 0.35
+   pLimKurtosis = 0.6
+   pLimNormal = 0.58
+
+# read data from file
+f = open( 'tests/rand_norm_double.out', 'rb' )
+rnd_var = np.fromfile( f, 'double' )
 
 # run skewtest
 res = stats.skewtest( rnd_var )
 
 if( res.pvalue < pLimSkew ):
-   if( args.hastings ):
-      print( 'Skew test for Hastings with mu = %e and sigma = %e failed.\np-value: %e' % ( args.mu, args.sigma, res.pvalue ) )
-      sys.exit( 1 )
-   else:
-      print( 'Skew test for Box-Muller with mu = %e and sigma = %e failed.\np-value: %e' % ( args.mu, args.sigma, res.pvalue ) )
-      sys.exit( 1 )
+   print( 'Skew test for %s with mu = %e and sigma = %e failed.\np-value: %e, expected p-value: > %e' % ( transformation, args.mu, args.sigma, res.pvalue, pLimSkew ) )
+   sys.exit( 1 )
 
 # run kurtosistest
 res = stats.kurtosistest( rnd_var )
 
 if( res.pvalue < pLimKurtosis ):
-   if( args.hastings ):
-      print( 'Kurtosis test for Hastings with mu = %e and sigma = %e failed.\np-value: %e' % ( args.mu, args.sigma, res.pvalue ) )
-      sys.exit( 1 )
-   else:
-      print( 'Kurtosis test for Box-Muller with mu = %e and sigma = %e failed.\np-value: %e' % ( args.mu, args.sigma, res.pvalue ) )
-      sys.exit( 1 )
+   print( 'Kurtosis test for %s with mu = %e and sigma = %e failed.\np-value: %e, expected p-value> > %e' % ( transformation, args.mu, args.sigma, res.pvalue, pLimKurtosis ) )
+   sys.exit( 1 )
 
-# successful
-if( args.hastings ):
-   print( 'Both tests for Hastings with mu = %e and sigma = %e were successful.' % ( args.mu, args.sigma ) )
-else:
-   print( 'Both tests for Box-Muller with mu = %e and sigma = %e were successful.' % ( args.mu, args.sigma ) )
+# run normaltest
+res = stats.normaltest( rnd_var )
+
+if( res.pvalue < pLimNormal ):
+   print( 'Normal test for %s with mu = %e and sigma = %e failed.\np-value: %e, expected p-value> > %e' % ( transformation, args.mu, args.sigma, res.pvalue, pLimNormal ) )
+   sys.exit( 1 )

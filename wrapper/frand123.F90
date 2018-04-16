@@ -84,21 +84,9 @@ module frand123
 #endif
    interface
       ! compute two double precision normally distributed random variables with
-      ! expectation mu and variance sigma using Box-Muller algorithm
+      ! expectation mu and variance sigma using polar Box-Muller algorithm
       ! use ARS or threefry based uniform random number generators
-      subroutine boxmuller2x64( state, mu, sigma, res ) bind( C, name='boxmuller2x64')
-         use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
-         implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
-         real( kind = c_double ), value, intent( in ) :: mu
-         real( kind = c_double ), value, intent( in ) :: sigma
-         real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
-      end subroutine
-      ! compute two double precision normally distributed random variables with
-      ! expectation mu and variance sigma using inverse transform sampling using
-      ! the algorithm proposed by Hastings 1955
-      ! use ARS or threefry based uniform random number generators
-      subroutine hastings2x64( state, mu, sigma, res ) bind( C, name='hastings2x64')
+      subroutine polar2x64( state, mu, sigma, res ) bind( C, name='polar2x64')
          use, intrinsic :: iso_c_binding, only: c_double, c_int64_t
          implicit none
          integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
@@ -227,78 +215,31 @@ contains
       ! get length of res
       len_res = size( res )
       
-#if defined(USE_HASTINGS)
-      ! calc number of sage iterations
+      ! calc number of safe iterations
       safe_it = len_res / 2
   
       ! generate sufficient number of random numbers
       do i = 1, safe_it
-         call hastings2x64( state, mu, sigma, res( 2*i-1:2*i ) )
-      enddo
-      ! finish in case of odd number of random numbers
-      if( mod( len_res, 2 ) .eq. 1 ) then
-         call hastings2x64( state, mu, sigma, buffer )
-         res( len_res ) = buffer( 1 )
-      endif
-#elif defined(USE_POLAR)
-      block
-         real( kind = res_kind_double ) :: r2, f
-         real( kind = res_kind_double ), dimension( 2 ) :: x
-         ! calc number of safe iterations
-         safe_it = len_res / 2
-
-         ! generate sufficient number of random numbers
-         do i = 1, safe_it
-            r2 = 0.d0
-            do while( ( r2 >= 1.d0 ) .or. ( r2 == 0.d0 ) )
-               call frand123Double( state, buffer )
-               x( 1 ) = 2.d0 * buffer( 1 ) - 1.d0
-               x( 2 ) = 2.d0 * buffer( 2 ) - 1.d0
-               r2 = sum( x ** 2 )
-            enddo
-            f = sqrt( -2.d0 * log( r2 ) / r2 )
-            res( 2*i-1 ) = mu + sigma * f * x( 1 )
-            res( 2*i   ) = mu + sigma * f * x( 2 )
-         enddo
-         ! finish in case of odd number of random numbers
-         if( mod( len_res, 2 ) .eq. 1 ) then
-            do while( ( r2 >= 1.d0 ) .or. ( r2 == 0.d0 ) )
-               call frand123Double( state, buffer )
-               x( 1 ) = 2.d0 * buffer( 1 ) - 1.d0
-               x( 2 ) = 2.d0 * buffer( 2 ) - 1.d0
-               r2 = sum( x ** 2 )
-            enddo
-            f = sqrt( -2.d0 * log( r2 ) / r2 )
-            res( len_res ) = mu + sigma * f * x( 1 )
-         endif
-      end block
-#elif defined(USE_WICHURA)
-      ! calc number of safe iterations
-      safe_it = len_res / 2
-
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
+#if defined( USE_POLAR )
+         call polar2x64( state, mu, sigma, res( 2*i-1:2*i ) )
+#elif defined( USE_WICHURA )
          call wichura2x64( state, mu, sigma, res( 2*i-1:2*i ) )
+#else
+         #error "Need to choose either Polar, Hastings or Wichura"
+#endif
+
       enddo
       ! finish in case of odd number of random numbers
       if( mod( len_res, 2 ) .eq. 1 ) then
+#if defined( USE_POLAR )
+         call polar2x64( state, mu, sigma, buffer )
+#elif defined( USE_WICHURA )
          call wichura2x64( state, mu, sigma, buffer )
-         res( len_res ) = buffer( 1 )
-      endif
 #else
-      ! calc number of safe iterations
-      safe_it = len_res / 2
-
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
-         call boxmuller2x64( state, mu, sigma, res( 2*i-1:2*i ) )
-      enddo
-      ! finish in case of odd number of random numbers
-      if ( mod( len_res, 2 ) .eq. 1 ) then
-         call boxmuller2x64( state, mu, sigma, buffer )
+         #error "Need to choose either Polar, Hastings or Wichura"
+#endif
          res( len_res ) = buffer( 1 )
       endif
-#endif
    end subroutine frand123NormDouble
 
    ! generate size(res) random 64 bit signed integers

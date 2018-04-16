@@ -45,15 +45,6 @@ ifeq ($(fma),y)
 	FFLAGS += -mfma
 endif
 
-# standard choice atm: Box-Muller
-TESTNORMDOUBLEPYFLAGS = --boxmuller
-
-# decide whether to use Hastings' inversion
-ifeq ($(hastings),y)
-	FFLAGS += -DUSE_HASTINGS
-	TESTNORMDOUBLEPYFLAGS = --hastings
-endif
-
 # decide whether to use the Polar method
 ifeq ($(polar),y)
 	FFLAGS += -DUSE_POLAR

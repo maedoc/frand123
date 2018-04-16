@@ -382,9 +382,9 @@
 #endif
 
    /*
-    * Function boxmuller2x64 calculates two double precision random numbers
+    * Function polar2x64 calculates two double precision random numbers
     * normally distributed with expectation mu and variance sigma using the
-    * Box-Muller transformation
+    * polar rejection method by Box and Muller
     *
     * Arguments: state: four elements holding
     *                   counter: first  128 bit
@@ -393,70 +393,28 @@
     *            sigma: variance
     *            res:   address to storage for 2 double precision reals
     */
-   void boxmuller2x64( int64_t *state, const double mu, const double sigma, double *res )
+   void polar2x64( int64_t *state, const double mu, const double sigma, double *res )
    {
-      // compute two uniformly distributed random numbers
-      double uniform[ 2 ];
-#if USE_ARS
-      ars2x64_u01( state, &uniform[ 0 ] );
-#else
-      threefry2x64_u01( state, &uniform[ 0 ] );
-#endif
-      // compute sine and cosine
-      double sine   = sin( 2. * M_PI * uniform[ 1 ] );
-      double cosine = cos( 2. * M_PI * uniform[ 1 ] );
-      // compute radius
-      double radius = sqrt( -2. * log( uniform[ 0 ] ) );
-      // compute standard normal distributed variables
-      double stdNorm0 = radius * cosine;
-      double stdNorm1 = radius * sine;
-      // adjust expectation and variance
-      res[ 0 ] = mu + sigma * stdNorm0;
-      res[ 1 ] = mu + sigma * stdNorm1;
-      return;
-   }
-
-   /*
-    * Function hastings2x64 calculates two double precision random numbers
-    * normally distributed with expectation mu and variance sigma using the
-    * inverse transform sampling introduced by Hastings 1955
-    *
-    * Arguments: state: four elements holding
-    *                   counter: first  128 bit
-    *                   key:     second 128 bit
-    *            mu:    expectation
-    *            sigma: variance
-    *            res:   address to storage for 2 double precision reals
-    */
-   void hastings2x64( int64_t *state, const double mu, const double sigma, double *res )
-   {
-      // constants
-      const double a0 = 2.515517;
-      const double a1 = 0.802853;
-      const double a2 = 0.010328;
-      const double b0 = 1.;
-      const double b1 = 1.432788;
-      const double b2 = 0.189269;
-      const double b3 = 0.001308;
-      // buffer
       double u[ 2 ];
-      // local variables
-      double w;
-      double factor;
-      int i;
-      // generate two uniformly distributed random numbers
-#if USE_ARS
-      ars2x64_u01( state, u );
-#else
-      threefry2x64_u01( state, u );
-#endif
-      #pragma omp simd private( w, factor ) linear( res )
-      for( i = 0; i < 2; i++ )
+      double x[ 2 ];
+      double r2;
+      double f;
+      // generate coordinates until within unit circle
+      do
       {
-         w = sqrt( -2. * log( 0.5 - fabs( u[ i ] - 0.5 ) ) );
-         factor = 1. - 2. * ( u[ i ] > 0.5 );
-         res[ i ] = mu + sigma * factor * ( -w + ( a0 + w * ( a1 + a2 * w ) ) / ( b0 + w * ( b1 + w * ( b2 + b3 * w ) ) ) );
-      }
+#if USE_ARS
+         ars2x64_u01( state, u );
+#else
+         threefry2x64_u01( state, u );
+#endif
+         x[ 0 ] = 2. * u[ 0 ] - 1.;
+         x[ 1 ] = 2. * u[ 1 ] - 1.;
+         r2 = x[ 0 ] * x[ 0 ] + x[ 1 ] * x[ 1 ];
+      } while( ( r2 >= 1. ) || ( r2 == 0. ) );
+      // compute random numbers
+      f = sqrt( -2. * log( r2 ) / r2 );
+      res[ 0 ] = mu + sigma * f * x[ 0 ];
+      res[ 1 ] = mu + sigma * f * x[ 1 ];
       return;
    }
    
