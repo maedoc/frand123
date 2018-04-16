@@ -27,13 +27,16 @@ run_test:
       - zypper --non-interactive in octave-cli
       - zypper --non-interactive in octave-forge-nan
       - zypper --non-interactive in octave-forge-statistics
+      - zypper --non-interactive in python
+      - zypper --non-interactive in python-scipy
+      - zypper --non-interactive in python-numpy
    stage: test
    tags:
       - linux
    variables:
       CV: '0'
       CV_S: 'coverage:'
-      N_TESTS: '13' # the number of tests we will be running
+      N_TESTS: '19' # the number of tests we will be running
    script:
       #
       - echo "Running test testAccuracyFloats"
@@ -111,6 +114,42 @@ run_test:
       - echo "Running test testCentralMomentsDouble with Threefry RNG"
       - make clean
       - SUFFIX=-7 make gcc=y testCentralMomentsDouble && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testWichura2x64Kernel with Threefry RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y testWichura2x64Kernel && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testWichura2x64Kernel with ARS RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y ars=y testWichura2x64Kernel && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testRandNormDoublePython with Threefry RNG and AS 241"
+      - make clean
+      - SUFFIX=-7 make gcc=y testRandNormDoublePython && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testRandNormDoublePython with ARS RNG and AS 241"
+      - make clean
+      - SUFFIX=-7 make gcc=y ars=ytestRandNormDoublePython && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testRandNormDoublePython with Threefry RNG and Polar Box-Muller"
+      - make clean
+      - SUFFIX=-7 make gcc=y polar=y testRandNormDoublePython && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testRandNormDoublePython with ARS RNG and Polar Box-Muller"
+      - make clean
+      - SUFFIX=-7 make gcc=y polar=y ars=ytestRandNormDoublePython && CV="$((CV + 1))"
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
    coverage: '/coverage: \d+\.\d+/'
