@@ -224,8 +224,6 @@ contains
          call polar2x64( state, mu, sigma, res( 2*i-1:2*i ) )
 #elif defined( USE_WICHURA )
          call wichura2x64( state, mu, sigma, res( 2*i-1:2*i ) )
-#else
-         #error "Need to choose either Polar, Hastings or Wichura"
 #endif
 
       enddo
@@ -235,8 +233,6 @@ contains
          call polar2x64( state, mu, sigma, buffer )
 #elif defined( USE_WICHURA )
          call wichura2x64( state, mu, sigma, buffer )
-#else
-         #error "Need to choose either Polar, Hastings or Wichura"
 #endif
          res( len_res ) = buffer( 1 )
       endif
