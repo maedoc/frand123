@@ -228,7 +228,6 @@ contains
       len_res = size( res )
       
 #if defined(USE_HASTINGS)
-      write(*,*) 'Hastings'
       ! calc number of sage iterations
       safe_it = len_res / 2
   
@@ -242,7 +241,6 @@ contains
          res( len_res ) = buffer( 1 )
       endif
 #elif defined(USE_POLAR)
-      write(*,*) 'Polar'
       block
          real( kind = res_kind_double ) :: r2, f
          real( kind = res_kind_double ), dimension( 2 ) :: x
@@ -275,7 +273,6 @@ contains
          endif
       end block
 #elif defined(USE_WICHURA)
-      write(*,*) 'Wichura'
       ! calc number of safe iterations
       safe_it = len_res / 2
 
