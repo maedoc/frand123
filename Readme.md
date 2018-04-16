@@ -44,13 +44,38 @@ The frand123 Fortran wrapper provides the following capabilities:
 * Fill vector res with double precision real random numbers uniformly distributed in (0,1)
 * The counter within the state is incremented appropriately
 * Uses either Threefry or ARS for generation of random bits
-* Random numvers are always generated in chunks of 2
+* Random numbers are always generated in chunks of 2
 
 #### Arguments
 * __state__: state used by the RNG
     * dimension: _state_size_
     * kind: integer of kind _state_kind_
     * intent: _inout_
+* __res__: memory to which random numbers are stored to
+    * dimension: arbitrary
+    * kind: real of kind _res_kind_double_
+    * intent: _inout_
+
+### frand123NormDouble( state, mu, sigma, res )
+#### Description
+* Fill vector res with double precision real random numbers normally distributed with mean mu and variance sigma
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 2
+
+#### Arguments
+* __state__: state used by the RNG
+    * dimension: _state_size_
+    * kind: integer of kind _state_kind_
+    * intent: _inout_
+* __mu__: mean of the normal distribution
+    * dimension: scalar
+    * kind: real of kind _res_kind_double_
+    * intent: in
+* __sigma__: variance of the normal distribution
+    * dimension: scalar
+    * kind: real of kind _res_kind_double_
+    * intent: in
 * __res__: memory to which random numbers are stored to
     * dimension: arbitrary
     * kind: real of kind _res_kind_double_
@@ -133,6 +158,8 @@ The Makefile was tested with:
 * use ARS: add _ars=y_ to _make_ command
 * use FMA3 in ARS: add _ars=y fma=y_ to _make_ command
 * use gcc: add _gcc=y_ to _make_ command
+* use Polar Box-Muller: add _polar=y_ to _make_ command
+* use Wichura''s AS 241 algorithm: add _wichura=y_ to _make_ command
 
 ## Examples
 For examples, please consult the tests subdirectory
@@ -179,3 +206,22 @@ This test compares the first 75 central moments of the generated double precisio
 The test is passed if:
 * for even moments, the relative error is below 10^-3
 * for odd moments, the error of the central moment is below 10^-3
+
+### testWichura2x64Kernel
+#### Description
+This test generates 10^8 uniformly distributed douple precision real random numbers and applies the PPND16 implementation in as241.c (taken from GRASS GIS) to generate reference normally distributed random numbers.
+Then, these reference values are compared to those computed from the exact same uniformly distributed numbers using the function wichura2x64Kernel.
+Deviations up to 1e-14 are tolerated.
+
+### testNormDoublePython
+#### Description
+This test generates 10^8 normally distributed random numbers and applies the hypothesis-tests skewtest, kurtosistest and normtest from the scipy stats package.
+Bounds on the p-values are defined on a per-algorithm basis.
+
+### testNormDoublePerformance
+#### Description
+Prints out serial and OpenMP parallel timings for the generation and summation of 10^9 random numbers
+
+## License
+still to do
+note that as241.c is taken from GRASS GIS and the original license (most likely GPL >= 2) applies
