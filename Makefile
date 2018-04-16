@@ -45,14 +45,11 @@ ifeq ($(fma),y)
 	FFLAGS += -mfma
 endif
 
-# decide whether to use the Polar method
-ifeq ($(polar),y)
+# decide whether to use the Polar or Wichura's AS 241 method
+ifeq ($(use_polar),y)
 	FFLAGS += -DUSE_POLAR
 	TESTNORMDOUBLEPYFLAGS = --polar
-endif
-
-# decide whether to use Wichura's AS241
-ifeq ($(wichura),y)
+else
 	FFLAGS += -DUSE_WICHURA
 	TESTNORMDOUBLEPYFLAGS = --wichura
 endif
