@@ -1,3 +1,86 @@
+#include <math.h>
+
+/*-
+ * algorithm as241  appl. statist. (1988) 37(3):477-484.
+ * produces the normal deviate z corresponding to a given lower tail
+ * area of p; z is accurate to about 1 part in 10**7.
+ *
+ * the hash sums below are the sums of the mantissas of the coefficients.
+ * they are included for use in checking transcription.
+ *
+ * Function ppnd16 is taken from the GRASS (https://grass.osgeo.org/)
+ * repository https://svn.osgeo.org/grass/grass/trunk
+ * at revision 62130
+ *
+ * The same license applies
+ */
+double ppnd7(double p)
+{
+    static double zero = 0.0, one = 1.0, half = 0.5;
+    static double split1 = 0.425, split2 = 5.0;
+    static double const1 = 0.180625, const2 = 1.6;
+
+    /* coefficients for p close to 0.5 */
+    static double a[4] = { 3.3871327179, 5.0434271938e+01,
+   1.5929113202e+02, 5.9109374720e+01
+    };
+    static double b[4] = { 0.0, 1.7895169469e+01, 7.8757757664e+01,
+   6.7187563600e+01
+    };
+
+    /* hash sum ab    32.3184577772 */
+    /* coefficients for p not close to 0, 0.5 or 1. */
+    static double c[4] = { 1.4234372777e+00, 2.7568153900e+00,
+   1.3067284816e+00, 1.7023821103e-01
+    };
+    static double d[3] = { 0.0, 7.3700164250e-01, 1.2021132975e-01 };
+
+    /* hash sum cd    15.7614929821 */
+    /* coefficients for p near 0 or 1. */
+    static double e[4] = { 6.6579051150e+00, 3.0812263860e+00,
+   4.2868294337e-01, 1.7337203997e-02
+    };
+    static double f[3] = { 0.0, 2.4197894225e-01, 1.2258202635e-02 };
+
+    /* hash sum ef    19.4052910204 */
+    double q, r, ret;
+
+    q = p - half;
+    if (fabs(q) <= split1) {
+   r = const1 - q * q;
+   ret = q * (((a[3] * r + a[2]) * r + a[1]) * r + a[0]) /
+       (((b[3] * r + b[2]) * r + b[1]) * r + one);
+
+   return ret;;
+    }
+    /* else */
+
+    if (q < zero)
+   r = p;
+    else
+   r = one - p;
+
+    if (r <= zero)
+   return zero;
+
+    r = sqrt(-log(r));
+    if (r <= split2) {
+   r = r - const2;
+   ret = (((c[3] * r + c[2]) * r + c[1]) * r + c[0]) /
+       ((d[2] * r + d[1]) * r + one);
+    }
+    else {
+   r = r - split2;
+   ret = (((e[3] * r + e[2]) * r + e[1]) * r + e[0]) /
+       ((f[2] * r + f[1]) * r + one);
+    }
+
+    if (q < zero)
+   ret = -ret;
+
+    return ret;;
+}
+
 /*-
  * algorithm as241  appl. statist. (1988) 37(3):
  *
@@ -14,11 +97,6 @@
  *
  * The same license applies
  */
-
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 double ppnd16(double p)
 {
     static double zero = 0.0, one = 1.0, half = 0.5;
@@ -133,50 +211,4 @@ double ppnd16(double p)
 	ret = -ret;
 
     return ret;
-}
-
-// create 1e8 normally distributed random numbers from the uniformly
-// distributed random numbers provided in file
-// rand_double.out and write those to file
-// input_testWichura2x64Kernel.in
-int main()
-{
-   const size_t elements = 1000 * 1000 * 100;
-   FILE *f;
-   double *uniform;
-   double *normal;
-   int i;
-   uniform = malloc( elements * sizeof( double ) );
-   normal  = malloc( elements * sizeof( double ) );
-   if( ( uniform == NULL ) || ( uniform == NULL ) )
-   {
-      perror( "Malloc failed!\n" );
-   }
-   f = fopen( "tests/rand_double.out", "rb" );
-   if( f == NULL )
-   {
-      perror( "Opening input file failed.\n" );
-   }
-   if( fread( (void*)uniform, sizeof(double), elements, f ) != elements )
-   {
-      perror( "Reading input failed!\n" );
-   }
-   fclose( f );
-   for( i = 0; i < elements; i++ )
-   {
-      normal[ i ] = ppnd16( uniform[ i ] );
-   }
-   free( uniform );
-   f = fopen( "tests/input_testWichura2x64Kernel.in", "wb" );
-   if( f == NULL )
-   {
-      perror( "Opening output file failed.\n" );
-   }
-   if( fwrite( (void*)normal, sizeof( double ), elements, f ) != elements )
-   {
-      perror( "Writing output failed!\n" );
-   }
-   free( normal );
-
-   return 0;
 }

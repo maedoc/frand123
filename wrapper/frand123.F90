@@ -106,6 +106,29 @@ module frand123
          real( kind = c_double ), value, intent( in ) :: sigma
          real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
       end subroutine
+      ! compute four single precision normally distributed random variables with
+      ! expectation mu and variance sigma using polar Box-Muller algorithm
+      ! use ARS or threefry based uniform random number generators
+      subroutine polar4x32( state, mu, sigma, res ) bind( C, name='polar4x32')
+         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         real( kind = c_float ), value, intent( in ) :: mu
+         real( kind = c_float ), value, intent( in ) :: sigma
+         real( kind = c_float ), dimension( 4 ), intent( inout )  :: res
+      end subroutine
+      ! compute four single precision normally distributed random variables with
+      ! expectation mu and variance sigma using inverse transform sampling using
+      ! the algorithm AS241 proposed by Wichura 1988
+      ! use ARS or threefry based uniform random number generators
+      subroutine wichura4x32( state, mu, sigma, res ) bind( C, name='wichura4x32')
+         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         real( kind = c_float ), value, intent( in ) :: mu
+         real( kind = c_float ), value, intent( in ) :: sigma
+         real( kind = c_float ), dimension( 4 ), intent( inout )  :: res
+      end subroutine
    end interface
 
    public :: frand123Double
@@ -237,6 +260,52 @@ contains
          res( len_res ) = buffer( 1 )
       endif
    end subroutine frand123NormDouble
+
+   ! generate size(res) normally distributedrandom single precision numbers
+   !
+   ! Arguments: state: state of the random number generator
+   !                   the counter in the state is incremented in every call
+   !            mu:    expected value
+   !            sigma: variance
+   !            res:   array to be filled with random single precision reals
+   subroutine frand123NormSingle( state, mu, sigma, res )
+      implicit none
+      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
+      real( kind = res_kind_single ), intent( in ) :: mu
+      real( kind = res_kind_single ), intent( in ) :: sigma
+      real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
+
+      integer :: len_res, safe_it, i, remaining
+      real( kind = res_kind_single ), dimension( 4 ) :: buffer
+
+      ! get length of res
+      len_res = size( res )
+      
+      ! calc number of safe iterations
+      safe_it = len_res / 4
+  
+      ! generate sufficient number of random numbers
+      do i = 1, safe_it
+#if defined( USE_POLAR )
+         call polar4x32( state, mu, sigma, res( 4*i-3:4*i ) )
+#elif defined( USE_WICHURA )
+         call wichura4x32( state, mu, sigma, res( 4*i-3:4*i ) )
+#endif
+
+      enddo
+      ! finish in case of odd number of random numbers
+      if( mod( len_res, 2 ) .ne. 0 ) then
+#if defined( USE_POLAR )
+         call polar4x32( state, mu, sigma, buffer )
+#elif defined( USE_WICHURA )
+         call wichura4x32( state, mu, sigma, buffer )
+#endif
+         ! calc number of remaining random numbers
+         remaining = len_res - 4 * i
+         ! store calculated random numbers in res
+         res( 4*i+1:len_res ) = buffer( 1:remaining )
+      endif
+   end subroutine frand123NormSingle
 
    ! generate size(res) random 64 bit signed integers
    !
