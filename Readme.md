@@ -81,6 +81,31 @@ The frand123 Fortran wrapper provides the following capabilities:
     * kind: real of kind _res_kind_double_
     * intent: _inout_
 
+### frand123NormSingle( state, mu, sigma, res )
+#### Description
+* Fill vector res with single precision real random numbers normally distributed with mean mu and variance sigma
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 4
+
+#### Arguments
+* __state__: state used by the RNG
+    * dimension: _state_size_
+    * kind: integer of kind _state_kind_
+    * intent: _inout_
+* __mu__: mean of the normal distribution
+    * dimension: scalar
+    * kind: real of kind _res_kind_single_
+    * intent: in
+* __sigma__: variance of the normal distribution
+    * dimension: scalar
+    * kind: real of kind _res_kind_single_
+    * intent: in
+* __res__: memory to which random numbers are stored to
+    * dimension: arbitrary
+    * kind: real of kind _res_kind_single_
+    * intent: _inout_
+
 ### frand123Integer32( state, res )
 #### Description
 * Fill vector res with signed 32-bit integer random numbers uniformly distributed between (iclusive) INT32_MIN and INT32_MAX
@@ -221,6 +246,16 @@ Bounds on the p-values are defined on a per-algorithm basis.
 ### testNormDoublePerformance
 #### Description
 Prints out serial and OpenMP parallel timings for the generation and summation of 10^9 random numbers
+
+### testWichura4x32Kernel
+#### Description
+This test generates 10^8 uniformly distributed single precision real random numbers and applies the PPND7 implementation in as241.c (taken from GRASS GIS) to generate reference normally distributed random numbers.
+Then, these reference values are compared to those computed from the exact same uniformly distributed numbers using the function wichura2x64Kernel.
+Deviations up to 1e-14 are tolerated.
+
+### testNormSinglePerformance
+#### Description
+Prints out serial and OpenMP parallel timings for the generation and summation of 10^9 random numbers.
 
 ## License
 still to do
