@@ -183,8 +183,7 @@ The Makefile was tested with:
 * use ARS: add _ars=y_ to _make_ command
 * use FMA3 in ARS: add _ars=y fma=y_ to _make_ command
 * use gcc: add _gcc=y_ to _make_ command
-* use Polar Box-Muller: add _polar=y_ to _make_ command
-* use Wichura''s AS 241 algorithm: add _wichura=y_ to _make_ command
+* use Polar Box-Muller instead of Wichura''s AS 241 PPND16 algorithm for double precision normally distributed random numbers: add _use_polar=y_ to _make_ command
 
 ## Examples
 For examples, please consult the tests subdirectory
@@ -238,7 +237,7 @@ This test generates 10^8 uniformly distributed douple precision real random numb
 Then, these reference values are compared to those computed from the exact same uniformly distributed numbers using the function wichura2x64Kernel.
 Deviations up to 1e-14 are tolerated.
 
-### testNormDoublePython
+### testRandNormDoublePython
 #### Description
 This test generates 10^8 normally distributed random numbers and applies the hypothesis-tests skewtest, kurtosistest and normtest from the scipy stats package.
 Bounds on the p-values are defined on a per-algorithm basis.
@@ -247,11 +246,10 @@ Bounds on the p-values are defined on a per-algorithm basis.
 #### Description
 Prints out serial and OpenMP parallel timings for the generation and summation of 10^9 random numbers
 
-### testWichura4x32Kernel
+### testRandNormSinglePython
 #### Description
-This test generates 10^8 uniformly distributed single precision real random numbers and applies the PPND7 implementation in as241.c (taken from GRASS GIS) to generate reference normally distributed random numbers.
-Then, these reference values are compared to those computed from the exact same uniformly distributed numbers using the function wichura2x64Kernel.
-Deviations up to 1e-14 are tolerated.
+This test generates 10^8 normally distributed random numbers and applies the hypothesis-tests skewtest, kurtosistest and normtest from the scipy stats package.
+Bounds on the p-values are defined on a per-RNG basis.
 
 ### testNormSinglePerformance
 #### Description
