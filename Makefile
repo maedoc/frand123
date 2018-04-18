@@ -19,11 +19,11 @@ OPENMPFLAGS = -qopenmp
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm -flto-report
+CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm #-flto-report
 FC = gfortran$(SUFFIX)
-FFLAGS = -fPIC -J lib64 -flto -O3 -maes -mtune=native -march=native -flto-report
+FFLAGS = -fPIC -J lib64 -flto -O3 -maes -mtune=native -march=native #-flto-report
 LD = gcc$(SUFFIX)
-LDFLAGS = -shared -fPIC -flto -O2 -mtune=native -march=native -flto-report
+LDFLAGS = -shared -fPIC -flto -O2 -mtune=native -march=native #-flto-report
 AR = gcc-ar$(SUFFIX)
 ARFLAGS = rc
 CMAINFLAGS =
@@ -187,5 +187,5 @@ tests/testWichura4x32Kernel.x: lib64/libfrand123.a tests/testWichura4x32Kernel.c
 tests/as241ReferenceSingle.x: tests/as241.c tests/as241ReferenceSingle.c Makefile
 	$(CC) $(CFLAGS) -lm -o tests/as241ReferenceSingle.x tests/as241.c tests/as241ReferenceSingle.c
 
-tests/testNormDoublePerformance.x: tests/testNormSinglePerformance.f90 lib64/libfrand123.a Makefile
+tests/testNormSinglePerformance.x: tests/testNormSinglePerformance.f90 lib64/libfrand123.a Makefile
 	$(FC) $(FFLAGS) $(OPENMPFLAGS) -o tests/testNormSinglePerformance.x tests/testNormSinglePerformance.f90 lib64/libfrand123.a
