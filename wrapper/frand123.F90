@@ -188,7 +188,7 @@ contains
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i, remaining
+      integer :: len_res, safe_it, i, mod_len_res
       real( kind = res_kind_single ), dimension( 4 ) :: buffer
 
       ! get length of res
@@ -206,16 +206,15 @@ contains
 #endif
       enddo
       ! finish remaining random numbers
-      if( mod( len_res, 4 ) .ne. 0 ) then
+      mod_len_res = mod( len_res, 4 )
+      if( mod_len_res .ne. 0 ) then
 #ifdef USE_ARS
          call ars4x32_u01( state, buffer )
 #else
          call threefry4x32_u01( state, buffer )
 #endif
-         ! calc number of remaining random numbers
-         remaining = len_res - 4 * i
          ! store calculated random numbers in res
-         res( 4*i+1:len_res ) = buffer( 1:remaining )
+         res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
       endif
    end subroutine frand123Single
 
@@ -276,7 +275,7 @@ contains
       real( kind = res_kind_single ), intent( in ) :: sigma
       real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i, remaining
+      integer :: len_res, safe_it, i, mod_len_res
       real( kind = res_kind_single ), dimension( 4 ) :: buffer
 
       ! get length of res
@@ -295,16 +294,15 @@ contains
 
       enddo
       ! finish in case of odd number of random numbers
-      if( mod( len_res, 2 ) .ne. 0 ) then
+      mod_len_res = mod( len_res, 4 )
+      if( mod_len_res .ne. 0 ) then
 #if defined( USE_POLAR )
          call polar4x32( state, mu, sigma, buffer )
 #elif defined( USE_WICHURA )
          call wichura4x32( state, mu, sigma, buffer )
 #endif
-         ! calc number of remaining random numbers
-         remaining = len_res - 4 * i
          ! store calculated random numbers in res
-         res( 4*i+1:len_res ) = buffer( 1:remaining )
+         res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
       endif
    end subroutine frand123NormSingle
 
@@ -356,7 +354,7 @@ contains
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       integer( kind = res_kind_int32 ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i, remaining
+      integer :: len_res, safe_it, i, mod_len_res
       integer( kind = res_kind_int32 ), dimension( 4 ) :: buffer
 
       ! get length of res
@@ -374,16 +372,15 @@ contains
 #endif
       enddo
       ! finish remaining random numbers
-      if( mod( len_res, 4 ) .ne. 0 ) then
+      mod_len_res = mod( len_res, 4 )
+      if( mod_len_res .ne. 0 ) then
 #ifdef USE_ARS
          call ars4x32_int( state, buffer )
 #else
          call threefry4x32_int( state, buffer )
 #endif
-         ! calc number of remaining random numbers
-         remaining = len_res - 4 * i
          ! store calculated random numbers in res
-         res( 4*i+1:len_res ) = buffer( 1:remaining )
+         res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
       endif
    end subroutine frand123Integer32
 
