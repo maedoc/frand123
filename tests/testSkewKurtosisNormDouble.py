@@ -19,7 +19,7 @@ if( not ( args.polar or args.wichura ) ):
 # Do we use polar Box-Muller's transformation?
 if( args.polar ):
    # check that no other is set
-   if( args.hastings or args.wichura ):
+   if( args.wichura ):
       print( 'Provide one transformation only.' )
       sys.exit( 1 )
    # set values
