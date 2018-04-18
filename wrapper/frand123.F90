@@ -134,6 +134,7 @@ module frand123
    public :: frand123Double
    public :: frand123Single
    public :: frand123NormDouble
+   public :: frand123NormSingle
    public :: frand123Integer32
    public :: frand123Integer64
    public :: frand123Init
