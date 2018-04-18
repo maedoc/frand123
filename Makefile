@@ -37,6 +37,9 @@ endif
 ifeq ($(ars),y)
 	CFLAGS += -DUSE_ARS -DR123_USE_AES_NI
 	FFLAGS += -DUSE_ARS
+	TESTNORMSINGLEPYFLAGS = --ars
+else
+	TESTNORMSINGLEPYFLAGS = --threefry
 endif
 
 # decide whether to use FMA instructions (requires Intel FMA3 support)
@@ -132,7 +135,7 @@ testNormDoublePerformance: tests/testNormDoublePerformance.x
 testRandNormSinglePython: tests/testSkewKurtosisNormSingle.py tests/testRandNormSingle.x
 	rm -rf tests/rand_norm_single.out
 	./tests/testRandNormSingle.x
-	set -e; python3 tests/testSkewKurtosisNormSingle.py
+	set -e; python3 tests/testSkewKurtosisNormSingle.py $(TESTNORMSINGLEPYFLAGS)
 	rm -rf tests/rand_norm_single.out
 
 testNormSinglePerformance: tests/testNormSinglePerformance.x
