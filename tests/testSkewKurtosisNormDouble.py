@@ -25,7 +25,7 @@ if( args.polar ):
    # set values
    transformation = 'Polar Box-Muller'
    pLimSkew = 0.27
-   pLimKurtosis = 0.7
+   pLimKurtosis = 0.6
    pLimNormal = 0.5
 
 # Do we use Wichura's transformation?

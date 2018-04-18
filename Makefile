@@ -69,8 +69,9 @@ clean:
 	rm -rf lib64/
 	rm -f tests/*.x
 	rm -f tests/rand_*.out
+	rm -f tests/input*.in
 
-tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testWichura4x32Kernel testRandNormSinglePython testNormSinglePerformance
+tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance
 
 testAccuracyFloats: tests/testAccuracyFloats.x
 	set -e ./tests/testAccuracyFloats.x
@@ -128,18 +129,10 @@ testRandNormDoublePython: tests/testSkewKurtosisNormDouble.py tests/testRandNorm
 testNormDoublePerformance: tests/testNormDoublePerformance.x
 	./tests/testNormDoublePerformance.x
 
-testWichura4x32Kernel: tests/testWichura4x32Kernel.x tests/as241ReferenceSingle.x tests/testRandSingle.x
-	rm -rf tests/rand_single.out
-	./tests/testRandSingle.x
-	./tests/as241ReferenceSingle.x
-	set -e; ./tests/testWichura4x32Kernel.x
-	rm -rf tests/rand_single.out
-	rm -rf tests/input_testWichura4x32Kernel.in
-
 testRandNormSinglePython: tests/testSkewKurtosisNormSingle.py tests/testRandNormSingle.x
 	rm -rf tests/rand_norm_single.out
 	./tests/testRandNormSingle.x
-	set -e; python3 tests/testSkewKurtosisNormSingle.py $(TESTNORMSINGLEPYFLAGS)
+	set -e; python3 tests/testSkewKurtosisNormSingle.py
 	rm -rf tests/rand_norm_single.out
 
 testNormSinglePerformance: tests/testNormSinglePerformance.x
@@ -172,17 +165,14 @@ tests/testRandNormDouble.x: lib64/libfrand123.a tests/testRandNormDouble.f90 Mak
 tests/testWichura2x64Kernel.x: lib64/libfrand123.a tests/testWichura2x64Kernel.c Makefile
 	$(CC) $(CFLAGS) -o tests/testWichura2x64Kernel.x tests/testWichura2x64Kernel.c lib64/libfrand123.a
 
-tests/as241ReferenceDouble.x: tests/as241.c tests/as241ReferenceDouble.c Makefile
-	$(CC) $(CFLAGS) -lm -o tests/as241ReferenceDouble.x tests/as241.c tests/as241ReferenceDouble.c
+tests/as241ReferenceDouble.x: tests/as241ReferenceDouble.c Makefile
+	$(CC) $(CFLAGS) -lm -o tests/as241ReferenceDouble.x tests/as241ReferenceDouble.c
 
 tests/testNormDoublePerformance.x: tests/testNormDoublePerformance.f90 lib64/libfrand123.a Makefile
 	$(FC) $(FFLAGS) $(OPENMPFLAGS) -o tests/testNormDoublePerformance.x tests/testNormDoublePerformance.f90 lib64/libfrand123.a
 
 tests/testRandNormSingle.x: lib64/libfrand123.a tests/testRandNormSingle.f90 Makefile
 	$(FC) $(FFLAGS) -o tests/testRandNormSingle.x tests/testRandNormSingle.f90 lib64/libfrand123.a
-
-tests/testWichura4x32Kernel.x: lib64/libfrand123.a tests/testWichura4x32Kernel.c Makefile
-	$(CC) $(CFLAGS) -o tests/testWichura4x32Kernel.x tests/testWichura4x32Kernel.c lib64/libfrand123.a
 
 tests/as241ReferenceSingle.x: tests/as241.c tests/as241ReferenceSingle.c Makefile
 	$(CC) $(CFLAGS) -lm -o tests/as241ReferenceSingle.x tests/as241.c tests/as241ReferenceSingle.c
