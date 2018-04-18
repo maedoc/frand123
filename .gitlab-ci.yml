@@ -36,7 +36,7 @@ run_test:
    variables:
       CV: '0'
       CV_S: 'coverage:'
-      N_TESTS: '19' # the number of tests we will be running
+      N_TESTS: '21' # the number of tests we will be running
    script:
       #
       - echo "Running test testAccuracyFloats"
@@ -143,13 +143,25 @@ run_test:
       #
       - echo "Running test testRandNormDoublePython with Threefry RNG and Polar Box-Muller"
       - make clean
-      - SUFFIX=-7 make gcc=y polar=y testRandNormDoublePython && CV="$((CV + 1))"
+      - SUFFIX=-7 make gcc=y use_polar=y testRandNormDoublePython && CV="$((CV + 1))"
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
       #
       - echo "Running test testRandNormDoublePython with ARS RNG and Polar Box-Muller"
       - make clean
-      - SUFFIX=-7 make gcc=y polar=y ars=ytestRandNormDoublePython && CV="$((CV + 1))"
+      - SUFFIX=-7 make gcc=y use_polar=y ars=y testRandNormDoublePython && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testRandNormSinglePython with Threefry RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y testRandNormSinglePython && CV="$((CV + 1))"
+      - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
+      - echo $CV_S "$CV_R"
+      #
+      - echo "Running test testRandNormSinglePython with ARS RNG"
+      - make clean
+      - SUFFIX=-7 make gcc=y ars=y testRandNormSinglePython && CV="$((CV + 1))"
       - CV_R=`echo "$CV $N_TESTS" | awk '{printf("%.1f\n", $1/$2*100)}'`
       - echo $CV_S "$CV_R"
    coverage: '/coverage: \d+\.\d+/'
