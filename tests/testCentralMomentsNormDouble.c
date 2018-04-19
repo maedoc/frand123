@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
@@ -7,17 +8,25 @@ void polar2x64( int64_t *state, const double mu, const double sigma, double *res
 
 // parameters
 // vector width of SIMD unit w.r.t. size of doubles
-const int vec_width_in_doubles = 4;
+const int vec_width_in_doubles = VECTOR_WIDTH / 8;
 // number of random numbers to generate
 // needs to be divisible by vec_width_in_doubles
-const uint64_t number_random_numbers = 1000ll * 1000ll * 1000ll * 10ll;
+const uint64_t number_random_numbers = 1000ll * 1000ll * 1000ll;
+// threshold under which to stop recursion
+const uint64_t recursion_threshold = 1000ll * 1000ll;
 
 // derived parameters
 // number of calls to polar 4x32 to fill vector registers
 const int rng_calls_per_loop = vec_width_in_doubles / 2;
 const int loop_iterations = number_random_numbers / vec_width_in_doubles;
 
-void computeCentralMoments( int64_t *state, const double mu, const double sigma, double *centralMoments )
+// compute the non-scaled central moments of local_number_random_numbers
+// normal random numbers
+void computeCentralMoments( int64_t *state,
+                            const int64_t local_number_random_numbers,
+                            const double mu,
+                            const double sigma,
+                            double *centralMoments )
 {
    // vector for random numbers
    double r[ vec_width_in_doubles ];
@@ -56,7 +65,7 @@ void computeCentralMoments( int64_t *state, const double mu, const double sigma,
    }
 
    // compute central moments
-   for( i = 0; i < number_random_numbers; i += vec_width_in_doubles )
+   for( i = 0; i < local_number_random_numbers; i += vec_width_in_doubles )
    {
       // fill r with random numbers
       for( j = 0; j < rng_calls_per_loop; j++ )
@@ -117,6 +126,37 @@ void computeCentralMoments( int64_t *state, const double mu, const double sigma,
    }
 }
 
+void recursion( int64_t *state,
+                const int64_t local_number_random_numbers,
+                const double mu,
+                const double sigma,
+                double *centralMoments )
+{
+   // do we keep on recursing
+   if( local_number_random_numbers <= recursion_threshold )
+   {
+      // no, call function directly
+      computeCentralMoments( state, local_number_random_numbers, mu, sigma, centralMoments );
+   }
+   else
+   {
+      // yes
+      double centralMomentsLeft[ 10 ];
+      double centralMomentsRight[ 10 ];
+      // init left branch
+      recursion( state, local_number_random_numbers / 2ll, mu, sigma, centralMomentsLeft );
+      // init right branch
+      recursion( state, local_number_random_numbers / 2ll, mu, sigma, centralMomentsRight );
+      // compute sum of both branches
+      int j;
+      for( j = 0; j < 10; j++ )
+      {
+         centralMoments[ j ] = centralMomentsLeft[ j ] + centralMomentsRight[ j ];
+      }
+   }
+   return;
+}
+
 int main()
 {
    // state for RNG
@@ -130,30 +170,26 @@ int main()
    double startTime, stopTime;
    // final central moments
    double final_cm[ 10 ];
+   // relative error
+   double relative_error;
    // iteration variables
    int j;
    // store number of threads
    int num_threads;
 
+   printf( "Run test testCentralMomentsNormDouble\n\n" );
+
    // timing
    startTime = omp_get_wtime();
 
-   #pragma omp parallel default(none) private(state) shared(num_threads) reduction(+:final_cm[:10])
-   {
-      // store number of threads for correct results
-      #pragma omp master
-      {
-         num_threads = omp_get_num_threads();
-      }
+   // init the rng
+   state[ 0 ] = 0;
+   state[ 1 ] = 0;
+   state[ 2 ] = 0;
+   state[ 3 ] = 0;
 
-      // init the rng
-      uint64_t *state_as_uint64_t = state;
-      state_as_uint64_t[ 0 ] = (uint64_t)omp_get_thread_num() * number_random_numbers / (uint64_t)2;
-      state_as_uint64_t[ 1 ] = 0;
-
-      // compute central moments
-      computeCentralMoments( state, mu, sigma, final_cm );
-   }
+   // compute central moments
+   recursion( state, number_random_numbers, mu, sigma, final_cm );
    
    // timing
    stopTime = omp_get_wtime();
@@ -163,8 +199,35 @@ int main()
    for( j = 0; j < 10; j++ )
    {
       double_fac = double_fac * ( 2 * j + 1 );
-      final_cm[ j ] = final_cm[ j ] / ( (uint64_t)num_threads * number_random_numbers );
-      printf( "%02dth numerical central moment: %e, exact central moment: %9ld, relative error: %e\n", j * 2 + 2, final_cm[ j ], double_fac, fabs( final_cm[ j ] - (double)double_fac ) / (double)double_fac );
+      final_cm[ j ] = final_cm[ j ] / number_random_numbers;
+      relative_error = fabs( final_cm[ j ] - (double)double_fac ) / (double)double_fac;
+      if( j < 4 )
+      {
+         if( relative_error > 1e-3 )
+         {
+            printf( "Error!\n" );
+            printf( "%02dth numerical central moment: %e, exact central moment: %9ld, relative error: %e\n", j * 2 + 2, final_cm[ j ], double_fac, fabs( final_cm[ j ] - (double)double_fac ) / (double)double_fac );
+            exit( 1 );
+         }
+      }
+      else if( j < 8 )
+      {
+         if( relative_error > 1e-2 )
+         {
+            printf( "Error!\n" );
+            printf( "%02dth numerical central moment: %e, exact central moment: %9ld, relative error: %e\n", j * 2 + 2, final_cm[ j ], double_fac, fabs( final_cm[ j ] - (double)double_fac ) / (double)double_fac );
+            exit( 1 );
+         }
+      }
+      else
+      {
+         if( relative_error > 2e-2 )
+         {
+            printf( "Error!\n" );
+            printf( "%02dth numerical central moment: %e, exact central moment: %9ld, relative error: %e\n", j * 2 + 2, final_cm[ j ], double_fac, fabs( final_cm[ j ] - (double)double_fac ) / (double)double_fac );
+            exit( 1 );
+         }
+      }
    }
 
    return 0;

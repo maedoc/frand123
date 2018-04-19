@@ -1,5 +1,6 @@
 # have a compiler suffix if necessary to pick specific version number
 SUFFIX ?=
+VECTORWIDHT ?= 1
 
 #########################
 #### Intel Compilers ####
@@ -74,7 +75,7 @@ clean:
 	rm -f tests/rand_*.out
 	rm -f tests/input*.in
 
-tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance
+tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble
 
 testAccuracyFloats: tests/testAccuracyFloats.x
 	set -e ./tests/testAccuracyFloats.x
@@ -132,6 +133,9 @@ testRandNormDoublePython: tests/testSkewKurtosisNormDouble.py tests/testRandNorm
 testNormDoublePerformance: tests/testNormDoublePerformance.x
 	./tests/testNormDoublePerformance.x
 
+testCentralMomentsNormDouble: tests/testCentralMomentsNormDouble.x
+	set -e; ./tests/testCentralMomentsNormDouble.x
+
 testRandNormSinglePython: tests/testSkewKurtosisNormSingle.py tests/testRandNormSingle.x
 	rm -rf tests/rand_norm_single.out
 	./tests/testRandNormSingle.x
@@ -184,4 +188,4 @@ tests/testNormSinglePerformance.x: tests/testNormSinglePerformance.f90 lib64/lib
 	$(FC) $(FFLAGS) $(OPENMPFLAGS) -o tests/testNormSinglePerformance.x tests/testNormSinglePerformance.f90 lib64/libfrand123.a
 
 tests/testCentralMomentsNormDouble.x: tests/testCentralMomentsNormDouble.c lib64/libfrand123.a Makefile
-	$(CC) $(CFLAGS) -o tests/testCentralMomentsNormDouble.x tests/testCentralMomentsNormDouble.c lib64/libfrand123.a -lm
+	$(CC) $(CFLAGS) -DVECTOR_WIDTH=$(VECTORWIDTH) -o tests/testCentralMomentsNormDouble.x tests/testCentralMomentsNormDouble.c lib64/libfrand123.a -lm
