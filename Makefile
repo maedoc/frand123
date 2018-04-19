@@ -5,11 +5,11 @@ SUFFIX ?=
 #### Intel Compilers ####
 #########################
 CC = icc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fpic -ipo -O2 -xHost -qopenmp #-qopt-report=2 -qopt-report-annotate=html -qopt-report-annotate-position=both -qopt-report-file=opt-report
+CFLAGS = -Iinclude/Random123 -fpic -ipo -O2 -xHost -qopenmp -qopt-report=2
 FC = ifort$(SUFFIX)
-FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp #-qopt-report=2 -qopt-report-annotate=html -qopt-report-annotate-position=both -qopt-report-file=opt-report
+FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp -qopt-report=2
 LD = ifort$(SUFFIX)
-LDFLAGS = -shared -ipo -O2 -xHost -qopenmp -qopt-report=2 #-qopt-report-annotate=html -qopt-report-annotate-position=both -qopt-report-file=opt-report
+LDFLAGS = -shared -ipo -O2 -xHost -qopenmp -qopt-report=2
 AR = xiar
 ARFLAGS = rc
 CMAINFLAGS = -nofor_main
@@ -182,3 +182,6 @@ tests/as241ReferenceSingle.x: tests/as241.c tests/as241ReferenceSingle.c Makefil
 
 tests/testNormSinglePerformance.x: tests/testNormSinglePerformance.f90 lib64/libfrand123.a Makefile
 	$(FC) $(FFLAGS) $(OPENMPFLAGS) -o tests/testNormSinglePerformance.x tests/testNormSinglePerformance.f90 lib64/libfrand123.a
+
+tests/testCentralMomentsNormDouble.x: tests/testCentralMomentsNormDouble.c lib64/libfrand123.a Makefile
+	$(CC) $(CFLAGS) -o tests/testCentralMomentsNormDouble.x tests/testCentralMomentsNormDouble.c lib64/libfrand123.a -lm
