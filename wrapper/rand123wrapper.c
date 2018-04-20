@@ -662,3 +662,64 @@ void polar4x32( int64_t *state, const float mu, const float sigma, float *res )
    res[ 3 ] = mu + sigma * f[ 1 ] * x[ 3 ];
    return;
 }
+
+/*
+ * Function polar4x32_two calculates two single precision random numbers
+ * normally distributed with expectation mu and variance sigma using the
+ * polar rejection method by Box and Muller
+ *
+ * Note: restriction to 2 random numbers allows for fewer calls to RNG due
+ * the specifics of the rejection method
+ *
+ * Arguments: state: four elements holding
+ *                   counter: first  128 bit
+ *                   key:     second 128 bit
+ *            mu:    expectation
+ *            sigma: variance
+ *            res:   address to storage for 2 single precision reals
+ */
+void polar4x32_two( int64_t *state, const float mu, const float sigma, float *res )
+{
+   float u[ 4 ];
+   float x[ 4 ];
+   float r2[ 2 ];
+   float f;
+   bool in[ 2 ];
+   // generate coordinates until within unit circle
+   // at least first try successful: probability ~95%
+   // at least second try successful: probability ~100%
+   // this implementation requires ~ 0.52 calls of the
+   // RNG per random number
+   do
+   {
+#if USE_ARS
+      ars4x32_u01( state, u );
+#else
+      threefry4x32_u01( state, u );
+#endif
+      // compute distance from center
+      x[ 0 ] = 2.f * u[ 0 ] - 1.f;
+      x[ 1 ] = 2.f * u[ 1 ] - 1.f;
+      x[ 2 ] = 2.f * u[ 2 ] - 1.f;
+      x[ 3 ] = 2.f * u[ 3 ] - 1.f;
+      r2[ 0 ] = x[ 0 ] * x[ 0 ] + x[ 1 ] * x[ 1 ];
+      r2[ 1 ] = x[ 2 ] * x[ 2 ] + x[ 3 ] * x[ 3 ];
+      // check which lies within the unit circle
+      in[ 0 ] = ( r2[ 0 ] > 0.f ) && ( r2[ 0 ] < 1.f );
+      in[ 1 ] = ( r2[ 1 ] > 0.f ) && ( r2[ 1 ] < 1.f );
+   } while( ! ( in[ 0 ] || in[ 2 ] ) );
+   // compute two random numbers
+   if( in[ 0 ] )
+   {
+      f = sqrt( -2.f * log( r2[ 0 ] ) / r2[ 0 ] );
+      res[ 0 ] = mu + sigma * f * x[ 0 ];
+      res[ 1 ] = mu + sigma * f * x[ 1 ];
+   }
+   else
+   {
+      f = sqrt( -2.f * log( r2[ 1 ] ) / r2[ 1 ] );
+      res[ 0 ] = mu + sigma * f * x[ 2 ];
+      res[ 1 ] = mu + sigma * f * x[ 3 ];
+   }
+   return;
+}

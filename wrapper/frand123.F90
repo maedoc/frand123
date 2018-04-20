@@ -257,7 +257,7 @@ contains
    !!!!!                          !!!!!
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-   ! generate size(res) normally distributedrandom single precision numbers
+   ! generate single normally distributedrandom single precision numbers
    ! 
    ! Note: The single precision version always uses the polar form of Box-Muller
    !       as this turned out to be on par with Wichura's PPND7 w.r.t.
@@ -267,7 +267,7 @@ contains
    !                   the counter in the state is incremented in every call
    !            mu:    expected value
    !            sigma: variance
-   !            res:   array to be filled with random single precision reals
+   !            res:   scalar for random single precision reals
    subroutine frand123NormSingle_scalar( state, mu, sigma, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
@@ -275,9 +275,12 @@ contains
       real( kind = res_kind_single ), intent( in ) :: sigma
       real( kind = res_kind_single ), intent( out ) :: res
 
-      real( kind = res_kind_single ), dimension( 4 ) :: buffer
+      real( kind = res_kind_single ), dimension( 2 ) :: buffer
 
-      call polar4x32( state, mu, sigma, buffer )
+      ! call different C function as performance of polar rejection method can
+      ! be improved by allowing for a single pair of uniform random numbers to
+      ! lie within the unit circle
+      call polar4x32_two( state, mu, sigma, buffer )
       res = buffer( 1 )
    end subroutine frand123NormSingle_scalar
 
@@ -304,20 +307,25 @@ contains
 
       ! get length of res
       len_res = size( res )
-      
-      ! calc number of safe iterations
-      safe_it = len_res / 4
-  
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
-         call polar4x32( state, mu, sigma, res( 4*i-3:4*i ) )
-      enddo
-      ! finish in case of odd number of random numbers
-      mod_len_res = mod( len_res, 4 )
-      if( mod_len_res .ne. 0 ) then
-         call polar4x32( state, mu, sigma, buffer )
-         ! store calculated random numbers in res
-         res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
+
+      ! handle case of only two random numbers more efficiently
+      if( len_res .eq. 2 ) then
+         call polar4x32_two( state, mu, sigma, res )
+      else
+         ! calc number of safe iterations
+         safe_it = len_res / 4
+     
+         ! generate sufficient number of random numbers
+         do i = 1, safe_it
+            call polar4x32( state, mu, sigma, res( 4*i-3:4*i ) )
+         enddo
+         ! finish in case of odd number of random numbers
+         mod_len_res = mod( len_res, 4 )
+         if( mod_len_res .ne. 0 ) then
+            call polar4x32( state, mu, sigma, buffer )
+            ! store calculated random numbers in res
+            res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
+         endif
       endif
    end subroutine frand123NormSingle_vector
 

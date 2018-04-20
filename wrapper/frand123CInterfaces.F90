@@ -122,5 +122,17 @@ module frand123CInterfaces
          real( kind = c_float ), value, intent( in ) :: sigma
          real( kind = c_float ), dimension( 4 ), intent( inout )  :: res
       end subroutine
+      ! compute two single precision normally distributed random variables with
+      ! expectation mu and variance sigma using polar Box-Muller algorithm
+      ! use ARS or threefry based uniform random number generators
+      ! beneficial wrt to runtime if only 1 or 2 random numbers required
+      subroutine polar4x32_two( state, mu, sigma, res ) bind( C, name='polar4x32_two')
+         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         real( kind = c_float ), value, intent( in ) :: mu
+         real( kind = c_float ), value, intent( in ) :: sigma
+         real( kind = c_float ), dimension( 2 ), intent( inout )  :: res
+      end subroutine
    end interface
 end module frand123CInterfaces
