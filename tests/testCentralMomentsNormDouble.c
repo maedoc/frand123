@@ -4,7 +4,11 @@
 #include <math.h>
 #include <omp.h>
 
-void polar2x64( int64_t *state, const double mu, const double sigma, double *res );
+#ifdef USE_POLAR
+   void polar2x64( int64_t *state, const double mu, const double sigma, double *res );
+#else
+   void wichura2x64( int64_t *state, const double mu, const double sigma, double *res );
+#endif
 
 // parameters
 // vector width of SIMD unit w.r.t. size of doubles
@@ -70,7 +74,11 @@ void computeCentralMoments( int64_t *state,
       // fill r with random numbers
       for( j = 0; j < rng_calls_per_loop; j++ )
       {
+#ifdef USE_POLAR
          polar2x64( state, mu, sigma, &r[ j * 2 ] );
+#else
+         wichura2x64( state, mu, sigma, &r[ j * 2 ] );
+#endif
       }
       // iteratively compute central moments
       #pragma omp simd

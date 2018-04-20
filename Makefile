@@ -6,11 +6,11 @@ VECTORWIDHT ?= 1
 #### Intel Compilers ####
 #########################
 CC = icc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fpic -ipo -O2 -xHost -qopenmp -qopt-report=2
+CFLAGS = -Iinclude/Random123 -fpic -ipo -O2 -xHost -qopenmp #-qopt-report=2
 FC = ifort$(SUFFIX)
-FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp -qopt-report=2
+FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp #-qopt-report=2
 LD = ifort$(SUFFIX)
-LDFLAGS = -shared -ipo -O2 -xHost -qopenmp -qopt-report=2
+LDFLAGS = -shared -ipo -O2 -xHost -qopenmp #-qopt-report=2
 AR = xiar
 ARFLAGS = rc
 CMAINFLAGS = -nofor_main
@@ -52,9 +52,11 @@ endif
 # decide whether to use the Polar or Wichura's AS 241 method
 ifeq ($(use_polar),y)
 	FFLAGS += -DUSE_POLAR
+	CFLAGS += -DUSE_POLAR
 	TESTNORMDOUBLEPYFLAGS = --polar
 else
 	FFLAGS += -DUSE_WICHURA
+	CFLAGS += -DUSE_WICHURA
 	TESTNORMDOUBLEPYFLAGS = --wichura
 endif
 
