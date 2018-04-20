@@ -135,4 +135,54 @@ module frand123CInterfaces
          real( kind = c_float ), dimension( 2 ), intent( inout )  :: res
       end subroutine
    end interface
+
+   interface
+      subroutine frand123Double_C( state, lenRes, res ) bind( C, name='frand123Double' )
+         use, intrinsic :: iso_c_binding, only: c_double, c_int64_t, c_long_long
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         integer( kind = c_long_long ), value, intent( in ) :: lenRes
+         real( kind = c_double ), dimension( lenRes ), intent( inout ) :: res
+      end subroutine
+      subroutine frand123Single_C( state, lenRes, res ) bind( C, name='frand123Single' )
+         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t, c_long_long
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         integer( kind = c_long_long ), value, intent( in ) :: lenRes
+         real( kind = c_float ), dimension( lenRes ), intent( inout ) :: res
+      end subroutine
+      subroutine frand123NormDouble_C( state, mu, sigma, lenRes, res ) bind( C, name='frand123NormDouble' )
+         use, intrinsic :: iso_c_binding, only: c_double, c_int64_t, c_long_long
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         real( kind = c_double ), value, intent( in ) :: mu
+         real( kind = c_double ), value, intent( in ) :: sigma
+         integer( kind = c_long_long ), value, intent( in ) :: lenRes
+         real( kind = c_double ), dimension( lenRes ), intent( inout ) :: res
+      end subroutine
+      subroutine frand123NormSingle_C( state, mu, sigma, lenRes, res ) bind( C, name='frand123NormSingle' )
+         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t, c_long_long
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         real( kind = c_float ), value, intent( in ) :: mu
+         real( kind = c_float ), value, intent( in ) :: sigma
+         integer( kind = c_long_long ), value, intent( in ) :: lenRes
+         real( kind = c_float ), dimension( lenRes ), intent( inout ) :: res
+      end subroutine
+      subroutine frand123Integer64_C( state, lenRes, res ) bind( C, name='frand123Integer64' )
+         use, intrinsic :: iso_c_binding, only: c_int64_t, c_long_long
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         integer( kind = c_long_long ), value, intent( in ) :: lenRes
+         integer( kind = c_int64_t ), dimension( lenRes ), intent( inout ) :: res
+      end subroutine
+      subroutine frand123Integer32_C( state, lenRes, res ) bind( C, name='frand123Integer32' )
+         use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_long_long
+         implicit none
+         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         integer( kind = c_long_long ), value, intent( in ) :: lenRes
+         integer( kind = c_int32_t ), dimension( lenRes ), intent( inout ) :: res
+      end subroutine
+   end interface
+
 end module frand123CInterfaces

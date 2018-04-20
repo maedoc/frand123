@@ -147,20 +147,23 @@ testRandNormSinglePython: tests/testSkewKurtosisNormSingle.py tests/testRandNorm
 testNormSinglePerformance: tests/testNormSinglePerformance.x
 	./tests/testNormSinglePerformance.x
 
-build/rand123wrapper.o: build wrapper/rand123wrapper.c wrapper/frand123enlarger.h Makefile
+build/rand123wrapper.o: build wrapper/rand123wrapper.c wrapper/rand123wrapper.h wrapper/frand123enlarger.h Makefile
 	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
 
 build/frand123CInterfaces.o lib64/frand123CInterfaces.mod: build lib64 wrapper/frand123CInterfaces.F90 Makefile
 	$(FC) $(FFLAGS) -c wrapper/frand123CInterfaces.F90 -o build/frand123CInterfaces.o
 
+build/frand123_c.o: build wrapper/frand123.c Makefile
+	$(CC) $(CFLAGS) -c wrapper/frand123.c -o build/frand123_c.o
+
 build/frand123.o lib64/frand123.mod: build lib64 wrapper/frand123.F90 build/frand123CInterfaces.o Makefile
 	$(FC) $(FFLAGS) -c wrapper/frand123.F90 -o build/frand123.o 
 
-lib64/libfrand123.so: build/frand123.o build/frand123CInterfaces.o build/rand123wrapper.o Makefile
-	$(LD) $(LDFLAGS) -o lib64/libfrand123.so build/frand123.o build/frand123CInterfaces.o build/rand123wrapper.o
+lib64/libfrand123.so: build/frand123.o build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o Makefile
+	$(LD) $(LDFLAGS) -o lib64/libfrand123.so build/frand123.o build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o
 
-lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o Makefile
-	$(AR) $(ARFLAGS) lib64/libfrand123.a build/frand123.o build/rand123wrapper.o
+lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o build/frand123CInterfaces.o build/frand123_c.o Makefile
+	$(AR) $(ARFLAGS) lib64/libfrand123.a build/frand123.o build/rand123wrapper.o build/frand123CInterfaces.o build/frand123_c.o
 
 tests/testAccuracyFloats.x: tests/testAccuracyFloats.c wrapper/frand123enlarger.h Makefile
 	$(CC) $(CFLAGS) -o tests/testAccuracyFloats.x tests/testAccuracyFloats.c

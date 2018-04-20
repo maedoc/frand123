@@ -81,36 +81,18 @@ contains
    !                   the counter in the state is incremented in every call
    !            res:   array to be filled with random double precision reals in (0,1)
    subroutine frand123Double_vector( state, res )
+      use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_double ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i
-      real( kind = res_kind_double ), dimension( 2 ) :: buffer
+      integer( kind = c_long_long ) :: len_res
 
       ! get length of res
       len_res = size( res )
-      
-      ! calc number of safe iterations
-      safe_it = len_res / 2
 
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
-#ifdef USE_ARS
-         call ars2x64_u01( state, res( 2*i-1:2*i ) )
-#else
-         call threefry2x64_u01( state, res( 2*i-1:2*i ) )
-#endif
-      enddo
-      ! finish in case of odd number of random numbers
-      if ( mod( len_res, 2 ) .eq. 1 ) then
-#ifdef USE_ARS
-         call ars2x64_u01( state, buffer )
-#else
-         call threefry2x64_u01( state, buffer )
-#endif
-         res( len_res ) = buffer( 1 )
-      endif
+      ! hand over to C implementation
+      call frand123Double_C( state, len_res, res )
    end subroutine frand123Double_vector
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -145,38 +127,18 @@ contains
    !                   the counter in the state is incremented in every call
    !            res:   array to be filled with random single precision reals in (0,1)
    subroutine frand123Single_vector( state, res )
+      use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i, mod_len_res
-      real( kind = res_kind_single ), dimension( 4 ) :: buffer
+      integer( kind = c_long_long ) :: len_res
 
       ! get length of res
       len_res = size( res )
 
-      ! calc numver of safe iterations
-      safe_it = len_res / 4
-
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
-#ifdef USE_ARS
-         call ars4x32_u01( state, res( 4*i-3:4*i ) )
-#else
-         call threefry4x32_u01( state, res( 4*i-3:4*i ) )
-#endif
-      enddo
-      ! finish remaining random numbers
-      mod_len_res = mod( len_res, 4 )
-      if( mod_len_res .ne. 0 ) then
-#ifdef USE_ARS
-         call ars4x32_u01( state, buffer )
-#else
-         call threefry4x32_u01( state, buffer )
-#endif
-         ! store calculated random numbers in res
-         res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
-      endif
+      ! hand over to C implementation
+      call frand123Single_C( state, len_res, res )
    end subroutine frand123Single_vector
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -216,39 +178,20 @@ contains
    !            sigma: variance
    !            res:   array to be filled with random double precision reals
    subroutine frand123NormDouble_vector( state, mu, sigma, res )
+      use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_double ), intent( in ) :: mu
       real( kind = res_kind_double ), intent( in ) :: sigma
       real( kind = res_kind_double ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i
-      real( kind = res_kind_double ), dimension( 2 ) :: buffer
+      integer( kind = c_long_long ) :: len_res
 
       ! get length of res
       len_res = size( res )
-      
-      ! calc number of safe iterations
-      safe_it = len_res / 2
-  
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
-#if defined( USE_POLAR )
-         call polar2x64( state, mu, sigma, res( 2*i-1:2*i ) )
-#elif defined( USE_WICHURA )
-         call wichura2x64( state, mu, sigma, res( 2*i-1:2*i ) )
-#endif
 
-      enddo
-      ! finish in case of odd number of random numbers
-      if( mod( len_res, 2 ) .eq. 1 ) then
-#if defined( USE_POLAR )
-         call polar2x64( state, mu, sigma, buffer )
-#elif defined( USE_WICHURA )
-         call wichura2x64( state, mu, sigma, buffer )
-#endif
-         res( len_res ) = buffer( 1 )
-      endif
+      ! call c implementation
+      call frand123NormDouble_C( state, mu, sigma, len_Res, res )
    end subroutine frand123NormDouble_vector
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -296,37 +239,20 @@ contains
    !            sigma: variance
    !            res:   array to be filled with random single precision reals
    subroutine frand123NormSingle_vector( state, mu, sigma, res )
+      use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_single ), intent( in ) :: mu
       real( kind = res_kind_single ), intent( in ) :: sigma
       real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i, mod_len_res
-      real( kind = res_kind_single ), dimension( 4 ) :: buffer
+      integer( kind = c_long_long ) :: len_res
 
       ! get length of res
       len_res = size( res )
 
-      ! handle case of only two random numbers more efficiently
-      if( len_res .eq. 2 ) then
-         call polar4x32_two( state, mu, sigma, res )
-      else
-         ! calc number of safe iterations
-         safe_it = len_res / 4
-     
-         ! generate sufficient number of random numbers
-         do i = 1, safe_it
-            call polar4x32( state, mu, sigma, res( 4*i-3:4*i ) )
-         enddo
-         ! finish in case of odd number of random numbers
-         mod_len_res = mod( len_res, 4 )
-         if( mod_len_res .ne. 0 ) then
-            call polar4x32( state, mu, sigma, buffer )
-            ! store calculated random numbers in res
-            res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
-         endif
-      endif
+      ! hand over to C implementation
+      call frand123NormSingle_C( state, mu, sigma, len_res, res )
    end subroutine frand123NormSingle_vector
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -361,36 +287,18 @@ contains
    !                   the counter in the state is incremented in every call
    !            res:   array to be filled with random 64 bit signed integers
    subroutine frand123Integer64_vector( state, res )
+      use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout) :: state
       integer( kind = res_kind_int64 ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i
-      integer( kind = res_kind_int64 ), dimension( 2 ) :: buffer
+      integer( kind = c_long_long ) :: len_res
 
       ! get length of res
       len_res = size( res )
 
-      ! calc number of safe iterations
-      safe_it = len_res / 2 
-
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
-#ifdef USE_ARS
-         call ars2x64_int( state, res( 2*i-1:2*i ) )
-#else
-         call threefry2x64_int( state, res( 2*i-1:2*i ) )
-#endif
-      enddo
-      ! finish remaining random numbers
-      if( mod( len_res, 2 ) .eq. 1 ) then
-#ifdef USE_ARS
-         call ars2x64_int( state, buffer )
-#else
-         call threefry2x64_int( state, buffer )
-#endif
-         res( len_res ) = buffer( 1 )
-      endif
+      ! leave rest to C implementation
+      call frand123Integer64_C( state, len_res, res )
    end subroutine frand123Integer64_vector
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -425,38 +333,18 @@ contains
    !                   the counter in the state is incremented in every call
    !            res:   array to be filled with random 32 bit signed integers
    subroutine frand123Integer32_vector( state, res )
+      use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       integer( kind = res_kind_int32 ), dimension(:), intent( inout ) :: res
 
-      integer :: len_res, safe_it, i, mod_len_res
-      integer( kind = res_kind_int32 ), dimension( 4 ) :: buffer
+      integer( kind = c_long_long ) :: len_res
 
       ! get length of res
       len_res = size( res )
 
-      ! calc numver of safe iterations
-      safe_it = len_res / 4
-
-      ! generate sufficient number of random numbers
-      do i = 1, safe_it
-#ifdef USE_ARS
-         call ars4x32_int( state, res( 4*i-3:4*i ) )
-#else
-         call threefry4x32_int( state, res( 4*i-3:4*i ) )
-#endif
-      enddo
-      ! finish remaining random numbers
-      mod_len_res = mod( len_res, 4 )
-      if( mod_len_res .ne. 0 ) then
-#ifdef USE_ARS
-         call ars4x32_int( state, buffer )
-#else
-         call threefry4x32_int( state, buffer )
-#endif
-         ! store calculated random numbers in res
-         res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
-      endif
+      ! leave rest to C implementation
+      call frand123Integer32_C( state, len_res, res )
    end subroutine frand123Integer32_vector
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!

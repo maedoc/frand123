@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <stdbool.h>
+#include "rand123wrapper.h"
 
 #if USE_ARS
    #include <ars.h>
