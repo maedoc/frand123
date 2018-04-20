@@ -2,6 +2,37 @@ module frand123
    use frand123CInterfaces
    implicit none
 
+   ! interfaces allowing use with scalar and vector arguments
+   interface frand123Double
+      module procedure frand123Double_scalar
+      module procedure frand123Double_vector
+   end interface frand123Double
+
+   interface frand123Single
+      module procedure frand123Single_scalar
+      module procedure frand123Single_vector
+   end interface frand123Single
+
+   interface frand123NormDouble
+      module procedure frand123NormDouble_scalar
+      module procedure frand123NormDouble_vector
+   end interface frand123NormDouble
+
+   interface frand123NormSingle
+      module procedure frand123NormSingle_scalar
+      module procedure frand123NormSingle_vector
+   end interface frand123NormSingle
+
+   interface frand123Integer64
+      module procedure frand123Integer64_scalar
+      module procedure frand123Integer64_vector
+   end interface frand123Integer64
+
+   interface frand123Integer32
+      module procedure frand123Integer32_scalar
+      module procedure frand123Integer32_vector
+   end interface frand123Integer32
+
    public :: state_kind
    public :: state_size
    public :: res_kind_double
@@ -17,12 +48,39 @@ module frand123
    public :: frand123Init
 
 contains
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   !!!!!                           !!!!! 
+   !!!!!  uniform double precision !!!!!
+   !!!!!                           !!!!!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+   ! generate single random double precision number
+   !
+   ! Arguments: state: state of the random number generator
+   !                   the counter in the state is incremented in every call
+   !            res:   scalar for random double precision reals in (0,1)
+   subroutine frand123Double_scalar( state, res )
+      implicit none
+      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
+      real( kind = res_kind_double ), intent( out ) :: res
+
+      real( kind = res_kind_double ), dimension( 2 ) :: buffer
+
+#ifdef USE_ARS
+      call ars2x64_u01( state, buffer )
+#else
+      call threefry2x64_u01( state, buffer )
+#endif
+      res = buffer( 1 )
+   end subroutine frand123Double_scalar
+
    ! generate size(res) random double precision numbers
    !
    ! Arguments: state: state of the random number generator
    !                   the counter in the state is incremented in every call
    !            res:   array to be filled with random double precision reals in (0,1)
-   subroutine frand123Double( state, res )
+   subroutine frand123Double_vector( state, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_double ), dimension(:), intent( inout ) :: res
@@ -53,14 +111,40 @@ contains
 #endif
          res( len_res ) = buffer( 1 )
       endif
-   end subroutine frand123Double
+   end subroutine frand123Double_vector
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   !!!!!                           !!!!! 
+   !!!!!  uniform single precision !!!!!
+   !!!!!                           !!!!!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+   ! generate a single random single precision numbers
+   !
+   ! Arguments: state: state of the random number generator
+   !                   the counter in the state is incremented in every call
+   !            res:  scalar for random single precision reals in (0,1)
+   subroutine frand123Single_scalar( state, res )
+      implicit none
+      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
+      real( kind = res_kind_single ), intent( out ) :: res
+
+      real( kind = res_kind_single ), dimension( 4 ) :: buffer
+
+#ifdef USE_ARS
+      call ars4x32_u01( state, buffer )
+#else
+      call threefry4x32_u01( state, buffer )
+#endif
+      res = buffer( 1 )
+   end subroutine frand123Single_scalar
 
    ! generate size(res) random single precision numbers
    !
    ! Arguments: state: state of the random number generator
    !                   the counter in the state is incremented in every call
    !            res:   array to be filled with random single precision reals in (0,1)
-   subroutine frand123Single( state, res )
+   subroutine frand123Single_vector( state, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
@@ -93,7 +177,36 @@ contains
          ! store calculated random numbers in res
          res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
       endif
-   end subroutine frand123Single
+   end subroutine frand123Single_vector
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   !!!!!                          !!!!! 
+   !!!!!  normal double precision !!!!!
+   !!!!!                          !!!!!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+   ! generate single normally distributedrandom double precision numbers
+   !
+   ! Arguments: state: state of the random number generator
+   !                   the counter in the state is incremented in every call
+   !            mu:    expected value
+   !            sigma: variance
+   !            res:   scalar random double precision reals
+   subroutine frand123NormDouble_scalar( state, mu, sigma, res )
+      implicit none
+      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
+      real( kind = res_kind_double ), intent( in ) :: mu
+      real( kind = res_kind_double ), intent( in ) :: sigma
+      real( kind = res_kind_double ), intent( out ) :: res
+
+      real( kind = res_kind_double ), dimension( 2 ) :: buffer
+#ifdef USE_POLAR
+      call polar2x64( state, mu, sigma, buffer )
+#else
+      call wichura2x64( state, mu, sigma, buffer )
+#endif
+      res = buffer( 1 )
+   end subroutine frand123NormDouble_scalar
 
    ! generate size(res) normally distributedrandom double precision numbers
    !
@@ -102,7 +215,7 @@ contains
    !            mu:    expected value
    !            sigma: variance
    !            res:   array to be filled with random double precision reals
-   subroutine frand123NormDouble( state, mu, sigma, res )
+   subroutine frand123NormDouble_vector( state, mu, sigma, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_double ), intent( in ) :: mu
@@ -136,7 +249,13 @@ contains
 #endif
          res( len_res ) = buffer( 1 )
       endif
-   end subroutine frand123NormDouble
+   end subroutine frand123NormDouble_vector
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   !!!!!                          !!!!! 
+   !!!!!  normal single precision !!!!!
+   !!!!!                          !!!!!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    ! generate size(res) normally distributedrandom single precision numbers
    ! 
@@ -149,7 +268,31 @@ contains
    !            mu:    expected value
    !            sigma: variance
    !            res:   array to be filled with random single precision reals
-   subroutine frand123NormSingle( state, mu, sigma, res )
+   subroutine frand123NormSingle_scalar( state, mu, sigma, res )
+      implicit none
+      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
+      real( kind = res_kind_single ), intent( in ) :: mu
+      real( kind = res_kind_single ), intent( in ) :: sigma
+      real( kind = res_kind_single ), intent( out ) :: res
+
+      real( kind = res_kind_single ), dimension( 4 ) :: buffer
+
+      call polar4x32( state, mu, sigma, buffer )
+      res = buffer( 1 )
+   end subroutine frand123NormSingle_scalar
+
+   ! generate size(res) normally distributedrandom single precision numbers
+   ! 
+   ! Note: The single precision version always uses the polar form of Box-Muller
+   !       as this turned out to be on par with Wichura's PPND7 w.r.t.
+   !       performance and excels w.r.t. quality of the random numbers
+   !
+   ! Arguments: state: state of the random number generator
+   !                   the counter in the state is incremented in every call
+   !            mu:    expected value
+   !            sigma: variance
+   !            res:   array to be filled with random single precision reals
+   subroutine frand123NormSingle_vector( state, mu, sigma, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_single ), intent( in ) :: mu
@@ -176,14 +319,40 @@ contains
          ! store calculated random numbers in res
          res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
       endif
-   end subroutine frand123NormSingle
+   end subroutine frand123NormSingle_vector
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   !!!!!                                !!!!! 
+   !!!!!  random 64 bit signed integers !!!!!
+   !!!!!                                !!!!!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+   ! generate single random 64 bit signed integers
+   !
+   ! Arguments: state: state of the random number generator
+   !                   the counter in the state is incremented in every call
+   !            res:   scalar random 64 bit signed integers
+   subroutine frand123Integer64_scalar( state, res )
+      implicit none
+      integer( kind = state_kind ), dimension( state_size ), intent( inout) :: state
+      integer( kind = res_kind_int64 ), intent( out ) :: res
+
+      integer( kind = res_kind_int64 ), dimension( 2 ) :: buffer
+
+#ifdef USE_ARS
+      call ars2x64_int( state, buffer )
+#else
+      call threefry2x64_int( state, buffer )
+#endif
+      res = buffer( 1 )
+   end subroutine frand123Integer64_scalar
 
    ! generate size(res) random 64 bit signed integers
    !
    ! Arguments: state: state of the random number generator
    !                   the counter in the state is incremented in every call
    !            res:   array to be filled with random 64 bit signed integers
-   subroutine frand123Integer64( state, res )
+   subroutine frand123Integer64_vector( state, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout) :: state
       integer( kind = res_kind_int64 ), dimension(:), intent( inout ) :: res
@@ -214,14 +383,40 @@ contains
 #endif
          res( len_res ) = buffer( 1 )
       endif
-   end subroutine frand123Integer64
+   end subroutine frand123Integer64_vector
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   !!!!!                                !!!!! 
+   !!!!!  random 32 bit signed integers !!!!!
+   !!!!!                                !!!!!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+   ! generate single random 32 bit signed integers
+   !
+   ! Arguments: state: state of the random number generator
+   !                   the counter in the state is incremented in every call
+   !            res:   scalar for random 32 bit signed integers
+   subroutine frand123Integer32_scalar( state, res )
+      implicit none
+      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
+      integer( kind = res_kind_int32 ), intent( out ) :: res
+
+      integer( kind = res_kind_int32 ), dimension( 4 ) :: buffer
+
+#ifdef USE_ARS
+      call ars4x32_int( state, buffer )
+#else
+      call threefry4x32_int( state, buffer )
+#endif
+      res = buffer( 1 )
+   end subroutine frand123Integer32_scalar
 
    ! generate size(res) random 32 bit signed integers
    !
    ! Arguments: state: state of the random number generator
    !                   the counter in the state is incremented in every call
    !            res:   array to be filled with random 32 bit signed integers
-   subroutine frand123Integer32( state, res )
+   subroutine frand123Integer32_vector( state, res )
       implicit none
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       integer( kind = res_kind_int32 ), dimension(:), intent( inout ) :: res
@@ -254,7 +449,13 @@ contains
          ! store calculated random numbers in res
          res( len_res-mod_len_res+1:len_res ) = buffer( 1:mod_len_res )
       endif
-   end subroutine frand123Integer32
+   end subroutine frand123Integer32_vector
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   !!!!!                  !!!!! 
+   !!!!!  Initialization  !!!!!
+   !!!!!                  !!!!!
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    ! initialize the state as follows:
    ! counter: first  64 bits: first entry of seed
