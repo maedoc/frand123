@@ -82,6 +82,7 @@ module frand123
       end subroutine
    end interface
 #endif
+#ifdef USE_POLAR
    interface
       ! compute two double precision normally distributed random variables with
       ! expectation mu and variance sigma using polar Box-Muller algorithm
@@ -94,6 +95,9 @@ module frand123
          real( kind = c_double ), value, intent( in ) :: sigma
          real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
       end subroutine
+   end interface
+#else
+   interface
       ! compute two double precision normally distributed random variables with
       ! expectation mu and variance sigma using inverse transform sampling using
       ! the algorithm AS241 proposed by Wichura 1988
@@ -106,18 +110,21 @@ module frand123
          real( kind = c_double ), value, intent( in ) :: sigma
          real( kind = c_double ), dimension( 2 ), intent( inout )  :: res
       end subroutine
-      ! compute four single precision normally distributed random variables with
-      ! expectation mu and variance sigma using polar Box-Muller algorithm
-      ! use ARS or threefry based uniform random number generators
-      subroutine polar4x32( state, mu, sigma, res ) bind( C, name='polar4x32')
-         use, intrinsic :: iso_c_binding, only: c_float, c_int64_t
-         implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
-         real( kind = c_float ), value, intent( in ) :: mu
-         real( kind = c_float ), value, intent( in ) :: sigma
-         real( kind = c_float ), dimension( 4 ), intent( inout )  :: res
-      end subroutine
    end interface
+#endif
+interface
+   ! compute four single precision normally distributed random variables with
+   ! expectation mu and variance sigma using polar Box-Muller algorithm
+   ! use ARS or threefry based uniform random number generators
+   subroutine polar4x32( state, mu, sigma, res ) bind( C, name='polar4x32')
+      use, intrinsic :: iso_c_binding, only: c_float, c_int64_t
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      real( kind = c_float ), value, intent( in ) :: mu
+      real( kind = c_float ), value, intent( in ) :: sigma
+      real( kind = c_float ), dimension( 4 ), intent( inout )  :: res
+   end subroutine
+end interface
 
    public :: frand123Double
    public :: frand123Single

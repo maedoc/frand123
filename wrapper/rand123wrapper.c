@@ -381,6 +381,7 @@
 
 #endif
 
+#ifdef USE_POLAR
    /*
     * Function polar2x64 calculates two double precision random numbers
     * normally distributed with expectation mu and variance sigma using the
@@ -420,56 +421,7 @@
       res[ 1 ] = mu + sigma * f * x[ 1 ];
       return;
    }
-
-   /*
-    * Function polar4x32 calculates four single precision random numbers
-    * normally distributed with expectation mu and variance sigma using the
-    * polar rejection method by Box and Muller
-    *
-    * Arguments: state: four elements holding
-    *                   counter: first  128 bit
-    *                   key:     second 128 bit
-    *            mu:    expectation
-    *            sigma: variance
-    *            res:   address to storage for 4 single precision reals
-    */
-   void polar4x32( int64_t *state, const float mu, const float sigma, float *res )
-   {
-      float u[ 4 ];
-      float x[ 4 ];
-      float r2[ 2 ];
-      float f[ 2 ];
-      // generate coordinates until within unit circle
-      // at least first try successful: probability ~62%
-      // at least second try successful: probability ~85%
-      // at least third try successful: probability ~94%
-      // this implementation should require ~0.8 calls of ars4x32_u01 or
-      // threefry4x32_u01 to generate a single random number but fewer
-      // conditionals than one that requires only ~0.7 calls per random number
-      do
-      {
-#if USE_ARS
-         ars4x32_u01( state, u );
 #else
-         threefry4x32_u01( state, u );
-#endif
-         x[ 0 ] = 2.f * u[ 0 ] - 1.f;
-         x[ 1 ] = 2.f * u[ 1 ] - 1.f;
-         x[ 2 ] = 2.f * u[ 2 ] - 1.f;
-         x[ 3 ] = 2.f * u[ 3 ] - 1.f;
-         r2[ 0 ] = x[ 0 ] * x[ 0 ] + x[ 1 ] * x[ 1 ];
-         r2[ 1 ] = x[ 2 ] * x[ 2 ] + x[ 3 ] * x[ 3 ];
-      } while( ( r2[ 0 ] >= 1.f ) || ( r2[ 0 ] == 0.f ) || ( r2[ 1 ] >= 1.f ) || ( r2[ 1 ] == 0.f ) );
-      // compute random numbers
-      f[ 0 ] = sqrt( -2.f * log( r2[ 0 ] ) / r2[ 0 ] );
-      f[ 1 ] = sqrt( -2.f * log( r2[ 1 ] ) / r2[ 1 ] );
-      res[ 0 ] = mu + sigma * f[ 0 ] * x[ 0 ];
-      res[ 1 ] = mu + sigma * f[ 0 ] * x[ 1 ];
-      res[ 2 ] = mu + sigma * f[ 1 ] * x[ 2 ];
-      res[ 3 ] = mu + sigma * f[ 1 ] * x[ 3 ];
-      return;
-   }
-   
    /*
     * Function wichura2x64kernel represents the kernel of the AS 241 algorithm extracted for testing
     */
@@ -660,3 +612,53 @@
       wichura2x64kernel( p, mu, sigma, res );
       return;
    }
+#endif
+
+/*
+ * Function polar4x32 calculates four single precision random numbers
+ * normally distributed with expectation mu and variance sigma using the
+ * polar rejection method by Box and Muller
+ *
+ * Arguments: state: four elements holding
+ *                   counter: first  128 bit
+ *                   key:     second 128 bit
+ *            mu:    expectation
+ *            sigma: variance
+ *            res:   address to storage for 4 single precision reals
+ */
+void polar4x32( int64_t *state, const float mu, const float sigma, float *res )
+{
+   float u[ 4 ];
+   float x[ 4 ];
+   float r2[ 2 ];
+   float f[ 2 ];
+   // generate coordinates until within unit circle
+   // at least first try successful: probability ~62%
+   // at least second try successful: probability ~85%
+   // at least third try successful: probability ~94%
+   // this implementation should require ~0.8 calls of ars4x32_u01 or
+   // threefry4x32_u01 to generate a single random number but fewer
+   // conditionals than one that requires only ~0.7 calls per random number
+   do
+   {
+#if USE_ARS
+      ars4x32_u01( state, u );
+#else
+      threefry4x32_u01( state, u );
+#endif
+      x[ 0 ] = 2.f * u[ 0 ] - 1.f;
+      x[ 1 ] = 2.f * u[ 1 ] - 1.f;
+      x[ 2 ] = 2.f * u[ 2 ] - 1.f;
+      x[ 3 ] = 2.f * u[ 3 ] - 1.f;
+      r2[ 0 ] = x[ 0 ] * x[ 0 ] + x[ 1 ] * x[ 1 ];
+      r2[ 1 ] = x[ 2 ] * x[ 2 ] + x[ 3 ] * x[ 3 ];
+   } while( ( r2[ 0 ] >= 1.f ) || ( r2[ 0 ] == 0.f ) || ( r2[ 1 ] >= 1.f ) || ( r2[ 1 ] == 0.f ) );
+   // compute random numbers
+   f[ 0 ] = sqrt( -2.f * log( r2[ 0 ] ) / r2[ 0 ] );
+   f[ 1 ] = sqrt( -2.f * log( r2[ 1 ] ) / r2[ 1 ] );
+   res[ 0 ] = mu + sigma * f[ 0 ] * x[ 0 ];
+   res[ 1 ] = mu + sigma * f[ 0 ] * x[ 1 ];
+   res[ 2 ] = mu + sigma * f[ 1 ] * x[ 2 ];
+   res[ 3 ] = mu + sigma * f[ 1 ] * x[ 3 ];
+   return;
+}
