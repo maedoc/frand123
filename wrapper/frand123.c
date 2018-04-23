@@ -154,11 +154,12 @@ void frand123NormDouble( int64_t *state, const double mu, const double sigma, co
  *                    length of array: lenRes
  */
 // scalar version returns one random number
+// Note: utilize specialized version with lower #calls to RNG per random number
 float frand123NormSingle_scalar( int64_t *state, const float mu, const float sigma )
 {
-   float buffer;
-   frand123NormSingle( state, mu, sigma, 1ll, &buffer );
-   return buffer;
+   float buffer[ 2 ];
+   polar4x32_two( state, mu, sigma, buffer );
+   return buffer[ 0 ];
 }
 // vectorial version
 void frand123NormSingle( int64_t *state, const float mu, const float sigma, const long long lenRes, float *res )

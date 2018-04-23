@@ -20,7 +20,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 * Comfortable interface for generating arbitrarily sized vectors of random numbers
 * Interface for initializing the state of the RNG
 
-## Reference
+## Reference Fortran
 
 ### frand123Single( state, res )
 #### Description
@@ -168,6 +168,199 @@ The frand123 Fortran wrapper provides the following capabilities:
     * kind: integer of kind _state_kind_
     * intent: _in_
 
+## Reference C
+
+### void frand123Single( int64_t *state, const long long lenRes, float *res )
+#### Description
+* Fill vector res with single precision real random numbers uniformly distributed in (0,1)
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 4
+
+#### Arguments
+* __state__: state used by the RNG
+* __lenRes__: length of array res
+* __res__: memory to which random numbers are stored to
+
+### float frand123Single_scalar( int64_t *state )
+#### Description
+* Return single random single precision number uniformly distributed in (0,1)
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+
+#### Arguments
+* __state__: state used by the RNG
+
+### void frand123Double( int64_t *state, const long long lenRes, double *res )
+#### Description
+* Fill vector res with double precision real random numbers uniformly distributed in (0,1)
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 2
+
+#### Arguments
+* __state__: state used by the RNG
+* __lenRes__: length of array res
+* __res__: memory to which random numbers are stored to
+
+### double frand123Double_scalar( int64_t *state )
+#### Description
+* Return single random double precision number uniformly distributed in (0,1)
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+
+#### Arguments
+* __state__: state used by the RNG
+
+### void frand123NormSingle( int64_t *state, const float mu, const float sigma, const long long lenRes, float *res )
+#### Description
+* Fill vector res with single precision real random numbers normally distributed with expectation mu and variance sigma
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 4
+
+#### Arguments
+* __state__: state used by the RNG
+* __mu__: expectation of the normal distribution to draw from
+* __sigma__: variance of the normal distribution to draw from
+* __lenRes__: length of array res
+* __res__: memory to which random numbers are stored to
+
+### float frand123NormSingle_scalar( int64_t *state, const float mu, const float sigma )
+#### Description
+* Return single random single precision number normally distributed with expectation mu and variance sigma
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+
+#### Arguments
+* __state__: state used by the RNG
+* __mu__: expectation of the normal distribution to draw from
+* __sigma__: variance of the normal distribution to draw from
+
+### void frand123NormDouble( int64_t *state, const double mu, const double sigma, const long long lenRes, double *res )
+#### Description
+* Fill vector res with double precision real random numbers normally distributed with expectation mu and variance sigma
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 2
+
+#### Arguments
+* __state__: state used by the RNG
+* __mu__: expectation of the normal distribution to draw from
+* __sigma__: variance of the normal distribution to draw from
+* __lenRes__: length of array res
+* __res__: memory to which random numbers are stored to
+
+### double frand123NormDouble_scalar( int64_t *state, const double mu, const double sigma )
+#### Description
+* Return single random double precision number normally distributed with expectation mu and variance sigma
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+
+#### Arguments
+* __state__: state used by the RNG
+* __mu__: expectation of the normal distribution to draw from
+* __sigma__: variance of the normal distribution to draw from
+
+### void frand123Integer32( int64_t *state, const long long lenRes, int32_t *res )
+#### Description
+* Fill vector res with 32-bit integer random numbers discretely uniformly distributed on INT32_MIN,..,INT32_MAX
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 4
+
+#### Arguments
+* __state__: state used by the RNG
+* __lenRes__: length of array res
+* __res__: memory to which random numbers are stored to
+
+### int32_t frand123Integer32_scalar( int64_t *state )
+#### Description
+* Return single random 32-bit integer number discretely uniformly distributed on INT32_MIN,..,INT32_MAX
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+
+#### Arguments
+* __state__: state used by the RNG
+
+### void frand123Integer64( int64_t *state, const long long lenRes, int64_t *res )
+#### Description
+* Fill vector res with 64-bit integer random numbers discretely uniformly distributed on INT64_MIN,..,INT64_MAX
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 2
+
+#### Arguments
+* __state__: state used by the RNG
+* __lenRes__: length of array res
+* __res__: memory to which random numbers are stored to
+
+### int64_t frand123Integer64_scalar( int64_t *state )
+#### Description
+* Return single random 64-bit integer number discretely uniformly distributed on INT64_MIN,..,INT64_MAX
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+
+### void frand123UnsignedInteger32( int64_t *state, const long long lenRes, uint32_t *res )
+#### Description
+* Fill vector res with 32-bit unsigned integer random numbers discretely uniformly distributed on 0,..,2^32-1
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 4
+
+#### Arguments
+* __state__: state used by the RNG
+* __lenRes__: length of array res
+* __res__: memory to which random numbers are stored to
+
+### uint32_t frand123UnsignedInteger32_scalar( int64_t *state )
+#### Description
+* Return single random 32-bit unsigned integer number discretely uniformly distributed on 0,..,2^32-1
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+
+#### Arguments
+* __state__: state used by the RNG
+
+### void frand123UnsignedInteger64( int64_t *state, const long long lenRes, uint64_t *res )
+#### Description
+* Fill vector res with 64-bit unsigned integer random numbers discretely uniformly distributed on 0,..,2^64-1
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+* Random numbers are always generated in chunks of 2
+
+#### Arguments
+* __state__: state used by the RNG
+* __lenRes__: length of array res
+* __res__: memory to which random numbers are stored to
+
+### uint64_t frand123Integer64_scalar( int64_t *state )
+#### Description
+* Return single random 64-bit unsigned integer number discretely uniformly distributed on 0,..,2^64-1
+* The counter within the state is incremented appropriately
+* Uses either Threefry or ARS for generation of random bits
+
+#### Arguments
+* __state__: state used by the RNG
+
+### void frand123Init( int64_t *state, int64_t rank, int64_t threadID, int64_t *seed )
+#### Description
+* Initialize state for use in serial, MPI-parallel, thread-parallel, and MPI- and thread-parallel settings
+* The key is initialized as follows:
+    * first  64 bits: rank
+    * second 64 bits: threadID
+* The counter is initialized as follows:
+    * first  64 bits: first element of seed
+    * second 64 bits: second element of seed
+
+#### Arguments
+* __state__: memory in which to initialize state in
+    * dimension: 4
+* __rank__: MPI rank of the caller
+* __threadID__: thread ID of the thread using the RNG
+* __seed__: seed to be used to initialize the counter
+    * dimension: 2
+
 ## Installation
 The Makefile was tested with:
 * gcc + gfortran 7.3.0
@@ -245,6 +438,10 @@ Bounds on the p-values are defined on a per-algorithm basis.
 ### testNormDoublePerformance
 #### Description
 Prints out serial and OpenMP parallel timings for the generation and summation of 10^9 random numbers
+
+### testCentralMomentsNormDouble
+#### Description
+This test generates 10^9 normally distributed random numbers and compute the 2nd, 4th, 6th, 8th, 10th, 12th, 14th, 16th, 18th, 20th central moments and compares these to the central moments of the standard normal distribution.
 
 ### testRandNormSinglePython
 #### Description
