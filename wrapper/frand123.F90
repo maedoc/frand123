@@ -65,14 +65,7 @@ contains
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_double ), intent( out ) :: res
 
-      real( kind = res_kind_double ), dimension( 2 ) :: buffer
-
-#ifdef USE_ARS
-      call ars2x64_u01( state, buffer )
-#else
-      call threefry2x64_u01( state, buffer )
-#endif
-      res = buffer( 1 )
+      res = frand123Double_scalar_C( state )
    end subroutine frand123Double_scalar
 
    ! generate size(res) random double precision numbers
@@ -111,14 +104,7 @@ contains
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       real( kind = res_kind_single ), intent( out ) :: res
 
-      real( kind = res_kind_single ), dimension( 4 ) :: buffer
-
-#ifdef USE_ARS
-      call ars4x32_u01( state, buffer )
-#else
-      call threefry4x32_u01( state, buffer )
-#endif
-      res = buffer( 1 )
+      res = frand123Single_scalar_C( state )
    end subroutine frand123Single_scalar
 
    ! generate size(res) random single precision numbers
@@ -161,13 +147,7 @@ contains
       real( kind = res_kind_double ), intent( in ) :: sigma
       real( kind = res_kind_double ), intent( out ) :: res
 
-      real( kind = res_kind_double ), dimension( 2 ) :: buffer
-#ifdef USE_POLAR
-      call polar2x64( state, mu, sigma, buffer )
-#else
-      call wichura2x64( state, mu, sigma, buffer )
-#endif
-      res = buffer( 1 )
+      res = frand123NormDouble_scalar_C( state, mu, sigma )
    end subroutine frand123NormDouble_scalar
 
    ! generate size(res) normally distributedrandom double precision numbers
@@ -218,13 +198,7 @@ contains
       real( kind = res_kind_single ), intent( in ) :: sigma
       real( kind = res_kind_single ), intent( out ) :: res
 
-      real( kind = res_kind_single ), dimension( 2 ) :: buffer
-
-      ! call different C function as performance of polar rejection method can
-      ! be improved by allowing for a single pair of uniform random numbers to
-      ! lie within the unit circle
-      call polar4x32_two( state, mu, sigma, buffer )
-      res = buffer( 1 )
+      res = frand123NormSingle_scalar_C( state, mu, sigma )
    end subroutine frand123NormSingle_scalar
 
    ! generate size(res) normally distributedrandom single precision numbers
@@ -271,14 +245,7 @@ contains
       integer( kind = state_kind ), dimension( state_size ), intent( inout) :: state
       integer( kind = res_kind_int64 ), intent( out ) :: res
 
-      integer( kind = res_kind_int64 ), dimension( 2 ) :: buffer
-
-#ifdef USE_ARS
-      call ars2x64_int( state, buffer )
-#else
-      call threefry2x64_int( state, buffer )
-#endif
-      res = buffer( 1 )
+      res = frand123Integer64_scalar_C( state )
    end subroutine frand123Integer64_scalar
 
    ! generate size(res) random 64 bit signed integers
@@ -317,14 +284,7 @@ contains
       integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
       integer( kind = res_kind_int32 ), intent( out ) :: res
 
-      integer( kind = res_kind_int32 ), dimension( 4 ) :: buffer
-
-#ifdef USE_ARS
-      call ars4x32_int( state, buffer )
-#else
-      call threefry4x32_int( state, buffer )
-#endif
-      res = buffer( 1 )
+      res = frand123Integer32_scalar_C( state )
    end subroutine frand123Integer32_scalar
 
    ! generate size(res) random 32 bit signed integers

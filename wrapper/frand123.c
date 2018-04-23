@@ -22,9 +22,9 @@ double frand123Double_scalar( int64_t *state )
    return buffer;
 }
 // vectorial version
-void frand123Double( int64_t *state, const long long lenRes, double *res )
+void frand123Double( int64_t *state, const int64_t lenRes, double *res )
 {
-   long long i;
+   int64_t i;
    double buffer[ 2 ];
 
    // store directly to res while safe
@@ -66,9 +66,9 @@ float frand123Single_scalar( int64_t *state )
    return buffer;
 }
 // vectorial version
-void frand123Single( int64_t *state, const long long lenRes, float *res )
+void frand123Single( int64_t *state, const int64_t lenRes, float *res )
 {
-   long long i, j;
+   int64_t i, j;
    float buffer[ 4 ];
 
    // store directly to res while safe
@@ -115,9 +115,9 @@ double frand123NormDouble_scalar( int64_t *state, const double mu, const double 
    return buffer;
 }
 // vectorial version
-void frand123NormDouble( int64_t *state, const double mu, const double sigma, const long long lenRes, double *res )
+void frand123NormDouble( int64_t *state, const double mu, const double sigma, const int64_t lenRes, double *res )
 {
-   long long i;
+   int64_t i;
    double buffer[ 2 ];
 
    // store directly to res while safe
@@ -162,9 +162,9 @@ float frand123NormSingle_scalar( int64_t *state, const float mu, const float sig
    return buffer[ 0 ];
 }
 // vectorial version
-void frand123NormSingle( int64_t *state, const float mu, const float sigma, const long long lenRes, float *res )
+void frand123NormSingle( int64_t *state, const float mu, const float sigma, const int64_t lenRes, float *res )
 {
-   long long i, j;
+   int64_t i, j;
    float buffer[ 4 ];
 
    // store directly to res while safe
@@ -201,9 +201,9 @@ int64_t frand123Integer64_scalar( int64_t *state )
    return buffer;
 }
 // vectorial version
-void frand123Integer64( int64_t *state, const long long lenRes, int64_t *res )
+void frand123Integer64( int64_t *state, const int64_t lenRes, int64_t *res )
 {
-   long long i;
+   int64_t i;
    int64_t buffer[ 2 ];
 
    // store directly to res while safe
@@ -245,9 +245,9 @@ int32_t frand123Integer32_scalar( int64_t *state )
    return buffer;
 }
 // vectorial version
-void frand123Integer32( int64_t *state, const long long lenRes, int32_t *res )
+void frand123Integer32( int64_t *state, const int64_t lenRes, int32_t *res )
 {
-   long long i, j;
+   int64_t i, j;
    int32_t buffer[ 4 ];
 
    // store directly to res while safe
@@ -292,9 +292,9 @@ uint64_t frand123UnsignedInteger64_scalar( int64_t *state )
    return buffer;
 }
 // vectorial version
-void frand123UnsignedInteger64( int64_t *state, const long long lenRes, uint64_t *res )
+void frand123UnsignedInteger64( int64_t *state, const int64_t lenRes, uint64_t *res )
 {
-   long long i;
+   int64_t i;
    uint64_t buffer[ 2 ];
 
    // store directly to res while safe
@@ -336,9 +336,9 @@ uint32_t frand123UnsignedInteger32_scalar( int64_t *state )
    return buffer;
 }
 // vectorial version
-void frand123UnsignedInteger32( int64_t *state, const long long lenRes, uint32_t *res )
+void frand123UnsignedInteger32( int64_t *state, const int64_t lenRes, uint32_t *res )
 {
-   long long i, j;
+   int64_t i, j;
    uint32_t buffer[ 4 ];
 
    // store directly to res while safe
