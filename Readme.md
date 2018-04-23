@@ -31,12 +31,12 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _state_size_
-    * kind: integer of kind _state_kind_
+    * dimension: _frand123_state_size_
+    * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
     * dimension: arbitrary
-    * kind: real of kind _res_kind_single_
+    * kind: real of kind _c_float_
     * intent: _inout_
 
 ### frand123Double( state, res )
@@ -48,12 +48,12 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _state_size_
-    * kind: integer of kind _state_kind_
+    * dimension: _frand123_state_size_
+    * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
     * dimension: arbitrary
-    * kind: real of kind _res_kind_double_
+    * kind: real of kind _c_double_
     * intent: _inout_
 
 ### frand123NormDouble( state, mu, sigma, res )
@@ -65,20 +65,20 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _state_size_
-    * kind: integer of kind _state_kind_
+    * dimension: _frand123_state_size_
+    * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __mu__: mean of the normal distribution
     * dimension: scalar
-    * kind: real of kind _res_kind_double_
+    * kind: real of kind _c_double_
     * intent: in
 * __sigma__: variance of the normal distribution
     * dimension: scalar
-    * kind: real of kind _res_kind_double_
+    * kind: real of kind _c_double_
     * intent: in
 * __res__: memory to which random numbers are stored to
     * dimension: arbitrary
-    * kind: real of kind _res_kind_double_
+    * kind: real of kind _c_double_
     * intent: _inout_
 
 ### frand123NormSingle( state, mu, sigma, res )
@@ -90,20 +90,20 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _state_size_
-    * kind: integer of kind _state_kind_
+    * dimension: _frand123_state_size_
+    * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __mu__: mean of the normal distribution
     * dimension: scalar
-    * kind: real of kind _res_kind_single_
+    * kind: real of kind _c_float_
     * intent: in
 * __sigma__: variance of the normal distribution
     * dimension: scalar
-    * kind: real of kind _res_kind_single_
+    * kind: real of kind _c_float_
     * intent: in
 * __res__: memory to which random numbers are stored to
     * dimension: arbitrary
-    * kind: real of kind _res_kind_single_
+    * kind: real of kind _c_float_
     * intent: _inout_
 
 ### frand123Integer32( state, res )
@@ -115,12 +115,12 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _state_size_
-    * kind: integer of kind _state_kind_
+    * dimension: _frand123_state_size_
+    * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
     * dimension: arbitrary
-    * kind: real of kind _res_kind_int32
+    * kind: real of kind _c_int32_t
     * intent: _inout_
 
 ### frand123Integer64( state, res )
@@ -132,12 +132,12 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _state_size_
-    * kind: integer of kind _state_kind_
+    * dimension: _frand123_state_size_
+    * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
     * dimension: arbitrary
-    * kind: real of kind _res_kind_int64
+    * kind: real of kind _c_int64_t
     * intent: _inout_
 
 ### frand123Init( state, rank, threadID, seed )
@@ -152,8 +152,8 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: memory in which to initialize state in
-    * dimension: _state_size_
-    * kind: integer of kind _state_kind_
+    * dimension: _frand123_state_size_
+    * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __rank__: MPI rank of the caller
     * dimension: scalar
@@ -165,7 +165,7 @@ The frand123 Fortran wrapper provides the following capabilities:
     * intent: _in_
 * __seed__: seed to be used to initialize the counter
     * dimension: 2
-    * kind: integer of kind _state_kind_
+    * kind: integer of kind _frand123_state_kind_
     * intent: _in_
 
 ## Reference C
