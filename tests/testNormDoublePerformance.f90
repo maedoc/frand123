@@ -1,18 +1,19 @@
 program testNormDoublePerformance
    use frand123
    use omp_lib
+   use, intrinsic :: iso_c_binding, only: c_double
    implicit none
 
-   integer( kind = state_kind ), dimension( state_size ) :: state
-   integer( kind = state_kind ), dimension( 2 ) :: seed
+   integer( kind = frand123_state_kind ), dimension( frand123_state_size ) :: state
+   integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
    integer, parameter :: ctr_kind = selected_int_kind( 14 )
    integer( kind = ctr_kind ), parameter :: rounds = 1000 * 1000 * 100
    integer( kind = ctr_kind ) :: i
-   real( kind = res_kind_double ), parameter :: mu = 0.d0
-   real( kind = res_kind_double ), parameter :: sigma = 1.d0
-   real( kind = res_kind_double ), dimension( 2 ) :: buffer
-   real( kind = res_kind_double ), dimension( 2 ) :: resArr
-   real( kind = res_kind_double ) :: res
+   real( kind = c_double ), parameter :: mu = 0.d0
+   real( kind = c_double ), parameter :: sigma = 1.d0
+   real( kind = c_double ), dimension( 2 ) :: buffer
+   real( kind = c_double ), dimension( 2 ) :: resArr
+   real( kind = c_double ) :: res
    double precision :: startTime, stopTime
 
    ! serial

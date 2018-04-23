@@ -1,14 +1,15 @@
 program testRandNormDouble
    use frand123
+   use, intrinsic :: iso_c_binding, only: c_double
    implicit none
 
    integer, parameter :: numRndNbrs = 1000 * 1000 * 100
-   real( kind = res_kind_double ), parameter :: mu = 0.d0
-   real( kind = res_kind_double ), parameter :: sigma = 1.d0
+   real( kind = c_double ), parameter :: mu = 0.d0
+   real( kind = c_double ), parameter :: sigma = 1.d0
 
-   integer( kind = state_kind ), dimension( state_size ) :: state
-   integer( kind = state_kind ), dimension( 2 ) :: seed
-   real( kind = res_kind_double ), dimension(:), allocatable :: res
+   integer( kind = frand123_state_kind ), dimension( frand123_state_size ) :: state
+   integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+   real( kind = c_double ), dimension(:), allocatable :: res
 
    integer :: out_unit
    real :: startTime, stopTime

@@ -3,17 +3,9 @@ module frand123CInterfaces
    implicit none
 
    ! kind parameter for state variables
-   integer, parameter, public :: state_kind      = c_int64_t
+   integer, parameter, public :: frand123_state_kind = c_int64_t
    ! size of the state (might be different if additional RNGs be supported
-   integer, parameter, public :: state_size      = 4
-   ! kind parameter for return arrays for double precision reals
-   integer, parameter, public :: res_kind_double = c_double
-   ! kind parameter for return arrays for single precision reals
-   integer, parameter, public :: res_kind_single = c_float
-   ! kind parameter for return arrays for 64 bit signed integers
-   integer, parameter, public :: res_kind_int64  = c_int64_t
-   ! kind parameter for return arrays for 32 bit signed integers
-   integer, parameter, public :: res_kind_int32  = c_int32_t
+   integer, parameter, public :: frand123_state_size = 4
       
    ! interfaces to C functions frand123Double_scalar and frand123Double
    ! generating random double precision numbers uniformly distributed in (0,1)

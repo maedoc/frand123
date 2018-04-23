@@ -77,7 +77,7 @@ clean:
 	rm -f tests/rand_*.out
 	rm -f tests/input*.in
 
-tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble testRandNormDoubleScalar.c
+tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble
 
 testAccuracyFloats: tests/testAccuracyFloats.x
 	set -e ./tests/testAccuracyFloats.x
@@ -147,9 +147,6 @@ testRandNormSinglePython: tests/testSkewKurtosisNormSingle.py tests/testRandNorm
 testNormSinglePerformance: tests/testNormSinglePerformance.x
 	./tests/testNormSinglePerformance.x
 
-testRandNormDoubleScalar: tests/testRandNormDoubleScalar.x
-	./tests/testRandNormDoubleScalar.x
-
 build/rand123wrapper.o: build wrapper/rand123wrapper.c wrapper/rand123wrapper.h wrapper/frand123enlarger.h Makefile
 	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
 
@@ -200,6 +197,3 @@ tests/testNormSinglePerformance.x: tests/testNormSinglePerformance.f90 lib64/lib
 
 tests/testCentralMomentsNormDouble.x: tests/testCentralMomentsNormDouble.c lib64/libfrand123.a Makefile
 	$(CC) $(CFLAGS) -DVECTOR_WIDTH=$(VECTORWIDTH) -o tests/testCentralMomentsNormDouble.x tests/testCentralMomentsNormDouble.c lib64/libfrand123.a -lm
-
-tests/testRandNormDoubleScalar.x: tests/testRandNormDoubleScalar.c lib64/libfrand123.a Makefile
-	$(CC) $(CFLAGS) -o tests/testRandNormDoubleScalar.x tests/testRandNormDoubleScalar.c lib64/libfrand123.a

@@ -1,14 +1,15 @@
 program testRandNormSingle
    use frand123
+   use, intrinsic :: iso_c_binding, only: c_float
    implicit none
 
    integer, parameter :: numRndNbrs = 1000 * 1000 * 100
-   real( kind = res_kind_single ), parameter :: mu = 0.d0
-   real( kind = res_kind_single ), parameter :: sigma = 1.d0
+   real( kind = c_float ), parameter :: mu = 0.d0
+   real( kind = c_float ), parameter :: sigma = 1.d0
 
-   integer( kind = state_kind ), dimension( state_size ) :: state
-   integer( kind = state_kind ), dimension( 2 ) :: seed
-   real( kind = res_kind_single ), dimension(:), allocatable :: res
+   integer( kind = frand123_state_kind ), dimension( frand123_state_size ) :: state
+   integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+   real( kind = c_float ), dimension(:), allocatable :: res
 
    integer :: out_unit
    real :: startTime, stopTime

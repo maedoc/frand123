@@ -33,12 +33,8 @@ module frand123
       module procedure frand123Integer32_vector
    end interface frand123Integer32
 
-   public :: state_kind
-   public :: state_size
-   public :: res_kind_double
-   public :: res_kind_single
-   public :: res_kind_int64
-   public :: res_kind_int32
+   public :: frand123_state_kind
+   public :: frand123_state_size
    public :: frand123Double
    public :: frand123Single
    public :: frand123NormDouble
@@ -62,8 +58,8 @@ contains
    !            res:   scalar for random double precision reals in (0,1)
    subroutine frand123Double_scalar( state, res )
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_double ), intent( out ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      real( kind = c_double ), intent( out ) :: res
 
       res = frand123Double_scalar_C( state )
    end subroutine frand123Double_scalar
@@ -76,8 +72,8 @@ contains
    subroutine frand123Double_vector( state, res )
       use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_double ), dimension(:), intent( inout ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      real( kind = c_double ), dimension(:), intent( inout ) :: res
 
       integer( kind = c_long_long ) :: len_res
 
@@ -101,8 +97,8 @@ contains
    !            res:  scalar for random single precision reals in (0,1)
    subroutine frand123Single_scalar( state, res )
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_single ), intent( out ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      real( kind = c_float ), intent( out ) :: res
 
       res = frand123Single_scalar_C( state )
    end subroutine frand123Single_scalar
@@ -115,8 +111,8 @@ contains
    subroutine frand123Single_vector( state, res )
       use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      real( kind = c_float ), dimension(:), intent( inout ) :: res
 
       integer( kind = c_long_long ) :: len_res
 
@@ -142,10 +138,10 @@ contains
    !            res:   scalar random double precision reals
    subroutine frand123NormDouble_scalar( state, mu, sigma, res )
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_double ), intent( in ) :: mu
-      real( kind = res_kind_double ), intent( in ) :: sigma
-      real( kind = res_kind_double ), intent( out ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      real( kind = c_double ), intent( in ) :: mu
+      real( kind = c_double ), intent( in ) :: sigma
+      real( kind = c_double ), intent( out ) :: res
 
       res = frand123NormDouble_scalar_C( state, mu, sigma )
    end subroutine frand123NormDouble_scalar
@@ -160,10 +156,10 @@ contains
    subroutine frand123NormDouble_vector( state, mu, sigma, res )
       use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_double ), intent( in ) :: mu
-      real( kind = res_kind_double ), intent( in ) :: sigma
-      real( kind = res_kind_double ), dimension(:), intent( inout ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      real( kind = c_double ), intent( in ) :: mu
+      real( kind = c_double ), intent( in ) :: sigma
+      real( kind = c_double ), dimension(:), intent( inout ) :: res
 
       integer( kind = c_long_long ) :: len_res
 
@@ -193,10 +189,10 @@ contains
    !            res:   scalar for random single precision reals
    subroutine frand123NormSingle_scalar( state, mu, sigma, res )
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_single ), intent( in ) :: mu
-      real( kind = res_kind_single ), intent( in ) :: sigma
-      real( kind = res_kind_single ), intent( out ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      real( kind = c_float ), intent( in ) :: mu
+      real( kind = c_float ), intent( in ) :: sigma
+      real( kind = c_float ), intent( out ) :: res
 
       res = frand123NormSingle_scalar_C( state, mu, sigma )
    end subroutine frand123NormSingle_scalar
@@ -215,10 +211,10 @@ contains
    subroutine frand123NormSingle_vector( state, mu, sigma, res )
       use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      real( kind = res_kind_single ), intent( in ) :: mu
-      real( kind = res_kind_single ), intent( in ) :: sigma
-      real( kind = res_kind_single ), dimension(:), intent( inout ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      real( kind = c_float ), intent( in ) :: mu
+      real( kind = c_float ), intent( in ) :: sigma
+      real( kind = c_float ), dimension(:), intent( inout ) :: res
 
       integer( kind = c_long_long ) :: len_res
 
@@ -242,8 +238,8 @@ contains
    !            res:   scalar random 64 bit signed integers
    subroutine frand123Integer64_scalar( state, res )
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout) :: state
-      integer( kind = res_kind_int64 ), intent( out ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout) :: state
+      integer( kind = c_int64_t ), intent( out ) :: res
 
       res = frand123Integer64_scalar_C( state )
    end subroutine frand123Integer64_scalar
@@ -256,8 +252,8 @@ contains
    subroutine frand123Integer64_vector( state, res )
       use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout) :: state
-      integer( kind = res_kind_int64 ), dimension(:), intent( inout ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout) :: state
+      integer( kind = c_int64_t ), dimension(:), intent( inout ) :: res
 
       integer( kind = c_long_long ) :: len_res
 
@@ -281,8 +277,8 @@ contains
    !            res:   scalar for random 32 bit signed integers
    subroutine frand123Integer32_scalar( state, res )
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      integer( kind = res_kind_int32 ), intent( out ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      integer( kind = c_int32_t ), intent( out ) :: res
 
       res = frand123Integer32_scalar_C( state )
    end subroutine frand123Integer32_scalar
@@ -295,8 +291,8 @@ contains
    subroutine frand123Integer32_vector( state, res )
       use, intrinsic :: iso_c_binding, only: c_long_long
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
-      integer( kind = res_kind_int32 ), dimension(:), intent( inout ) :: res
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      integer( kind = c_int32_t ), dimension(:), intent( inout ) :: res
 
       integer( kind = c_long_long ) :: len_res
 
@@ -332,10 +328,10 @@ contains
    !                      different or same random numbers with each run
    subroutine frand123Init( state, rank, threadID, seed )
       implicit none
-      integer( kind = state_kind ), dimension( state_size ), intent( inout ) :: state
+      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
       integer, intent( in ) :: rank
       integer, intent( in ) :: threadID
-      integer( kind = state_kind ), dimension( 2 ), intent( in ), optional :: seed
+      integer( kind = frand123_state_kind ), dimension( 2 ), intent( in ), optional :: seed
 
       ! set counter if present
       if(present(seed)) then
