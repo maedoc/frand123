@@ -1,4 +1,4 @@
-# The frand123 Fortran wrapper for the Random123 C library
+# The frand123 Fortran and C wrapper for the low-level Random123 C library
 
 The frand123 Fortran wrapper for the Random123 C library provides random number generators (RNG) to Fortran using the random bits generated using functions of the Random123 C library.
 
