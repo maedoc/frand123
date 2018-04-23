@@ -1,4 +1,16 @@
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
 #include "rand123wrapper.h"
+#include "frand123.h"
+
+double frand123Double_scalar( int64_t *state )
+{
+   double buffer;
+   frand123Double( state, 1ll, &buffer );
+   return buffer;
+}
 
 void frand123Double( int64_t *state, const long long lenRes, double *res )
 {
@@ -25,6 +37,13 @@ void frand123Double( int64_t *state, const long long lenRes, double *res )
       res[ lenRes - 1ll ] = buffer[ 0 ];
    }
    return;
+}
+
+float frand123Single_scalar( int64_t *state )
+{
+   float buffer;
+   frand123Single( state, 1ll, &buffer );
+   return buffer;
 }
 
 void frand123Single( int64_t *state, const long long lenRes, float *res )
@@ -57,6 +76,13 @@ void frand123Single( int64_t *state, const long long lenRes, float *res )
    return;
 }
 
+double frand123NormDouble_scalar( int64_t *state, const double mu, const double sigma )
+{
+   double buffer;
+   frand123NormDouble( state, mu, sigma, 1ll, &buffer );
+   return buffer;
+}
+
 void frand123NormDouble( int64_t *state, const double mu, const double sigma, const long long lenRes, double *res )
 {
    long long i;
@@ -84,6 +110,13 @@ void frand123NormDouble( int64_t *state, const double mu, const double sigma, co
    return;
 }
 
+float frand123NormSingle_scalar( int64_t *state, const float mu, const float sigma )
+{
+   float buffer;
+   frand123NormSingle( state, mu, sigma, 1ll, &buffer );
+   return buffer;
+}
+
 void frand123NormSingle( int64_t *state, const float mu, const float sigma, const long long lenRes, float *res )
 {
    long long i, j;
@@ -104,6 +137,13 @@ void frand123NormSingle( int64_t *state, const float mu, const float sigma, cons
       }
    }
    return;
+}
+
+int64_t frand123Integer64_scalar( int64_t *state )
+{
+   int64_t buffer;
+   frand123Integer64( state, 1ll, &buffer );
+   return buffer;
 }
 
 void frand123Integer64( int64_t *state, const long long lenRes, int64_t *res )
@@ -131,6 +171,13 @@ void frand123Integer64( int64_t *state, const long long lenRes, int64_t *res )
       res[ lenRes - 1ll ] = buffer[ 0 ];
    }
    return;
+}
+
+int32_t frand123Integer32_scalar( int64_t *state )
+{
+   int32_t buffer;
+   frand123Integer32( state, 1ll, &buffer );
+   return buffer;
 }
 
 void frand123Integer32( int64_t *state, const long long lenRes, int32_t *res )
@@ -165,9 +212,22 @@ void frand123Integer32( int64_t *state, const long long lenRes, int32_t *res )
 
 void frand123Init( int64_t *state, const int64_t rank, const int64_t threadID, const int64_t *seed )
 {
-   // use the seed for the counter
-   state[ 0 ] = seed[ 0 ];
-   state[ 1 ] = seed[ 1 ];
+   // test if state is not NULL -> allocate it
+   if( state == NULL )
+   {
+      state = malloc( 4 * sizeof( int64_t ) );
+      if( state == NULL )
+      {
+         perror( "malloc of non-associated state failed" );
+      }
+   }
+   // if seed is given use it, otherwise use bits already in state
+   if( seed != NULL )
+   {
+      // use the seed for the counter
+      state[ 0 ] = seed[ 0 ];
+      state[ 1 ] = seed[ 1 ];
+   }
    // use rank and threadID to choose a random stream
    state[ 2 ] = rank;
    state[ 3 ] = threadID;
