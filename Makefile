@@ -171,7 +171,7 @@ build/frand123.o lib64/frand123.mod: wrapper/frand123.F90 build/frand123CInterfa
 	mkdir -p build/ lib64/ 
 	$(FC) $(FFLAGS) -c wrapper/frand123.F90 -o build/frand123.o 
 
-lib64/libfrand123.so: build/frand123.o build/frand123.mod build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o Makefile
+lib64/libfrand123.so: build/frand123.o lib64/frand123.mod build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o Makefile
 	$(LD) $(LDFLAGS) -o lib64/libfrand123.so build/frand123.o build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o
 
 lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o build/frand123CInterfaces.o build/frand123_c.o Makefile
