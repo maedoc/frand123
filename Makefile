@@ -60,7 +60,7 @@ else
 	TESTNORMDOUBLEPYFLAGS = --wichura
 endif
 
-.PHONY: all clean tests examples examplesC exampleFortran testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble
+.PHONY: all clean tests examples examplesC exampleFortran testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testEquivalence testOdd
 
 all: lib64/libfrand123.a lib64/libfrand123.so
 
@@ -73,7 +73,7 @@ clean:
 	rm -f examples/C/*.x
 	rm -f examples/Fortran/*.x
 
-tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble testEquivalence
+tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble testEquivalence testOdd
 
 examples: examplesC exampleFortran
 
@@ -152,6 +152,9 @@ testNormSinglePerformance: tests/testNormSinglePerformance.x
 testEquivalence: tests/testEquivalence.x
 	set -e; ./tests/testEquivalence.x
 
+testOdd: tests/testOdd.x
+	set -e; ./tests/testOdd.x
+
 build/rand123wrapper.o: wrapper/rand123wrapper.c wrapper/rand123wrapper.h wrapper/frand123enlarger.h Makefile
 	mkdir -p build/
 	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
@@ -209,6 +212,9 @@ tests/testCentralMomentsNormDouble.x: tests/testCentralMomentsNormDouble.c lib64
 
 tests/testEquivalence.x: tests/testEquivalence.f90 lib64/libfrand123.a Makefile
 	$(FC) $(FFLAGS) -o tests/testEquivalence.x tests/testEquivalence.f90 lib64/libfrand123.a
+
+tests/testOdd.x: tests/testOdd.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) -o tests/testOdd.x tests/testOdd.f90 lib64/libfrand123.a
 
 examples/C/piDouble.x: examples/C/piDouble.c lib64/libfrand123.a Makefile
 	$(CC) $(CFLAGS) -o examples/C/piDouble.x examples/C/piDouble.c lib64/libfrand123.a

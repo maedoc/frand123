@@ -15,6 +15,7 @@ program testEquivalence
       write(*,*) 'Test frand123Double passed'
    else
       write(*,*) 'Test frand123Double failed'
+      exit( 1 )
    endif
 
    ! test frand123Single
@@ -23,6 +24,7 @@ program testEquivalence
       write(*,*) 'Test frand123Single passed'
    else
       write(*,*) 'Test frand123Single failed'
+      exit( 1 )
    endif
 
    ! test frand123NormDouble
@@ -31,6 +33,7 @@ program testEquivalence
       write(*,*) 'Test frand123NormDouble passed'
    else
       write(*,*) 'Test frand123NormDouble failed'
+      exit( 1 )
    endif
 
    ! test frand123NormSingle
@@ -39,6 +42,7 @@ program testEquivalence
       write(*,*) 'Test frand123NormSingle passed'
    else
       write(*,*) 'Test frand123NormSingle failed'
+      exit( 1 )
    endif
 
    ! test frand123Integer64
@@ -47,6 +51,7 @@ program testEquivalence
       write(*,*) 'Test frand123Integer64 passed'
    else
       write(*,*) 'Test frand123Integer64 failed'
+      exit( 1 )
    endif
 
    ! test frand123Integer32
@@ -55,6 +60,7 @@ program testEquivalence
       write(*,*) 'Test frand123Integer32 passed'
    else
       write(*,*) 'Test frand123Integer32 failed'
+      exit( 1 )
    endif
 
 contains
