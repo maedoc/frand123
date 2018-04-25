@@ -327,7 +327,7 @@
       threefry2x64_ctr_t resThreefry = threefry2x64_R( 13, *ctr_threefry, *key_threefry );
       // reinterprete as signed 64 bit integer
       res[0] = *((int64_t*)&resThreefry.v[0]);
-      res[1] = *((int64_t*)&resThreefry.v[2]);
+      res[1] = *((int64_t*)&resThreefry.v[1]);
       // advance counter
       if( ctr_threefry->v[0] < UINT64_MAX )
          ctr_threefry->v[0]++;

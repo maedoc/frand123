@@ -73,7 +73,7 @@ clean:
 	rm -f examples/C/*.x
 	rm -f examples/Fortran/*.x
 
-tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble
+tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble testEquivalence
 
 examples: examplesC exampleFortran
 
@@ -149,6 +149,9 @@ testRandNormSinglePython: tests/testSkewKurtosisNormSingle.py tests/testRandNorm
 testNormSinglePerformance: tests/testNormSinglePerformance.x
 	./tests/testNormSinglePerformance.x
 
+testEquivalence: tests/testEquivalence.x
+	set -e; ./tests/testEquivalence.x
+
 build/rand123wrapper.o: wrapper/rand123wrapper.c wrapper/rand123wrapper.h wrapper/frand123enlarger.h Makefile
 	mkdir -p build/
 	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
@@ -203,6 +206,9 @@ tests/testNormSinglePerformance.x: tests/testNormSinglePerformance.f90 lib64/lib
 
 tests/testCentralMomentsNormDouble.x: tests/testCentralMomentsNormDouble.c lib64/libfrand123.a Makefile
 	$(CC) $(CFLAGS) -DVECTOR_WIDTH=$(VECTORWIDTH) -o tests/testCentralMomentsNormDouble.x tests/testCentralMomentsNormDouble.c lib64/libfrand123.a -lm
+
+tests/testEquivalence.x: tests/testEquivalence.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) -o tests/testEquivalence.x tests/testEquivalence.f90 lib64/libfrand123.a
 
 examples/C/piDouble.x: examples/C/piDouble.c lib64/libfrand123.a Makefile
 	$(CC) $(CFLAGS) -o examples/C/piDouble.x examples/C/piDouble.c lib64/libfrand123.a

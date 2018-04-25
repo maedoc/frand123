@@ -452,6 +452,10 @@ Bounds on the p-values are defined on a per-RNG basis.
 #### Description
 Prints out serial and OpenMP parallel timings for the generation and summation of 10^9 random numbers.
 
+### testEquivalence
+#### Description
+Generates random numbers in pieces of 2/4 and 20 at a time and checks that both versions return the same random numbers when starting with the same state.
+
 ## License
 still to do
 note that as241.c is taken from GRASS GIS and the original license (most likely GPL >= 2) applies
