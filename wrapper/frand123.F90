@@ -33,6 +33,22 @@ module frand123
       module procedure frand123Integer32_vector
    end interface frand123Integer32
 
+   ! allowing one unified interface
+   interface frand123Rand
+      module procedure frand123Double_scalar
+      module procedure frand123Double_vector
+      module procedure frand123Single_scalar
+      module procedure frand123Single_vector
+      module procedure frand123NormDouble_scalar
+      module procedure frand123NormDouble_vector
+      module procedure frand123NormSingle_scalar
+      module procedure frand123NormSingle_vector
+      module procedure frand123Integer64_scalar
+      module procedure frand123Integer64_vector
+      module procedure frand123Integer32_scalar
+      module procedure frand123Integer32_vector
+   end interface frand123Rand
+
    public :: frand123_state_kind
    public :: frand123_state_size
    public :: frand123Double
@@ -42,6 +58,7 @@ module frand123
    public :: frand123Integer32
    public :: frand123Integer64
    public :: frand123Init
+   public :: frand123Rand
 
 contains
 

@@ -18,7 +18,7 @@
 double frand123Double_scalar( int64_t *state )
 {
    double buffer;
-   frand123Double( state, 1ll, &buffer );
+   frand123Double( state, INT64_C( 1 ), &buffer );
    return buffer;
 }
 // vectorial version
@@ -28,7 +28,7 @@ void frand123Double( int64_t *state, const int64_t lenRes, double *res )
    double buffer[ 2 ];
 
    // store directly to res while safe
-   for( i = 0ll; ( i + 2ll ) < lenRes; i += 2ll )
+   for( i = INT64_C( 0 ); ( i + UINT64_C( 1 ) ) < lenRes; i += UINT64_C( 2 ) )
    {
 #ifdef USE_ARS
       ars2x64_u01( state, &res[ i ] );
@@ -44,7 +44,7 @@ void frand123Double( int64_t *state, const int64_t lenRes, double *res )
 #else
       threefry2x64_u01( state, buffer );
 #endif
-      res[ lenRes - 1ll ] = buffer[ 0 ];
+      res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
    return;
 }
@@ -62,7 +62,7 @@ void frand123Double( int64_t *state, const int64_t lenRes, double *res )
 float frand123Single_scalar( int64_t *state )
 {
    float buffer;
-   frand123Single( state, 1ll, &buffer );
+   frand123Single( state, INT64_C( 1 ), &buffer );
    return buffer;
 }
 // vectorial version
@@ -72,7 +72,7 @@ void frand123Single( int64_t *state, const int64_t lenRes, float *res )
    float buffer[ 4 ];
 
    // store directly to res while safe
-   for( i = 0ll; ( i + 4ll ) < lenRes; i += 4ll )
+   for( i = INT64_C( 0 ); ( i + UINT64_C( 3 ) ) < lenRes; i += UINT64_C( 4 ) )
    {
 #ifdef USE_ARS
       ars4x32_u01( state, &res[ i ] );
@@ -88,7 +88,7 @@ void frand123Single( int64_t *state, const int64_t lenRes, float *res )
 #else
       threefry4x32_u01( state, buffer );
 #endif
-      for( j = 0ll; i + j < lenRes; j++ )
+      for( j = INT64_C( 0 ); i + j < lenRes; j++ )
       {
          res[ i + j ] = buffer[ j ];
       }
@@ -111,7 +111,7 @@ void frand123Single( int64_t *state, const int64_t lenRes, float *res )
 double frand123NormDouble_scalar( int64_t *state, const double mu, const double sigma )
 {
    double buffer;
-   frand123NormDouble( state, mu, sigma, 1ll, &buffer );
+   frand123NormDouble( state, mu, sigma, INT64_C( 1 ), &buffer );
    return buffer;
 }
 // vectorial version
@@ -121,7 +121,7 @@ void frand123NormDouble( int64_t *state, const double mu, const double sigma, co
    double buffer[ 2 ];
 
    // store directly to res while safe
-   for( i = 0ll; ( i + 2ll ) < lenRes; i += 2ll )
+   for( i = INT64_C( 0 ); ( i + UINT64_C( 1 ) ) < lenRes; i += UINT64_C( 2 ) )
    {
 #ifdef USE_POLAR
       polar2x64( state, mu, sigma, &res[ i ] );
@@ -137,7 +137,7 @@ void frand123NormDouble( int64_t *state, const double mu, const double sigma, co
 #else
       wichura2x64( state, mu, sigma, buffer );
 #endif
-      res[ lenRes - 1ll ] = buffer[ 0 ];
+      res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
    return;
 }
@@ -168,7 +168,7 @@ void frand123NormSingle( int64_t *state, const float mu, const float sigma, cons
    float buffer[ 4 ];
 
    // store directly to res while safe
-   for( i = 0ll; ( i + 4ll ) < lenRes; i += 4ll )
+   for( i = INT64_C( 0 ); ( i + UINT64_C( 3 ) ) < lenRes; i += UINT64_C( 4 ) )
    {
       polar4x32( state, mu, sigma, &res[ i ] );
    }
@@ -176,7 +176,7 @@ void frand123NormSingle( int64_t *state, const float mu, const float sigma, cons
    if( i != lenRes )
    {
       polar4x32( state, mu, sigma, buffer );
-      for( j = 0ll; i + j < lenRes; j++ )
+      for( j = INT64_C( 0 ); i + j < lenRes; j++ )
       {
          res[ i + j ] = buffer[ j ];
       }
@@ -197,7 +197,7 @@ void frand123NormSingle( int64_t *state, const float mu, const float sigma, cons
 int64_t frand123Integer64_scalar( int64_t *state )
 {
    int64_t buffer;
-   frand123Integer64( state, 1ll, &buffer );
+   frand123Integer64( state, INT64_C( 1 ), &buffer );
    return buffer;
 }
 // vectorial version
@@ -207,7 +207,7 @@ void frand123Integer64( int64_t *state, const int64_t lenRes, int64_t *res )
    int64_t buffer[ 2 ];
 
    // store directly to res while safe
-   for( i = 0ll; ( i + 2ll ) < lenRes; i += 2ll )
+   for( i = INT64_C( 0 ); ( i + UINT64_C( 1 ) ) < lenRes; i += UINT64_C( 2 ) )
    {
 #ifdef USE_ARS
       ars2x64_int( state, &res[ i ] );
@@ -223,7 +223,7 @@ void frand123Integer64( int64_t *state, const int64_t lenRes, int64_t *res )
 #else
       threefry2x64_int( state, buffer );
 #endif
-      res[ lenRes - 1ll ] = buffer[ 0 ];
+      res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
    return;
 }
@@ -241,7 +241,7 @@ void frand123Integer64( int64_t *state, const int64_t lenRes, int64_t *res )
 int32_t frand123Integer32_scalar( int64_t *state )
 {
    int32_t buffer;
-   frand123Integer32( state, 1ll, &buffer );
+   frand123Integer32( state, INT64_C( 1 ), &buffer );
    return buffer;
 }
 // vectorial version
@@ -251,7 +251,7 @@ void frand123Integer32( int64_t *state, const int64_t lenRes, int32_t *res )
    int32_t buffer[ 4 ];
 
    // store directly to res while safe
-   for( i = 0ll; ( i + 4ll ) < lenRes; i += 4ll )
+   for( i = INT64_C( 0 ); ( i + UINT64_C( 3 ) ) < lenRes; i += UINT64_C( 4 ) )
    {
 #ifdef USE_ARS
       ars4x32_int( state, &res[ i ] );
@@ -267,7 +267,7 @@ void frand123Integer32( int64_t *state, const int64_t lenRes, int32_t *res )
 #else
       threefry4x32_int( state, buffer );
 #endif
-      for( j = 0ll; i + j < lenRes; j++ )
+      for( j = INT64_C( 0 ); i + j < lenRes; j++ )
       {
          res[ i + j ] = buffer[ j ];
       }
@@ -288,7 +288,7 @@ void frand123Integer32( int64_t *state, const int64_t lenRes, int32_t *res )
 uint64_t frand123UnsignedInteger64_scalar( int64_t *state )
 {
    uint64_t buffer;
-   frand123Integer64( state, 1ll, (int64_t*)&buffer );
+   frand123Integer64( state, INT64_C( 1 ), (int64_t*)&buffer );
    return buffer;
 }
 // vectorial version
@@ -298,7 +298,7 @@ void frand123UnsignedInteger64( int64_t *state, const int64_t lenRes, uint64_t *
    uint64_t buffer[ 2 ];
 
    // store directly to res while safe
-   for( i = 0ll; ( i + 2ll ) < lenRes; i += 2ll )
+   for( i = INT64_C( 0 ); ( i + UINT64_C( 1 ) ) < lenRes; i += UINT64_C( 2 ) )
    {
 #ifdef USE_ARS
       ars2x64_int( state, (int64_t*)&res[ i ] );
@@ -314,7 +314,7 @@ void frand123UnsignedInteger64( int64_t *state, const int64_t lenRes, uint64_t *
 #else
       threefry2x64_int( state, (int64_t*)buffer );
 #endif
-      res[ lenRes - 1ll ] = buffer[ 0 ];
+      res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
    return;
 }
@@ -332,7 +332,7 @@ void frand123UnsignedInteger64( int64_t *state, const int64_t lenRes, uint64_t *
 uint32_t frand123UnsignedInteger32_scalar( int64_t *state )
 {
    uint32_t buffer;
-   frand123Integer32( state, 1ll, (uint32_t*)&buffer );
+   frand123Integer32( state, INT64_C( 1 ), (uint32_t*)&buffer );
    return buffer;
 }
 // vectorial version
@@ -342,7 +342,7 @@ void frand123UnsignedInteger32( int64_t *state, const int64_t lenRes, uint32_t *
    uint32_t buffer[ 4 ];
 
    // store directly to res while safe
-   for( i = 0ll; ( i + 4ll ) < lenRes; i += 4ll )
+   for( i = INT64_C( 0 ); ( i + UINT64_C( 3 ) ) < lenRes; i += UINT64_C( 4 ) )
    {
 #ifdef USE_ARS
       ars4x32_int( state, (int32_t*)&res[ i ] );
@@ -358,7 +358,7 @@ void frand123UnsignedInteger32( int64_t *state, const int64_t lenRes, uint32_t *
 #else
       threefry4x32_int( state, (int32_t*)buffer );
 #endif
-      for( j = 0ll; i + j < lenRes; j++ )
+      for( j = INT64_C( 0 ); i + j < lenRes; j++ )
       {
          res[ i + j ] = buffer[ j ];
       }

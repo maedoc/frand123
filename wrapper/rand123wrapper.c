@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <math.h>
 #include <stdbool.h>
@@ -708,7 +709,7 @@ void polar4x32_two( int64_t *state, const float mu, const float sigma, float *re
       // check which lies within the unit circle
       in[ 0 ] = ( r2[ 0 ] > 0.f ) && ( r2[ 0 ] < 1.f );
       in[ 1 ] = ( r2[ 1 ] > 0.f ) && ( r2[ 1 ] < 1.f );
-   } while( ! ( in[ 0 ] || in[ 2 ] ) );
+   } while( ! ( in[ 0 ] || in[ 1 ] ) );
    // compute two random numbers
    if( in[ 0 ] )
    {

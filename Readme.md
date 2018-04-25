@@ -22,7 +22,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 ## Reference Fortran
 
-### frand123Single( state, res )
+### frand123Single( state, res ) / frand123Rand( state, res )
 #### Description
 * Fill vector res with single precision real random numbers uniformly distributed in (0,1)
 * The counter within the state is incremented appropriately
@@ -35,11 +35,11 @@ The frand123 Fortran wrapper provides the following capabilities:
     * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
-    * dimension: arbitrary
+    * dimension: scalar or arbitrary length array
     * kind: real of kind _c_float_
     * intent: _inout_
 
-### frand123Double( state, res )
+### frand123Double( state, res ) / frand123Rand( state, res )
 #### Description
 * Fill vector res with double precision real random numbers uniformly distributed in (0,1)
 * The counter within the state is incremented appropriately
@@ -52,11 +52,11 @@ The frand123 Fortran wrapper provides the following capabilities:
     * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
-    * dimension: arbitrary
+    * dimension: scalar or arbitrary length array
     * kind: real of kind _c_double_
     * intent: _inout_
 
-### frand123NormDouble( state, mu, sigma, res )
+### frand123NormDouble( state, mu, sigma, res ) / frand123Rand( state, mu, sigma, res )
 #### Description
 * Fill vector res with double precision real random numbers normally distributed with mean mu and variance sigma
 * The counter within the state is incremented appropriately
@@ -77,11 +77,11 @@ The frand123 Fortran wrapper provides the following capabilities:
     * kind: real of kind _c_double_
     * intent: in
 * __res__: memory to which random numbers are stored to
-    * dimension: arbitrary
+    * dimension: scalar or arbitrary length array
     * kind: real of kind _c_double_
     * intent: _inout_
 
-### frand123NormSingle( state, mu, sigma, res )
+### frand123NormSingle( state, mu, sigma, res ) / frand123Rand( state, mu, sigma, res )
 #### Description
 * Fill vector res with single precision real random numbers normally distributed with mean mu and variance sigma
 * The counter within the state is incremented appropriately
@@ -102,11 +102,11 @@ The frand123 Fortran wrapper provides the following capabilities:
     * kind: real of kind _c_float_
     * intent: in
 * __res__: memory to which random numbers are stored to
-    * dimension: arbitrary
+    * dimension: scalar or arbitrary length array
     * kind: real of kind _c_float_
     * intent: _inout_
 
-### frand123Integer32( state, res )
+### frand123Integer32( state, res ) / frand123Rand( state, res )
 #### Description
 * Fill vector res with signed 32-bit integer random numbers uniformly distributed between (iclusive) INT32_MIN and INT32_MAX
 * The counter within the state is incremented appropriately
@@ -119,11 +119,11 @@ The frand123 Fortran wrapper provides the following capabilities:
     * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
-    * dimension: arbitrary
+    * dimension: scalar or arbitrary length array
     * kind: real of kind _c_int32_t
     * intent: _inout_
 
-### frand123Integer64( state, res )
+### frand123Integer64( state, res ) / frand123Rand( state, res )
 #### Description
 * Fill vector res with signed 64-bit integer random numbers uniformly distributed between (iclusive) INT64_MIN and INT64_MAX
 * The counter within the state is incremented appropriately
@@ -136,7 +136,7 @@ The frand123 Fortran wrapper provides the following capabilities:
     * kind: integer of kind _frand123_state_kind_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
-    * dimension: arbitrary
+    * dimension: scalar or arbitrary length array
     * kind: real of kind _c_int64_t
     * intent: _inout_
 

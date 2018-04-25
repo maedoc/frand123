@@ -60,15 +60,9 @@ else
 	TESTNORMDOUBLEPYFLAGS = --wichura
 endif
 
-.PHONY: all clean tests testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble
+.PHONY: all clean tests examples examplesC exampleFortran testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble
 
 all: lib64/libfrand123.a lib64/libfrand123.so
-
-build:
-	mkdir build/
-
-lib64:
-	mkdir lib64/
 
 clean:
 	rm -rf build/
@@ -76,8 +70,16 @@ clean:
 	rm -f tests/*.x
 	rm -f tests/rand_*.out
 	rm -f tests/input*.in
+	rm -f examples/C/*.x
+	rm -f examples/Fortran/*.x
 
 tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble
+
+examples: examplesC exampleFortran
+
+examplesC: examples/C/piDouble.x examples/C/piSingle.x examples/C/kurtosisDouble.x examples/C/kurtosisSingle.x examples/C/integer64.x examples/C/integer32.x
+
+examplesFortran: examples/Fortran/piDouble.x examples/Fortran/piSingle.x examples/Fortran/kurtosisDouble.x examples/Fortran/kurtosisSingle.x examples/Fortran/integer64.x examples/Fortran/integer32.x examples/Fortran/unifiedInterface.x
 
 testAccuracyFloats: tests/testAccuracyFloats.x
 	set -e ./tests/testAccuracyFloats.x
@@ -147,19 +149,23 @@ testRandNormSinglePython: tests/testSkewKurtosisNormSingle.py tests/testRandNorm
 testNormSinglePerformance: tests/testNormSinglePerformance.x
 	./tests/testNormSinglePerformance.x
 
-build/rand123wrapper.o: build wrapper/rand123wrapper.c wrapper/rand123wrapper.h wrapper/frand123enlarger.h Makefile
+build/rand123wrapper.o: wrapper/rand123wrapper.c wrapper/rand123wrapper.h wrapper/frand123enlarger.h Makefile
+	mkdir -p build/
 	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
 
-build/frand123CInterfaces.o lib64/frand123CInterfaces.mod: build lib64 wrapper/frand123CInterfaces.F90 Makefile
+build/frand123CInterfaces.o lib64/frand123CInterfaces.mod: wrapper/frand123CInterfaces.F90 Makefile
+	mkdir -p build/ lib64/
 	$(FC) $(FFLAGS) -c wrapper/frand123CInterfaces.F90 -o build/frand123CInterfaces.o
 
-build/frand123_c.o: build wrapper/frand123.c Makefile
+build/frand123_c.o: wrapper/frand123.c Makefile
+	mkdir -p build
 	$(CC) $(CFLAGS) -c wrapper/frand123.c -o build/frand123_c.o
 
-build/frand123.o lib64/frand123.mod: build lib64 wrapper/frand123.F90 build/frand123CInterfaces.o Makefile
+build/frand123.o lib64/frand123.mod: wrapper/frand123.F90 build/frand123CInterfaces.o Makefile
+	mkdir -p build/ lib64/ 
 	$(FC) $(FFLAGS) -c wrapper/frand123.F90 -o build/frand123.o 
 
-lib64/libfrand123.so: build/frand123.o build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o Makefile
+lib64/libfrand123.so: build/frand123.o build/frand123.mod build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o Makefile
 	$(LD) $(LDFLAGS) -o lib64/libfrand123.so build/frand123.o build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o
 
 lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o build/frand123CInterfaces.o build/frand123_c.o Makefile
@@ -197,3 +203,42 @@ tests/testNormSinglePerformance.x: tests/testNormSinglePerformance.f90 lib64/lib
 
 tests/testCentralMomentsNormDouble.x: tests/testCentralMomentsNormDouble.c lib64/libfrand123.a Makefile
 	$(CC) $(CFLAGS) -DVECTOR_WIDTH=$(VECTORWIDTH) -o tests/testCentralMomentsNormDouble.x tests/testCentralMomentsNormDouble.c lib64/libfrand123.a -lm
+
+examples/C/piDouble.x: examples/C/piDouble.c lib64/libfrand123.a Makefile
+	$(CC) $(CFLAGS) -o examples/C/piDouble.x examples/C/piDouble.c lib64/libfrand123.a
+
+examples/C/piSingle.x: examples/C/piSingle.c lib64/libfrand123.a Makefile
+	$(CC) $(CFLAGS) -o examples/C/piSingle.x examples/C/piSingle.c lib64/libfrand123.a
+
+examples/C/kurtosisDouble.x: examples/C/kurtosisDouble.c lib64/libfrand123.a Makefile
+	$(CC) $(CFLAGS) -o examples/C/kurtosisDouble.x examples/C/kurtosisDouble.c lib64/libfrand123.a
+
+examples/C/kurtosisSingle.x: examples/C/kurtosisSingle.c lib64/libfrand123.a Makefile
+	$(CC) $(CFLAGS) -o examples/C/kurtosisSingle.x examples/C/kurtosisSingle.c lib64/libfrand123.a
+
+examples/C/integer64.x: examples/C/integer64.c lib64/libfrand123.a Makefile
+	$(CC) $(CFLAGS) -o examples/C/integer64.x examples/C/integer64.c lib64/libfrand123.a
+
+examples/C/integer32.x: examples/C/integer32.c lib64/libfrand123.a Makefile
+	$(CC) $(CFLAGS) -o examples/C/integer32.x examples/C/integer32.c lib64/libfrand123.a
+
+examples/Fortran/piDouble.x: examples/Fortran/piDouble.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) -o examples/Fortran/piDouble.x examples/Fortran/piDouble.f90 lib64/libfrand123.a
+
+examples/Fortran/piSingle.x: examples/Fortran/piSingle.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) -o examples/Fortran/piSingle.x examples/Fortran/piSingle.f90 lib64/libfrand123.a
+
+examples/Fortran/kurtosisDouble.x: examples/Fortran/kurtosisDouble.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) -o examples/Fortran/kurtosisDouble.x examples/Fortran/kurtosisDouble.f90 lib64/libfrand123.a
+
+examples/Fortran/kurtosisSingle.x: examples/Fortran/kurtosisSingle.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) -o examples/Fortran/kurtosisSingle.x examples/Fortran/kurtosisSingle.f90 lib64/libfrand123.a
+
+examples/Fortran/integer64.x: examples/Fortran/integer64.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) -o examples/Fortran/integer64.x examples/Fortran/integer64.f90 lib64/libfrand123.a
+
+examples/Fortran/integer32.x: examples/Fortran/integer32.f90 lib64/libfrand123.a Makefile
+	$(FC) $(FFLAGS) -o examples/Fortran/integer32.x examples/Fortran/integer32.f90 lib64/libfrand123.a
+
+examples/Fortran/unifiedInterface.x: examples/Fortran/unifiedInterface.f90 lib64/libfrand123.a
+	$(FC) $(FFLAGS) -o examples/Fortran/unifiedInterface.x examples/Fortran/unifiedInterface.f90 lib64/libfrand123.a
