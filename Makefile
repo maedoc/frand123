@@ -6,11 +6,11 @@ VECTORWIDHT ?= 1
 #### Intel Compilers ####
 #########################
 CC = icc$(SUFFIX)
-CFLAGS = -IRandom123 -fpic -ipo -O2 -xHost -qopenmp #-qopt-report=2
+CFLAGS = -IRandom123 -fpic -ipo -O2 -xHost -qopenmp #-qopt-report=5 -no-inline-min-size
 FC = ifort$(SUFFIX)
-FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp #-qopt-report=2
+FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp #-qopt-report=5 -no-inline-min-size
 LD = ifort$(SUFFIX)
-LDFLAGS = -shared -ipo -O2 -xHost -qopenmp #-qopt-report=2
+LDFLAGS = -shared -ipo -O2 -xHost -qopenmp #-qopt-report=5 -no-inline-min-size
 AR = xiar
 ARFLAGS = rc
 CMAINFLAGS = -nofor_main
@@ -70,8 +70,11 @@ clean:
 	rm -f tests/*.x
 	rm -f tests/rand_*.out
 	rm -f tests/input*.in
+	rm -f tests/*optrpt
 	rm -f examples/C/*.x
+	rm -f examples/C/*optrpt
 	rm -f examples/Fortran/*.x
+	rm -f examples/Fortran/*optrpt
 
 tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble testEquivalence testOdd
 

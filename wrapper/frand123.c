@@ -332,7 +332,7 @@ void frand123UnsignedInteger64( int64_t *state, const int64_t lenRes, uint64_t *
 uint32_t frand123UnsignedInteger32_scalar( int64_t *state )
 {
    uint32_t buffer;
-   frand123Integer32( state, INT64_C( 1 ), (uint32_t*)&buffer );
+   frand123Integer32( state, INT64_C( 1 ), (int32_t*)&buffer );
    return buffer;
 }
 // vectorial version
