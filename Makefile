@@ -6,7 +6,7 @@ VECTORWIDHT ?= 1
 #### Intel Compilers ####
 #########################
 CC = icc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fpic -ipo -O2 -xHost -qopenmp #-qopt-report=2
+CFLAGS = -IRandom123 -fpic -ipo -O2 -xHost -qopenmp #-qopt-report=2
 FC = ifort$(SUFFIX)
 FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp #-qopt-report=2
 LD = ifort$(SUFFIX)
@@ -20,7 +20,7 @@ OPENMPFLAGS = -qopenmp
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX)
-CFLAGS = -Iinclude/Random123 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm #-flto-report
+CFLAGS = -IRandom123 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm #-flto-report
 FC = gfortran$(SUFFIX)
 FFLAGS = -fPIC -J lib64 -flto -O3 -maes -mtune=native -march=native #-flto-report
 LD = gcc$(SUFFIX)
