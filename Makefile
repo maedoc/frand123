@@ -20,9 +20,9 @@ OPENMPFLAGS = -qopenmp
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX)
-CFLAGS = -IRandom123 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm #-flto-report
+CFLAGS = -IRandom123 -Jlib64 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm #-flto-report
 FC = gfortran$(SUFFIX)
-FFLAGS = -fPIC -J lib64 -flto -O3 -maes -mtune=native -march=native #-flto-report
+FFLAGS = $(CFLAGS)
 LD = gcc$(SUFFIX)
 LDFLAGS = -shared -fPIC -flto -O2 -mtune=native -march=native #-flto-report
 AR = gcc-ar$(SUFFIX)
@@ -59,6 +59,13 @@ else
 	CFLAGS += -DUSE_WICHURA
 	TESTNORMDOUBLEPYFLAGS = --wichura
 endif
+
+# decide whether to activate assertions in c functions
+ifeq ($(use_assertions),y)
+else
+	CFLAGS += -DNDEBUG
+endif
+
 
 .PHONY: all clean tests examples examplesC exampleFortran testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testEquivalence testOdd
 
@@ -158,15 +165,11 @@ testEquivalence: tests/testEquivalence.x
 testOdd: tests/testOdd.x
 	set -e; ./tests/testOdd.x
 
-build/rand123wrapper.o: wrapper/rand123wrapper.c wrapper/rand123wrapper.h wrapper/frand123enlarger.h Makefile
-	mkdir -p build/
-	$(CC) $(CFLAGS) -c wrapper/rand123wrapper.c -o build/rand123wrapper.o
-
 build/frand123CInterfaces.o lib64/frand123CInterfaces.mod: wrapper/frand123CInterfaces.F90 Makefile
 	mkdir -p build/ lib64/
 	$(FC) $(FFLAGS) -c wrapper/frand123CInterfaces.F90 -o build/frand123CInterfaces.o
 
-build/frand123_c.o: wrapper/frand123.c Makefile
+build/frand123_c.o: wrapper/frand123.c wrapper/rand123wrapper.h Makefile
 	mkdir -p build
 	$(CC) $(CFLAGS) -c wrapper/frand123.c -o build/frand123_c.o
 
@@ -174,11 +177,11 @@ build/frand123.o lib64/frand123.mod: wrapper/frand123.F90 build/frand123CInterfa
 	mkdir -p build/ lib64/ 
 	$(FC) $(FFLAGS) -c wrapper/frand123.F90 -o build/frand123.o 
 
-lib64/libfrand123.so: build/frand123.o lib64/frand123.mod build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o Makefile
-	$(LD) $(LDFLAGS) -o lib64/libfrand123.so build/frand123.o build/frand123CInterfaces.o build/rand123wrapper.o build/frand123_c.o
+lib64/libfrand123.so: build/frand123.o lib64/frand123.mod build/frand123CInterfaces.o build/frand123_c.o Makefile
+	$(LD) $(LDFLAGS) -o lib64/libfrand123.so build/frand123.o build/frand123CInterfaces.o build/frand123_c.o
 
-lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/rand123wrapper.o build/frand123CInterfaces.o build/frand123_c.o Makefile
-	$(AR) $(ARFLAGS) lib64/libfrand123.a build/frand123.o build/rand123wrapper.o build/frand123CInterfaces.o build/frand123_c.o
+lib64/libfrand123.a: lib64/frand123.mod build/frand123.o build/frand123CInterfaces.o build/frand123_c.o Makefile
+	$(AR) $(ARFLAGS) lib64/libfrand123.a build/frand123.o build/frand123CInterfaces.o build/frand123_c.o
 
 tests/testAccuracyFloats.x: tests/testAccuracyFloats.c wrapper/frand123enlarger.h Makefile
 	$(CC) $(CFLAGS) -o tests/testAccuracyFloats.x tests/testAccuracyFloats.c
