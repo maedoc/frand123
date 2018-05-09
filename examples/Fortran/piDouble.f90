@@ -38,21 +38,21 @@ program piDouble
    varPiScalar = piScalar( state )
    endTime = omp_get_wtime()
    write(*, '( "Result generating  one random number at a time: ", ES11.4, &
-          " took ", ES11.4, " seconds" )' ) varPiScalar, endTime - startTime
+          & " took ", ES11.4, " seconds" )' ) varPiScalar, endTime - startTime
 
    ! use piTwo
    startTime = omp_get_wtime()
    varPiTwo = piTwo( state )
    endTime = omp_get_wtime()
    write(*, '( "Result generating  two random number at a time: ", ES11.4, &
-          " took ", ES11.4, " seconds" )' ) varPiTwo, endTime - startTime
+          & " took ", ES11.4, " seconds" )' ) varPiTwo, endTime - startTime
 
    ! use pi2000
    startTime = omp_get_wtime()
    varPi2000 = pi2000( state )
    endTime = omp_get_wtime()
    write(*, '( "Result generating 2000 random number at a time: ", ES11.4, &
-          " took ", ES11.4, " seconds" )' ) varPiTwo, endTime - startTime
+          & " took ", ES11.4, " seconds" )' ) varPiTwo, endTime - startTime
 
 contains
    
