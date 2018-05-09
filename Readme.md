@@ -157,11 +157,11 @@ The frand123 Fortran wrapper provides the following capabilities:
     * intent: _inout_
 * __rank__: MPI rank of the caller
     * dimension: scalar
-    * kind: integer
+    * kind: integer or integer of kind _c_int64_t_
     * intent: _in_
 * __threadID__: thread ID of the thread using the RNG
     * dimension: scalar
-    * kind: integer
+    * kind: integer or integer of kind _c_int64_t_
     * intent: _in_
 * __seed__: seed to be used to initialize the counter
     * dimension: 2
