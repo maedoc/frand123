@@ -22,7 +22,7 @@
     *            res:   address to storage for 2 double precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void ars2x64_u01( int64_t *state, double *res )
+   void ars2x64_u01( int64_t state[ 4 ], double *res )
    {
       // extract counter and key from state
       ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
@@ -83,7 +83,7 @@
     *            res:   address to storage for 4 single precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void ars4x32_u01( int64_t *state, float *res )
+   void ars4x32_u01( int64_t state[ 4 ], float *res )
    {
       // extract counter and key from state
       ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
@@ -140,7 +140,7 @@
     *            res:   adress to storage for 2 64 bit signed integers
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void ars2x64_int( int64_t *state, int64_t *res )
+   void ars2x64_int( int64_t state[ 4 ], int64_t *res )
    {
       // extract counter and key from state
       ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
@@ -182,7 +182,7 @@
     *            res:   adress to storage for 4 32 bit signed integers
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void ars4x32_int( int64_t *state, int32_t *res )
+   void ars4x32_int( int64_t state[ 4 ], int32_t *res )
    {
       // extract counter and key from state
       ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
@@ -243,7 +243,7 @@
     *            res:   address to storage for 2 double precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void threefry2x64_u01( int64_t *state, double *res )
+   void threefry2x64_u01( int64_t state[ 4 ], double *res )
    {
       // extract counter and key from state
       threefry2x64_ctr_t *ctr_threefry = (threefry2x64_ctr_t*)&state[0];
@@ -280,7 +280,7 @@
     *                   res:     address to storage for 4 single precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void threefry4x32_u01( int64_t *state, float *res )
+   void threefry4x32_u01( int64_t state[ 4 ], float *res )
    {
       // extract counter and key from state
       threefry4x32_ctr_t *ctr_threefry = (threefry4x32_ctr_t*)&state[0];
@@ -324,7 +324,7 @@
     *            res:   address to storage for 2 64 bit signed integers
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void threefry2x64_int( int64_t *state, int64_t *res )
+   void threefry2x64_int( int64_t state[ 4 ], int64_t *res )
    {
       // extract counter and key from state
       threefry2x64_ctr_t *ctr_threefry = (threefry2x64_ctr_t*)&state[0];
@@ -354,7 +354,7 @@
     *            res:     address to storage for 4 32 bit signed integers
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void threefry4x32_int( int64_t *state, int32_t *res )
+   void threefry4x32_int( int64_t state[ 4 ], int32_t *res )
    {
       // extract counter and key from state
       threefry4x32_ctr_t *ctr_threefry = (threefry4x32_ctr_t*)&state[0];
@@ -404,7 +404,7 @@
     *            res:   address to storage for 2 double precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void polar2x64( int64_t *state, const double mu, const double sigma, double *res )
+   void polar2x64( int64_t state[ 4 ], const double mu, const double sigma, double *res )
    {
       double u[ 2 ];
       double x[ 2 ];
@@ -611,7 +611,7 @@
     *            res:   address to storage for 2 double precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void wichura2x64( int64_t *state, const double mu, const double sigma, double *res )
+   void wichura2x64( int64_t state[ 4 ], const double mu, const double sigma, double *res )
    {
       // get uniform random numbers
       double p[ 2 ];
@@ -638,7 +638,7 @@
  *            sigma: variance
  *            res:   address to storage for 4 single precision reals
  */
-void polar4x32( int64_t *state, const float mu, const float sigma, float *res )
+void polar4x32( int64_t state[ 4 ], const float mu, const float sigma, float *res )
 {
    float u[ 4 ];
    float x[ 4 ];
@@ -690,7 +690,7 @@ void polar4x32( int64_t *state, const float mu, const float sigma, float *res )
  *            sigma: variance
  *            res:   address to storage for 2 single precision reals
  */
-void polar4x32_two( int64_t *state, const float mu, const float sigma, float *res )
+void polar4x32_two( int64_t state[ 4 ], const float mu, const float sigma, float *res )
 {
    float u[ 4 ];
    float x[ 4 ];
