@@ -68,6 +68,31 @@ module frand123
       module procedure frand123Double_vector
    end interface frand123Double
 
+   interface frand123Single
+      module procedure frand123Single_scalar
+      module procedure frand123Single_vector
+   end interface frand123Single
+
+   interface frand123NormDouble
+      module procedure frand123NormDouble_scalar
+      module procedure frand123NormDouble_vector
+   end interface frand123NormDouble
+
+   interface frand123NormSingle
+      module procedure frand123NormSingle_scalar
+      module procedure frand123NormSingle_vector
+   end interface frand123NormSingle
+
+   interface frand123Integer64
+      module procedure frand123Integer64_scalar
+      module procedure frand123Integer64_vector
+   end interface frand123Integer64
+
+   interface frand123Integer32
+      module procedure frand123Integer32_scalar
+      module procedure frand123Integer32_vector
+   end interface frand123Integer32
+
    interface frand123Init
       module procedure frand123Init_int64
       module procedure frand123Init_int32
@@ -99,6 +124,144 @@ contains
       ! call C implementation
       call frand123Double_C( state, lenRes, res )
    end subroutine frand123Double_vector
+
+   subroutine frand123Single_scalar( state, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      real( kind = c_float ), intent( inout ) :: res
+
+      ! use vector version
+      real( kind = c_float ), dimension( 1 ) :: buffer
+      call frand123Single( state, buffer )
+      res = buffer( 1 )
+   end subroutine frand123Single_scalar
+
+   subroutine frand123Single_vector( state, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      real( kind = c_float ), dimension( : ), intent( inout ) :: res
+
+      ! size of array
+      integer( kind = c_int64_t ) :: lenRes
+      lenRes = size( res )
+
+      ! call C implementation
+      call frand123Single_C( state, lenRes, res )
+   end subroutine frand123Single_vector
+
+   subroutine frand123NormDouble_scalar( state, mu, sigma, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t, c_double
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      real( kind = c_double ), value, intent( in ) :: mu
+      real( kind = c_double ), value, intent( in ) :: sigma
+      real( kind = c_double ), intent( inout ) :: res
+
+      ! use vector version
+      real( kind = c_double ), dimension( 1 ) :: buffer
+      call frand123NormDouble( state, mu, sigma, buffer )
+      res = buffer( 1 )
+   end subroutine frand123NormDouble_scalar
+
+   subroutine frand123NormDouble_vector( state, mu, sigma, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t, c_double
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      real( kind = c_double ), value, intent( in ) :: mu
+      real( kind = c_double ), value, intent( in ) :: sigma
+      real( kind = c_double ), dimension( : ), intent( inout ) :: res
+
+      ! size of array
+      integer( kind = c_int64_t ) :: lenRes
+      lenRes = size( res )
+
+      ! call C implementation
+      call frand123NormDouble_C( state, mu, sigma, lenRes, res )
+   end subroutine frand123NormDouble_vector
+
+   subroutine frand123NormSingle_scalar( state, mu, sigma, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      real( kind = c_float ), value, intent( in ) :: mu
+      real( kind = c_float ), value, intent( in ) :: sigma
+      real( kind = c_float ), intent( inout ) :: res
+
+      ! use vector version
+      real( kind = c_float ), dimension( 1 ) :: buffer
+      call frand123NormSingle( state, mu, sigma, buffer )
+      res = buffer( 1 )
+   end subroutine frand123NormSingle_scalar
+
+   subroutine frand123NormSingle_vector( state, mu, sigma, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      real( kind = c_float ), value, intent( in ) :: mu
+      real( kind = c_float ), value, intent( in ) :: sigma
+      real( kind = c_float ), dimension( : ), intent( inout ) :: res
+
+      ! size of array
+      integer( kind = c_int64_t ) :: lenRes
+      lenRes = size( res )
+
+      ! call C implementation
+      call frand123NormSingle_C( state, mu, sigma, lenRes, res )
+   end subroutine frand123NormSingle_vector
+
+   subroutine frand123Integer64_scalar( state, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      integer( kind = c_int64_t ), intent( inout ) :: res
+
+      ! use vector version
+      integer( kind = c_int64_t ), dimension( 1 ) :: buffer
+      call frand123Integer64( state, buffer )
+      res = buffer( 1 )
+   end subroutine frand123Integer64_scalar
+
+   subroutine frand123Integer64_vector( state, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      integer( kind = c_int64_t ), dimension( : ), intent( inout ) :: res
+
+      ! size of array
+      integer( kind = c_int64_t ) :: lenRes
+      lenRes = size( res )
+
+      ! call C implementation
+      call frand123Integer64_C( state, lenRes, res )
+   end subroutine frand123Integer64_vector
+
+   subroutine frand123Integer32_scalar( state, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t, c_int32_t
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      integer( kind = c_int32_t ), intent( inout ) :: res
+
+      ! use vector version
+      integer( kind = c_int32_t ), dimension( 1 ) :: buffer
+      call frand123Integer32( state, buffer )
+      res = buffer( 1 )
+   end subroutine frand123Integer32_scalar
+
+   subroutine frand123Integer32_vector( state, res )
+      use, intrinsic :: iso_c_binding, only: c_int64_t, c_int32_t
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      integer( kind = c_int32_t ), dimension( : ), intent( inout ) :: res
+
+      ! size of array
+      integer( kind = c_int64_t ) :: lenRes
+      lenRes = size( res )
+
+      ! call C implementation
+      call frand123Integer32_C( state, lenRes, res )
+   end subroutine frand123Integer32_vector
 
    subroutine frand123Init_int64( state, rank, threadId, seed )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_ptr, c_loc, c_null_ptr
