@@ -102,9 +102,27 @@ module frand123
    end interface frand123Integer32
 
    interface frand123Init
-      module procedure frand123Init_int64
-      module procedure frand123Init_int32
+      module procedure frand123Init_int64_int64
+      module procedure frand123Init_int32_int64
+      module procedure frand123Init_int64_int32
+      module procedure frand123Init_int32_int32
    end interface frand123Init
+
+   ! most general interface
+   interface frand123Rand
+      module procedure frand123Double_scalar
+      module procedure frand123Double_vector
+      module procedure frand123Single_scalar
+      module procedure frand123Single_vector
+      module procedure frand123NormDouble_scalar
+      module procedure frand123NormDouble_vector
+      module procedure frand123NormSingle_scalar
+      module procedure frand123NormSingle_vector
+      module procedure frand123Integer32_scalar
+      module procedure frand123Integer32_vector
+      module procedure frand123Integer64_scalar
+      module procedure frand123Integer64_vector
+   end interface frand123Rand
 
    ! make only generic interfaces public
    public :: frand123_state_kind
@@ -116,6 +134,7 @@ module frand123
    public :: frand123Integer32
    public :: frand123Integer64
    public :: frand123Init
+   public :: frand123Rand
 
    ! keep different implementations private
    private :: frand123Double_scalar
@@ -130,8 +149,10 @@ module frand123
    private :: frand123Integer32_vector
    private :: frand123Integer64_scalar
    private :: frand123Integer64_vector
-   private :: frand123Init_int64
-   private :: frand123Init_int32
+   private :: frand123Init_int64_int64
+   private :: frand123Init_int64_int32
+   private :: frand123Init_int32_int64
+   private :: frand123Init_int32_int32
 
 contains
    ! generate single random double precision number
@@ -390,7 +411,7 @@ contains
    !                      If not in threaded situation, choose freely
    !            seed:     Seed for the random number generator to allow for
    !                      different or same random numbers with each run
-   subroutine frand123Init_int64( state, rank, threadId, seed )
+   subroutine frand123Init_int64_int64( state, rank, threadId, seed )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_ptr, c_loc, c_null_ptr
       implicit none
       integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
@@ -410,7 +431,89 @@ contains
 
       ! call C implementation
       call frand123Init_C( state, rank, threadID, seed_ptr )
-   end subroutine frand123Init_int64
+   end subroutine frand123Init_int64_int64
+
+   ! initialization of the random number generators using 64 bit integer for rank
+   ! and 32 bit integer for threadID
+   ! initialize the state as follows:
+   ! counter: first  64 bits: first entry of seed
+   !          second 64 bits: second entry of seed
+   ! key:     first  64 bits: rank
+   !          second 64 bits: threadID
+   !
+   ! Arguments: state:    storage to hold the state of the random number generator
+   !                      the state is handed over in each call to the random
+   !                      number generators
+   !            rank:     rank of the process using the random number generator
+   !                      allows MPI-parallel use of the random number generator
+   !                      If not in MPI situation, choose freely
+   !            threadID: ID of the thread using the random number generator
+   !                      allows thread-parallel use of the random number generator
+   !                      If not in threaded situation, choose freely
+   !            seed:     Seed for the random number generator to allow for
+   !                      different or same random numbers with each run
+   subroutine frand123Init_int64_int32( state, rank, threadId, seed )
+      use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_ptr, c_loc, c_null_ptr
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      integer( kind = c_int64_t ), value, intent( in ) :: rank
+      integer( kind = c_int32_t ), value, intent( in ) :: threadId
+      integer( kind = c_int64_t ), dimension( 2 ), target, optional, intent( in ) :: seed
+
+      ! need ptr to allow for seed and no seed
+      type( c_ptr ) :: seed_ptr
+      
+      ! is optional seed given
+      if( present( seed ) ) then
+         seed_ptr = c_loc( seed )
+      else
+         seed_ptr = c_null_ptr
+      endif
+
+      ! call C implementation
+      call frand123Init_C( state, rank, int( threadID, c_int64_t ), seed_ptr )
+   end subroutine frand123Init_int64_int32
+
+   ! initialization of the random number generators using 32 bit integer for rank
+   ! and 64 bit integer for threadID
+   ! initialize the state as follows:
+   ! counter: first  64 bits: first entry of seed
+   !          second 64 bits: second entry of seed
+   ! key:     first  64 bits: rank
+   !          second 64 bits: threadID
+   !
+   ! Arguments: state:    storage to hold the state of the random number generator
+   !                      the state is handed over in each call to the random
+   !                      number generators
+   !            rank:     rank of the process using the random number generator
+   !                      allows MPI-parallel use of the random number generator
+   !                      If not in MPI situation, choose freely
+   !            threadID: ID of the thread using the random number generator
+   !                      allows thread-parallel use of the random number generator
+   !                      If not in threaded situation, choose freely
+   !            seed:     Seed for the random number generator to allow for
+   !                      different or same random numbers with each run
+   subroutine frand123Init_int32_int64( state, rank, threadId, seed )
+      use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_ptr, c_loc, c_null_ptr
+      implicit none
+      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      integer( kind = c_int32_t ), value, intent( in ) :: rank
+      integer( kind = c_int64_t ), value, intent( in ) :: threadId
+      integer( kind = c_int64_t ), dimension( 2 ), target, optional, intent( in ) :: seed
+
+      ! need ptr to allow for seed and no seed
+      type( c_ptr ) :: seed_ptr
+      
+      ! is optional seed given
+      if( present( seed ) ) then
+         seed_ptr = c_loc( seed )
+      else
+         seed_ptr = c_null_ptr
+      endif
+
+      ! call C implementation
+      call frand123Init_C( state, int( rank, c_int64_t ), threadID, seed_ptr )
+   end subroutine frand123Init_int32_int64
 
    ! initialization of the random number generators using 32 bit integers for rank and threadID
    ! initialize the state as follows:
@@ -430,7 +533,7 @@ contains
    !                      If not in threaded situation, choose freely
    !            seed:     Seed for the random number generator to allow for
    !                      different or same random numbers with each run
-   subroutine frand123Init_int32( state, rank, threadId, seed )
+   subroutine frand123Init_int32_int32( state, rank, threadId, seed )
       use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_ptr, c_loc, c_null_ptr
       implicit none
       integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
@@ -438,11 +541,17 @@ contains
       integer( kind = c_int32_t ), value, intent( in ) :: threadId
       integer( kind = c_int64_t ), dimension( 2 ), target, optional, intent( in ) :: seed
 
+      ! need ptr to allow for seed or no seed
+      type( c_ptr ) :: seed_ptr
+
       ! is optional seed given
       if( present( seed ) ) then
-         call frand123Init( state, int( rank, c_int64_t ), int( threadId, c_int64_t), seed )
+         seed_ptr = c_loc( seed )
       else
-         call frand123Init( state, int( rank, c_int64_t ), int( threadId, c_int64_t ) )
+         seed_ptr = c_null_ptr
       endif
-   end subroutine frand123Init_int32
+
+      ! call C implementation
+      call frand123Init_C( state, int( rank, c_int64_t ), int( threadID, c_int64_t ), seed_ptr )
+   end subroutine frand123Init_int32_int32
 end module frand123
