@@ -20,7 +20,7 @@ OPENMPFLAGS = -qopenmp
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX) -std=c99
-CFLAGS = -IRandom123 -Jlib64 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm #-flto-report
+CFLAGS = -IRandom123 -Jlib64 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm -ffree-form -ffixed-line-length-none#-flto-report
 FC = gfortran$(SUFFIX) -std=f2008
 FFLAGS = $(CFLAGS)
 LD = gcc$(SUFFIX)
@@ -82,6 +82,8 @@ clean:
 	rm -f examples/C/*optrpt
 	rm -f examples/Fortran/*.x
 	rm -f examples/Fortran/*optrpt
+	rm -f tuning/*.x
+	rm -f tuning/*optrpt
 
 tests: testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testWichura2x64Kernel testRandNormDoublePython testNormDoublePerformance testRandNormSinglePython testNormSinglePerformance testCentralMomentsNormDouble testEquivalence testOdd
 
@@ -256,3 +258,27 @@ examples/Fortran/integer32.x: examples/Fortran/integer32.f90 lib64/libfrand123.a
 
 examples/Fortran/unifiedInterface.x: examples/Fortran/unifiedInterface.f90 lib64/libfrand123.a
 	$(FC) $(FFLAGS) -o examples/Fortran/unifiedInterface.x examples/Fortran/unifiedInterface.f90 lib64/libfrand123.a
+
+tuning/c_frand123Double.x: tuning/c_frand123Double.c lib64/libfrand123.a
+	$(CC) $(CFLAGS) -o tuning/c_frand123Double.x tuning/c_frand123Double.c lib64/libfrand123.a
+
+tuning/c_frand123Single.x: tuning/c_frand123Single.c lib64/libfrand123.a
+	$(CC) $(CFLAGS) -o tuning/c_frand123Single.x tuning/c_frand123Single.c lib64/libfrand123.a
+
+tuning/c_frand123NormDouble.x: tuning/c_frand123NormDouble.c lib64/libfrand123.a
+	$(CC) $(CFLAGS) -o tuning/c_frand123NormDouble.x tuning/c_frand123NormDouble.c lib64/libfrand123.a
+
+tuning/c_frand123NormSingle.x: tuning/c_frand123NormSingle.c lib64/libfrand123.a
+	$(CC) $(CFLAGS) -o tuning/c_frand123NormSingle.x tuning/c_frand123NormSingle.c lib64/libfrand123.a
+
+tuning/f_frand123Double.x: tuning/f_frand123Double.f90 lib64/libfrand123.a
+	$(FC) $(FFLAGS) -o tuning/f_frand123Double.x tuning/f_frand123Double.f90 lib64/libfrand123.a
+
+tuning/f_frand123Single.x: tuning/f_frand123Single.f90 lib64/libfrand123.a
+	$(FC) $(FFLAGS) -o tuning/f_frand123Single.x tuning/f_frand123Single.f90 lib64/libfrand123.a
+
+tuning/f_frand123NormDouble.x: tuning/f_frand123NormDouble.f90 lib64/libfrand123.a
+	$(FC) $(FFLAGS) -o tuning/f_frand123NormDouble.x tuning/f_frand123NormDouble.f90 lib64/libfrand123.a
+
+tuning/f_frand123NormSingle.x: tuning/f_frand123NormSingle.f90 lib64/libfrand123.a
+	$(FC) $(FFLAGS) -o tuning/f_frand123NormSingle.x tuning/f_frand123NormSingle.f90 lib64/libfrand123.a
