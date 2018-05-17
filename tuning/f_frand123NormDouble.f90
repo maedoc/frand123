@@ -64,14 +64,12 @@ contains
 
       ! local parameters
       integer, parameter :: it = c_int64_t
-      integer( kind = it ), dimension( 8 ), parameter :: numbers = (/ 10_it, &
+      integer( kind = it ), dimension( 6 ), parameter :: numbers = (/ 10_it, &
                                                                     & 100_it, &
                                                                     & 1000_it, &
                                                                     & 10000_it, &
                                                                     & 100000_it, &
-                                                                    & 1000000_it, &
-                                                                    & 10000000_it, &
-                                                                    & 100000000_it /)
+                                                                    & 1000000_it /)
 
       ! local variables
       character( len = 200 ) :: filename
@@ -80,7 +78,7 @@ contains
       real( kind = c_double ) :: meanTime, minTime, maxTime, timeElapsed, resultSum
 
       ! create filename
-      write( filename, '( "tuning/frand123NormDouble_scalar_f", A, ".dat" )' ) trim( compileCombination )
+      write( filename, '( "tuning/timings/frand123NormDouble_scalar_f", A, ".dat" )' ) trim( compileCombination )
 
       ! open file
       open( newunit = fileHandler, file = filename, action = 'write', iostat = stat )
@@ -89,18 +87,18 @@ contains
          stop
       endif
 
-      do i = 1, 8
+      do i = 1, 6
          localNum = numbers( i )
          meanTime = 0._c_double
          minTime = 100._c_double
          maxTime = 0._c_double
-         do k = 0, 10
+         do k = 0, 20
             call time_frand123NormDouble_scalar( state, localNum, timeElapsed, resultSum )
             meanTime = meanTime + timeElapsed
             minTime = min( minTime, timeElapsed )
             maxTime = max( maxTime, timeElapsed )
          enddo
-         meanTime = meanTime / 10._c_double
+         meanTime = meanTime / 20._c_double
          write( fileHandler, '( "frand123NormDouble_scalar,", I12, ",", E13.6, ",", E13.6, ",", E13.6 )' ) &
                 & localNum, meanTime, minTime, maxTime
          write( *, '( "frand123NormDouble_scalar,", I12, ",", E13.6, ",", E13.6, ",", E13.6 )' ) & 
@@ -126,7 +124,13 @@ contains
       integer( kind = c_int64_t ) :: i
       real( kind = c_double ) :: startTime, endTime
       real( kind = c_double ) :: dummySum
-      real( kind = c_double ), dimension( chunksize ) :: randomNumber
+      real( kind = c_double ), dimension( : ), allocatable :: randomNumber
+
+      allocate( randomNumber( chunksize ) )
+      if( .not. allocated( randomNumber ) ) then
+         write(*,*) 'error allocating randomNumber in time_frand123NormDouble Fortran version'
+         stop 1
+      endif
 
       dummySum = 0.
       startTime = omp_get_wtime()
@@ -146,22 +150,20 @@ contains
 
       ! local parameters
       integer, parameter :: it = c_int64_t
-      integer( kind = it ), dimension( 7 ), parameter :: numbers = (/ 10_it, &
+      integer( kind = it ), dimension( 6 ), parameter :: numbers = (/ 10_it, &
                                                                     & 100_it, &
                                                                     & 1000_it, &
                                                                     & 10000_it, &
                                                                     & 100000_it, &
-                                                                    & 1000000_it, &
-                                                                    & 10000000_it /)
-      integer( kind = it ), dimension( 9 ), parameter :: chunksizes = (/ 1_it, &
+                                                                    & 1000000_it /)
+      integer( kind = it ), dimension( 8 ), parameter :: chunksizes = (/ 1_it, &
                                                                        & 2_it, &
                                                                        & 10_it, &
                                                                        & 100_it, &
                                                                        & 1000_it, &
                                                                        & 10000_it, &
                                                                        & 100000_it, &
-                                                                       & 1000000_it, &
-                                                                       & 10000000_it /)
+                                                                       & 1000000_it /)
 
       ! local variables
       character( len = 200 ) :: filename
@@ -170,7 +172,7 @@ contains
       real( kind = c_double ) :: meanTime, minTime, maxTime, timeElapsed, resultSum
 
       ! create filename
-      write( filename, '( "tuning/frand123NormDouble_f", A, ".dat" )' ) trim( compileCombination )
+      write( filename, '( "tuning/timings/frand123NormDouble_f", A, ".dat" )' ) trim( compileCombination )
 
       ! open file
       open( newunit = fileHandler, file = filename, action = 'write', iostat = stat )
@@ -179,21 +181,21 @@ contains
          stop
       endif
 
-      do i = 1, 8
-         do j = 1, 9
+      do i = 1, 6
+         do j = 1, 8
             localNum = numbers( i )
             localChunksize = chunksizes( j )
             if( localChunksize .le. localNum ) then
                meanTime = 0._c_double
                minTime = 100._c_double
                maxTime = 0._c_double
-               do k = 0, 10
+               do k = 0, 20
                   call time_frand123NormDouble( state, localNum, localChunksize, timeElapsed, resultSum )
                   meanTime = meanTime + timeElapsed
                   minTime = min( minTime, timeElapsed )
                   maxTime = max( maxTime, timeElapsed )
                enddo
-               meanTime = meanTime / 10._c_double
+               meanTime = meanTime / 20._c_double
                write( fileHandler, '( "frand123NormDouble,", I12, ",", I12, ",", E13.6, ",", E13.6, ",", E13.6 )' ) &
                       & localNum, localChunksize, meanTime, minTime, maxTime
                write( *, '( "frand123NormDouble,", I12, ",", I12, ",", E13.6, ",", E13.6, ",", E13.6 )' ) &

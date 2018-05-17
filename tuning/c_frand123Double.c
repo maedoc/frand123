@@ -32,9 +32,9 @@ void time_frand123Double_scalar_runner( int64_t *restrict state, char *compileCo
 {
    resDouble_t res;
    
-   const int64_t number[ 8 ] = { INT64_C( 10 ), INT64_C( 100 ), INT64_C( 1000 ), INT64_C( 10000 ), INT64_C( 100000 ), INT64_C( 1000000 ), INT64_C( 10000000 ), INT64_C( 100000000 ) };
+   const int64_t number[ 6 ] = { INT64_C( 10 ), INT64_C( 100 ), INT64_C( 1000 ), INT64_C( 10000 ), INT64_C( 100000 ), INT64_C( 1000000 ) };
 
-   char filename[ 200 ] = "tuning/frand123Double_scalar";
+   char filename[ 200 ] = "tuning/timings/frand123Double_scalar";
    strncat( filename, compileCombination, 100 );
    strncat( filename, ".dat", 4 );
    FILE *fd = fopen( filename, "w+" );
@@ -45,18 +45,18 @@ void time_frand123Double_scalar_runner( int64_t *restrict state, char *compileCo
 
    printf( "time frand123Double_scalar\n" );
 
-   for( int i = 0; i < 8; i++ )
+   for( int i = 0; i < 6; i++ )
    {
       const int64_t num = number[ i ];
       double meanTime = 0., minTime = 100., maxTime = 0.;
-      for( int k = 0; k < 8; k++ )
+      for( int k = 0; k < 20; k++ )
       {
          res = time_frand123Double_scalar( state, num );
          meanTime += res.timeElapsed;
          minTime = fmin( minTime, res.timeElapsed );
          maxTime = fmax( maxTime, res.timeElapsed );
       }
-      meanTime = meanTime / 10.;
+      meanTime = meanTime / 20.;
       fprintf( fd, "frand123Double_scalar, %d, %e, %e, %e\n", num, meanTime, minTime, maxTime );
       printf( "frand123Double_scalar, %d, %e, %e, %e\n", num, meanTime, minTime, maxTime );
       free( res.sum );
@@ -91,10 +91,10 @@ void time_frand123Double_runner( int64_t *restrict state, char *compileCombinati
 {
    resDouble_t res;
 
-   const int64_t number[ 7 ] = { INT64_C( 10 ), INT64_C( 100 ), INT64_C( 1000 ), INT64_C( 10000 ), INT64_C( 100000 ), INT64_C( 1000000 ), INT64_C( 10000000 ) };
-   const int64_t chunksize[ 9 ] = { INT64_C( 1 ), INT64_C( 2 ), INT64_C( 10 ), INT64_C( 100 ), INT64_C( 1000 ), INT64_C( 10000 ), INT64_C( 100000 ), INT64_C( 1000000 ), INT64_C( 10000000 ) };
+   const int64_t number[ 6 ] = { INT64_C( 10 ), INT64_C( 100 ), INT64_C( 1000 ), INT64_C( 10000 ), INT64_C( 100000 ), INT64_C( 1000000 ) };
+   const int64_t chunksize[ 8 ] = { INT64_C( 1 ), INT64_C( 2 ), INT64_C( 10 ), INT64_C( 100 ), INT64_C( 1000 ), INT64_C( 10000 ), INT64_C( 100000 ), INT64_C( 1000000 ) };
 
-   char filename[ 200 ] = "tuning/frand123Double";
+   char filename[ 200 ] = "tuning/timings/frand123Double";
    strncat( filename, compileCombination, 100 );
    strncat( filename, ".dat", 4 );
    FILE *fd = fopen( filename, "w+" );
@@ -105,23 +105,23 @@ void time_frand123Double_runner( int64_t *restrict state, char *compileCombinati
 
    printf( "time frand123Double\n" );
 
-   for( int i = 0; i < 7; i++ )
+   for( int i = 0; i < 6; i++ )
    {
-      for( int j = 0; j < 9; j++ )
+      for( int j = 0; j < 8; j++ )
       {
          const int64_t num = number[ i ];
          const int64_t cs = chunksize[ j ];
          if( cs <= num )
          {
             double meanTime = 0., minTime = 100., maxTime = 0.;
-            for( int k = 0; k < 10; k++ )
+            for( int k = 0; k < 20; k++ )
             {
                res = time_frand123Double( state, num, cs );
                meanTime += res.timeElapsed;
                minTime = fmin( minTime, res.timeElapsed );
                maxTime = fmax( maxTime, res.timeElapsed );
             }
-            meanTime = meanTime / 10.;
+            meanTime = meanTime / 20.;
             fprintf( fd, "frand123Double, %d, %d, %e, %e, %e\n", num, cs, meanTime, minTime, maxTime );
             printf( "frand123Double, %d, %d, %e, %e, %e\n", num, cs, meanTime, minTime, maxTime );
             free( res.sum );
