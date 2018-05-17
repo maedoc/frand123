@@ -6,15 +6,13 @@ VECTORWIDHT ?= 1
 #### Intel Compilers ####
 #########################
 CC = icc$(SUFFIX)
-CFLAGS = -IRandom123 -fpic -ipo -O2 -xHost -qopenmp -qopt-report=5 -no-inline-min-size
+CFLAGS = -IRandom123 -fpic -ipo -O3 -xHost -qopenmp -no-inline-min-size #-qopt-report=5
 FC = ifort$(SUFFIX)
-FFLAGS = -fpic -module lib64 -ipo -O2 -xHost -qopenmp -qopt-report=5 -no-inline-min-size
+FFLAGS = -fpic -module lib64 -ipo -O3 -xHost -qopenmp -no-inline-min-size #-qopt-report=5
 LD = ifort$(SUFFIX)
-LDFLAGS = -shared -ipo -O2 -xHost -qopenmp -qopt-report=5 -no-inline-min-size
+LDFLAGS = -shared -ipo -O3 -xHost -qopenmp -no-inline-min-size #-qopt-report=5
 AR = xiar
 ARFLAGS = rc
-CMAINFLAGS = -nofor_main
-OPENMPFLAGS = -qopenmp
 #######################
 #### GNU Compilers ####
 #######################
@@ -27,8 +25,6 @@ LD = gcc$(SUFFIX)
 LDFLAGS = -shared -fPIC -flto -O2 -mtune=native -march=native #-flto-report
 AR = gcc-ar$(SUFFIX)
 ARFLAGS = rc
-CMAINFLAGS =
-OPENMPFLAGS = -fopenmp
 endif
 ############################
 #### For static library ####
@@ -46,7 +42,7 @@ endif
 # decide whether to use FMA instructions (requires Intel FMA3 support)
 ifeq ($(fma),y)
 	CFLAGS += -DUSE_FMA -mfma
-	FFLAGS += -mfma
+	FFLAGS += -mfma -fma
 endif
 
 # decide whether to use the Polar or Wichura's AS 241 method
@@ -200,7 +196,7 @@ tests/as241ReferenceDouble.x: tests/as241ReferenceDouble.c Makefile
 	$(CC) $(CFLAGS) -lm -o tests/as241ReferenceDouble.x tests/as241ReferenceDouble.c
 
 tests/testNormDoublePerformance.x: tests/testNormDoublePerformance.f90 lib64/libfrand123.a Makefile
-	$(FC) $(FFLAGS) $(OPENMPFLAGS) -o tests/testNormDoublePerformance.x tests/testNormDoublePerformance.f90 lib64/libfrand123.a
+	$(FC) $(FFLAGS) -o tests/testNormDoublePerformance.x tests/testNormDoublePerformance.f90 lib64/libfrand123.a
 
 tests/testRandNormSingle.x: lib64/libfrand123.a tests/testRandNormSingle.f90 Makefile
 	$(FC) $(FFLAGS) -o tests/testRandNormSingle.x tests/testRandNormSingle.f90 lib64/libfrand123.a
@@ -209,7 +205,7 @@ tests/as241ReferenceSingle.x: tests/as241.c tests/as241ReferenceSingle.c Makefil
 	$(CC) $(CFLAGS) -lm -o tests/as241ReferenceSingle.x tests/as241.c tests/as241ReferenceSingle.c
 
 tests/testNormSinglePerformance.x: tests/testNormSinglePerformance.f90 lib64/libfrand123.a Makefile
-	$(FC) $(FFLAGS) $(OPENMPFLAGS) -o tests/testNormSinglePerformance.x tests/testNormSinglePerformance.f90 lib64/libfrand123.a
+	$(FC) $(FFLAGS) -o tests/testNormSinglePerformance.x tests/testNormSinglePerformance.f90 lib64/libfrand123.a
 
 tests/testCentralMomentsNormDouble.x: tests/testCentralMomentsNormDouble.c lib64/libfrand123.a Makefile
 	$(CC) $(CFLAGS) -DVECTOR_WIDTH=$(VECTORWIDTH) -o tests/testCentralMomentsNormDouble.x tests/testCentralMomentsNormDouble.c lib64/libfrand123.a -lm
