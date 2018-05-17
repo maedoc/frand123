@@ -5,7 +5,8 @@ import pprint
 
 pp = pprint.PrettyPrinter( depth = 6 )
 
-compiler_names = [ "gcc", "intel" ]
+#compiler_names = [ "gcc", "intel" ]
+compiler_names = [ "intel" ]
 ars_switch = [ "n", "y" ]
 fma_switch = [ "n", "y" ]
 polar_switch = [ "n", "y" ]

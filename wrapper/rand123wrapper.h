@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <stdbool.h>
+#include "frand123.h"
 
 #if USE_ARS
    #include <ars.h>
@@ -22,11 +23,11 @@
     *            res:   address to storage for 2 double precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void ars2x64_u01( int64_t state[ 4 ], double *res )
+   void ars2x64_u01( frand123State_t *state, double *res )
    {
       // extract counter and key from state
-      ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
-      ars4x32_key_t *key_ars = (ars4x32_key_t*)&state[2];
+      ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&( state->state[0] );
+      ars4x32_key_t *key_ars = (ars4x32_key_t*)&( state->state[2] );
       // calc uniformly distributed integers
       ars4x32_ctr_t resArs = ars4x32_R( 6, *ctr_ars, *key_ars );
       // convert to uint64_t
@@ -83,11 +84,11 @@
     *            res:   address to storage for 4 single precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void ars4x32_u01( int64_t state[ 4 ], float *res )
+   void ars4x32_u01( frand123State_t *state, float *res )
    {
       // extract counter and key from state
-      ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
-      ars4x32_key_t *key_ars = (ars4x32_key_t*)&state[2];
+      ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&( state->state[0] );
+      ars4x32_key_t *key_ars = (ars4x32_key_t*)&( state->state[2] );
       // move to vector registers
       ars1xm128i_ctr_t c128;
       ars1xm128i_key_t k128;
@@ -140,11 +141,11 @@
     *            res:   adress to storage for 2 64 bit signed integers
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void ars2x64_int( int64_t state[ 4 ], int64_t *res )
+   void ars2x64_int( frand123State_t *state, int64_t *res )
    {
       // extract counter and key from state
-      ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
-      ars4x32_key_t *key_ars = (ars4x32_key_t*)&state[2];
+      ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&( state->state[0] );
+      ars4x32_key_t *key_ars = (ars4x32_key_t*)&( state->state[2] );
       // calc uniformly distributed integers
       ars4x32_ctr_t resArs = ars4x32_R( 6, *ctr_ars, *key_ars );
       // store in res and reinterpret as int64_t
@@ -182,11 +183,11 @@
     *            res:   adress to storage for 4 32 bit signed integers
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void ars4x32_int( int64_t state[ 4 ], int32_t *res )
+   void ars4x32_int( frand123State_t *state, int32_t *res )
    {
       // extract counter and key from state
-      ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&state[0];
-      ars4x32_key_t *key_ars = (ars4x32_key_t*)&state[2];
+      ars4x32_ctr_t *ctr_ars = (ars4x32_ctr_t*)&( state->state[0] );
+      ars4x32_key_t *key_ars = (ars4x32_key_t*)&( state->state[2] );
       // calc uniformly distributed integers
       ars4x32_ctr_t resArs = ars4x32_R( 6, *ctr_ars, *key_ars );
       // store in res and reinterpret as int64_t
@@ -243,11 +244,11 @@
     *            res:   address to storage for 2 double precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void threefry2x64_u01( int64_t state[ 4 ], double *res )
+   void threefry2x64_u01( frand123State_t *state, double *res )
    {
       // extract counter and key from state
-      threefry2x64_ctr_t *ctr_threefry = (threefry2x64_ctr_t*)&state[0];
-      threefry2x64_key_t *key_threefry = (threefry2x64_key_t*)&state[2];
+      threefry2x64_ctr_t *ctr_threefry = (threefry2x64_ctr_t*)&( state->state[0] );
+      threefry2x64_key_t *key_threefry = (threefry2x64_key_t*)&( state->state[2] );
       // calc uniformly distributed integers
       conv_union_t resInt;
       resInt.ctr = threefry2x64_R( 13, *ctr_threefry, *key_threefry );
@@ -280,11 +281,11 @@
     *                   res:     address to storage for 4 single precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void threefry4x32_u01( int64_t state[ 4 ], float *res )
+   void threefry4x32_u01( frand123State_t *state, float *res )
    {
       // extract counter and key from state
-      threefry4x32_ctr_t *ctr_threefry = (threefry4x32_ctr_t*)&state[0];
-      threefry4x32_key_t *key_threefry = (threefry4x32_key_t*)&state[2];
+      threefry4x32_ctr_t *ctr_threefry = (threefry4x32_ctr_t*)&( state->state[0] );
+      threefry4x32_key_t *key_threefry = (threefry4x32_key_t*)&( state->state[2] );
       // calc uniformly distributed integers
       threefry4x32_ctr_t resInt = threefry4x32_R( 12, *ctr_threefry, *key_threefry );
       // convert to uniformly distributed floats in (0,1)
@@ -324,11 +325,11 @@
     *            res:   address to storage for 2 64 bit signed integers
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void threefry2x64_int( int64_t state[ 4 ], int64_t *res )
+   void threefry2x64_int( frand123State_t *state, int64_t *res )
    {
       // extract counter and key from state
-      threefry2x64_ctr_t *ctr_threefry = (threefry2x64_ctr_t*)&state[0];
-      threefry2x64_key_t *key_threefry = (threefry2x64_key_t*)&state[2];
+      threefry2x64_ctr_t *ctr_threefry = (threefry2x64_ctr_t*)&( state->state[0] );
+      threefry2x64_key_t *key_threefry = (threefry2x64_key_t*)&( state->state[2] );
       // calc uniformly distributed integers
       threefry2x64_ctr_t resThreefry = threefry2x64_R( 13, *ctr_threefry, *key_threefry );
       // reinterprete as signed 64 bit integer
@@ -354,11 +355,11 @@
     *            res:     address to storage for 4 32 bit signed integers
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void threefry4x32_int( int64_t state[ 4 ], int32_t *res )
+   void threefry4x32_int( frand123State_t *state, int32_t *res )
    {
       // extract counter and key from state
-      threefry4x32_ctr_t *ctr_threefry = (threefry4x32_ctr_t*)&state[0];
-      threefry4x32_key_t *key_threefry = (threefry4x32_key_t*)&state[2];
+      threefry4x32_ctr_t *ctr_threefry = (threefry4x32_ctr_t*)&( state->state[0] );
+      threefry4x32_key_t *key_threefry = (threefry4x32_key_t*)&( state->state[2] );
       // calc uniformly distributed integers
       threefry4x32_ctr_t resInt = threefry4x32_R( 12, *ctr_threefry, *key_threefry );
       // reinterprete as 32 bit signed integer
@@ -404,7 +405,7 @@
     *            res:   address to storage for 2 double precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void polar2x64( int64_t state[ 4 ], const double mu, const double sigma, double *res )
+   void polar2x64( frand123State_t *state, const double mu, const double sigma, double *res )
    {
       double u[ 2 ];
       double x[ 2 ];
@@ -417,9 +418,9 @@
       do
       {
 #if USE_ARS
-         ars2x64_u01( state, u );
+         ars2x64_u01( &( state->state ), u );
 #else
-         threefry2x64_u01( state, u );
+         threefry2x64_u01( &( state->state ), u );
 #endif
          x[ 0 ] = 2. * u[ 0 ] - 1.;
          x[ 1 ] = 2. * u[ 1 ] - 1.;
@@ -611,7 +612,7 @@
     *            res:   address to storage for 2 double precision reals
     */
    R123_STATIC_INLINE R123_FORCE_INLINE()
-   void wichura2x64( int64_t state[ 4 ], const double mu, const double sigma, double *res )
+   void wichura2x64( frand123State_t *state, const double mu, const double sigma, double *res )
    {
       // get uniform random numbers
       double p[ 2 ];
@@ -638,7 +639,7 @@
  *            sigma: variance
  *            res:   address to storage for 4 single precision reals
  */
-void polar4x32( int64_t state[ 4 ], const float mu, const float sigma, float *res )
+void polar4x32( frand123State_t *state, const float mu, const float sigma, float *res )
 {
    float u[ 4 ];
    float x[ 4 ];
@@ -690,7 +691,7 @@ void polar4x32( int64_t state[ 4 ], const float mu, const float sigma, float *re
  *            sigma: variance
  *            res:   address to storage for 2 single precision reals
  */
-void polar4x32_two( int64_t state[ 4 ], const float mu, const float sigma, float *res )
+void polar4x32_two( frand123State_t *state, const float mu, const float sigma, float *res )
 {
    float u[ 4 ];
    float x[ 4 ];

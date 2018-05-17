@@ -1,29 +1,39 @@
-module frand123
+module frand123State
    use, intrinsic :: iso_c_binding, only: c_int64_t
    implicit none
-   integer, parameter :: frand123_state_kind = c_int64_t
-   integer, parameter :: frand123_state_size = 4
+
+   type :: frand123State_t
+      integer( kind = c_int64_t ), dimension( 4 ) :: state
+   end type frand123State_t
+end module frand123State
+module frand123
+   use, intrinsic :: iso_c_binding!, only: c_int64_t
+   use :: frand123State
+   implicit none
 
    ! interfaces to C functions
    interface
       subroutine frand123Double_C( state, lenRes, res ) bind( C, name='frand123Double' )
-         use, intrinsic :: iso_c_binding, only: c_int64_t, c_double
+         use, intrinsic :: iso_c_binding!, only: c_int64_t, c_double
+         use :: frand123State
          implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         type( frand123State_t ), intent( inout ) :: state
          integer( kind = c_int64_t ), value, intent( in ) :: lenRes
          real( kind = c_double ), dimension( * ), intent( inout ) :: res
       end subroutine frand123Double_C
       subroutine frand123Single_C( state, lenRes, res ) bind( C, name='frand123Single' )
          use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+         use :: frand123State
          implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         type( frand123State_t ), intent( inout ) :: state
          integer( kind = c_int64_t ), value, intent( in ) :: lenRes
          real( kind = c_float ), dimension( * ), intent( inout ) :: res
       end subroutine frand123Single_C
       subroutine frand123NormDouble_C( state, mu, sigma, lenRes, res ) bind( C, name='frand123NormDouble' )
          use, intrinsic :: iso_c_binding, only: c_int64_t, c_double
+         use :: frand123State
          implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         type( frand123State_t ), intent( inout ) :: state
          real( kind = c_double ), value, intent( in ) :: mu
          real( kind = c_double ), value, intent( in ) :: sigma
          integer( kind = c_int64_t ), value, intent( in ) :: lenRes
@@ -31,16 +41,18 @@ module frand123
       end subroutine frand123NormDouble_C
       function frand123NormSingle_scalar_C( state, mu, sigma ) result( res ) bind( C, name='frand123NormSingle_scalar' )
          use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+         use :: frand123State
          implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         type( frand123State_t ), intent( inout ) :: state
          real( kind = c_float ), value, intent( in ) :: mu
          real( kind = c_float ), value, intent( in ) :: sigma
          real( kind = c_float ) :: res 
       end function frand123NormSingle_scalar_C
       subroutine frand123NormSingle_C( state, mu, sigma, lenRes, res ) bind( C, name='frand123NormSingle' )
          use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+         use :: frand123State
          implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         type( frand123State_t ), intent( inout ) :: state
          real( kind = c_float ), value, intent( in ) :: mu
          real( kind = c_float ), value, intent( in ) :: sigma
          integer( kind = c_int64_t ), value, intent( in ) :: lenRes
@@ -48,22 +60,25 @@ module frand123
       end subroutine frand123NormSingle_C
       subroutine frand123Integer64_C( state, lenRes, res ) bind( C, name='frand123Integer64' )
          use, intrinsic :: iso_c_binding, only: c_int64_t
+         use :: frand123State
          implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         type( frand123State_t ), intent( inout ) :: state
          integer( kind = c_int64_t ), value, intent( in ) :: lenRes
          integer( kind = c_int64_t ), dimension( * ), intent( inout ) :: res
       end subroutine frand123Integer64_C
       subroutine frand123Integer32_C( state, lenRes, res ) bind( C, name='frand123Integer32' )
          use, intrinsic :: iso_c_binding, only: c_int64_t, c_int32_t
+         use :: frand123State
          implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         type( frand123State_t ), intent( inout ) :: state
          integer( kind = c_int64_t ), value, intent( in ) :: lenRes
          integer( kind = c_int32_t ), dimension( * ), intent( inout ) :: res
       end subroutine frand123Integer32_C
       subroutine frand123Init_C( state, rank, threadId, seed ) bind( C, name='frand123Init' )
          use, intrinsic :: iso_c_binding, only: c_int64_t, c_ptr
+         use :: frand123State
          implicit none
-         integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+         type( frand123State_t ), intent( inout ) :: state
          integer( kind = c_int64_t ), value, intent( in ) :: rank
          integer( kind = c_int64_t ), value, intent( in ) :: threadID
          type( c_ptr ), value :: seed
@@ -125,8 +140,7 @@ module frand123
    end interface frand123Rand
 
    ! make only generic interfaces public
-   public :: frand123_state_kind
-   public :: frand123_state_size
+   public :: frand123State_t
    public :: frand123Double
    public :: frand123Single
    public :: frand123NormDouble
@@ -162,8 +176,9 @@ contains
    !            res:   scalar for random double precision reals in (0,1)
    subroutine frand123Double_scalar( state, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_double
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       real( kind = c_double ), intent( inout ) :: res
 
       ! use vector version
@@ -179,8 +194,9 @@ contains
    !            res:   array to be filled with random double precision reals in (0,1)
    subroutine frand123Double_vector( state, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_double
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       real( kind = c_double ), dimension( : ), intent( inout ) :: res
 
       ! size of array
@@ -198,8 +214,9 @@ contains
    !            res:   scalar for random single precision reals in (0,1)
    subroutine frand123Single_scalar( state, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       real( kind = c_float ), intent( inout ) :: res
 
       ! use vector version
@@ -215,8 +232,9 @@ contains
    !            res:   array to be filled with random single precision reals in (0,1)
    subroutine frand123Single_vector( state, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       real( kind = c_float ), dimension( : ), intent( inout ) :: res
 
       ! size of array
@@ -236,8 +254,9 @@ contains
    !            res:   scalar random double precision reals
    subroutine frand123NormDouble_scalar( state, mu, sigma, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_double
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       real( kind = c_double ), value, intent( in ) :: mu
       real( kind = c_double ), value, intent( in ) :: sigma
       real( kind = c_double ), intent( inout ) :: res
@@ -257,8 +276,9 @@ contains
    !            res:   array to be filled with random double precision real
    subroutine frand123NormDouble_vector( state, mu, sigma, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_double
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       real( kind = c_double ), value, intent( in ) :: mu
       real( kind = c_double ), value, intent( in ) :: sigma
       real( kind = c_double ), dimension( : ), intent( inout ) :: res
@@ -284,8 +304,9 @@ contains
    !            res:   scalar for random single precision reals
    subroutine frand123NormSingle_scalar( state, mu, sigma, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       real( kind = c_float ), value, intent( in ) :: mu
       real( kind = c_float ), value, intent( in ) :: sigma
       real( kind = c_float ), intent( inout ) :: res
@@ -307,8 +328,9 @@ contains
    !            res:   array to be filled with random single precision reals
    subroutine frand123NormSingle_vector( state, mu, sigma, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       real( kind = c_float ), value, intent( in ) :: mu
       real( kind = c_float ), value, intent( in ) :: sigma
       real( kind = c_float ), dimension( : ), intent( inout ) :: res
@@ -328,8 +350,9 @@ contains
    !            res:   scalar random 64 bit signed integers
    subroutine frand123Integer64_scalar( state, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int64_t ), intent( inout ) :: res
 
       ! use vector version
@@ -345,8 +368,9 @@ contains
    !            res:   array to be filled with random 64 bit signed integers
    subroutine frand123Integer64_vector( state, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int64_t ), dimension( : ), intent( inout ) :: res
 
       ! size of array
@@ -364,8 +388,9 @@ contains
    !            res:   scalar for random 32 bit signed integer
    subroutine frand123Integer32_scalar( state, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_int32_t
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int32_t ), intent( inout ) :: res
 
       ! use vector version
@@ -381,8 +406,9 @@ contains
    !            res:   array to be filled with random 32 bit signed integer
    subroutine frand123Integer32_vector( state, res )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_int32_t
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int32_t ), dimension( : ), intent( inout ) :: res
 
       ! size of array
@@ -413,8 +439,9 @@ contains
    !                      different or same random numbers with each run
    subroutine frand123Init_int64_int64( state, rank, threadId, seed )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_ptr, c_loc, c_null_ptr
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int64_t ), value, intent( in ) :: rank
       integer( kind = c_int64_t ), value, intent( in ) :: threadId
       integer( kind = c_int64_t ), dimension( 2 ), target, optional, intent( in ) :: seed
@@ -454,8 +481,9 @@ contains
    !                      different or same random numbers with each run
    subroutine frand123Init_int64_int32( state, rank, threadId, seed )
       use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_ptr, c_loc, c_null_ptr
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int64_t ), value, intent( in ) :: rank
       integer( kind = c_int32_t ), value, intent( in ) :: threadId
       integer( kind = c_int64_t ), dimension( 2 ), target, optional, intent( in ) :: seed
@@ -495,8 +523,9 @@ contains
    !                      different or same random numbers with each run
    subroutine frand123Init_int32_int64( state, rank, threadId, seed )
       use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_ptr, c_loc, c_null_ptr
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int32_t ), value, intent( in ) :: rank
       integer( kind = c_int64_t ), value, intent( in ) :: threadId
       integer( kind = c_int64_t ), dimension( 2 ), target, optional, intent( in ) :: seed
@@ -535,8 +564,9 @@ contains
    !                      different or same random numbers with each run
    subroutine frand123Init_int32_int32( state, rank, threadId, seed )
       use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, c_ptr, c_loc, c_null_ptr
+      use :: frand123State
       implicit none
-      integer( kind = c_int64_t ), dimension( 4 ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int32_t ), value, intent( in ) :: rank
       integer( kind = c_int32_t ), value, intent( in ) :: threadId
       integer( kind = c_int64_t ), dimension( 2 ), target, optional, intent( in ) :: seed

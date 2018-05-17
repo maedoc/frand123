@@ -11,7 +11,7 @@ typedef struct
    double *sum;
 } resDouble_t;
 
-resDouble_t time_frand123NormDouble_scalar( int64_t *restrict state, int64_t number )
+resDouble_t time_frand123NormDouble_scalar( frand123State_t *state, int64_t number )
 {
    double startTime, endTime;
    volatile double sum = 0.;
@@ -28,7 +28,7 @@ resDouble_t time_frand123NormDouble_scalar( int64_t *restrict state, int64_t num
    return res;
 }
 
-void time_frand123NormDouble_scalar_runner( int64_t *restrict state, char *compileCombination )
+void time_frand123NormDouble_scalar_runner( frand123State_t *state, char *compileCombination )
 {
    resDouble_t res;
    
@@ -66,7 +66,7 @@ void time_frand123NormDouble_scalar_runner( int64_t *restrict state, char *compi
    return;
 }
 
-resDouble_t time_frand123NormDouble( int64_t *restrict state, int64_t number, int64_t chunksize )
+resDouble_t time_frand123NormDouble( frand123State_t *state, int64_t number, int64_t chunksize )
 {
    double startTime, endTime;
    volatile double sum = 0.;
@@ -87,7 +87,7 @@ resDouble_t time_frand123NormDouble( int64_t *restrict state, int64_t number, in
    return res;
 }
 
-void time_frand123NormDouble_runner( int64_t *restrict state, char *compileCombination )
+void time_frand123NormDouble_runner( frand123State_t *state, char *compileCombination )
 {
    resDouble_t res;
 
@@ -135,8 +135,8 @@ void time_frand123NormDouble_runner( int64_t *restrict state, char *compileCombi
 
 int main( int argc, char **argv )
 {
-   int64_t state[ 4 ];
-   frand123Init( state, 0, 0, NULL );
+   frand123State_t state;
+   frand123Init( &state, 0, 0, NULL );
 
    if( argc < 2 )
    {
@@ -150,10 +150,10 @@ int main( int argc, char **argv )
    printf( "frand123 tuning script for the C interface\n" );
 
    // time frand123NormDouble_scalar
-   time_frand123NormDouble_scalar_runner( state, argv[ 1 ] );
+   time_frand123NormDouble_scalar_runner( &state, argv[ 1 ] );
 
    // time frand123NormDouble
-   time_frand123NormDouble_runner( state, argv[ 1 ] );
+   time_frand123NormDouble_runner( &state, argv[ 1 ] );
 
    return 0;
 }

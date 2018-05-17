@@ -11,7 +11,7 @@ typedef struct
    float *sum;
 } resSingle_t;
 
-resSingle_t time_frand123Single_scalar( int64_t *restrict state, int64_t number )
+resSingle_t time_frand123Single_scalar( frand123State_t *state, int64_t number )
 {
    double startTime, endTime;
    volatile float sum = 0.;
@@ -28,7 +28,7 @@ resSingle_t time_frand123Single_scalar( int64_t *restrict state, int64_t number 
    return res;
 }
 
-void time_frand123Single_scalar_runner( int64_t *restrict state, char *compileCombination )
+void time_frand123Single_scalar_runner( frand123State_t *state, char *compileCombination )
 {
    resSingle_t res;
    
@@ -66,7 +66,7 @@ void time_frand123Single_scalar_runner( int64_t *restrict state, char *compileCo
    return;
 }
 
-resSingle_t time_frand123Single( int64_t *restrict state, int64_t number, int64_t chunksize )
+resSingle_t time_frand123Single( frand123State_t *state, int64_t number, int64_t chunksize )
 {
    double startTime, endTime;
    volatile float sum = 0.;
@@ -87,7 +87,7 @@ resSingle_t time_frand123Single( int64_t *restrict state, int64_t number, int64_
    return res;
 }
 
-void time_frand123Single_runner( int64_t *restrict state, char *compileCombination )
+void time_frand123Single_runner( frand123State_t *state, char *compileCombination )
 {
    resSingle_t res;
 
@@ -135,8 +135,8 @@ void time_frand123Single_runner( int64_t *restrict state, char *compileCombinati
 
 int main( int argc, char **argv )
 {
-   int64_t state[ 4 ];
-   frand123Init( state, 0, 0, NULL );
+   frand123State_t state;
+   frand123Init( &state, 0, 0, NULL );
 
    if( argc < 2 )
    {
@@ -150,10 +150,10 @@ int main( int argc, char **argv )
    printf( "frand123 tuning script for the C interface\n" );
 
    // time frand123Single_scalar
-   time_frand123Single_scalar_runner( state, argv[ 1 ] );
+   time_frand123Single_scalar_runner( &state, argv[ 1 ] );
 
    // time frand123Single
-   time_frand123Single_runner( state, argv[ 1 ] );
+   time_frand123Single_runner( &state, argv[ 1 ] );
 
    return 0;
 }

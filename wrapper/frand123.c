@@ -16,7 +16,7 @@
  *                    length of array: lenRes
  */
 // scalar version returns one random number
-double frand123Double_scalar( int64_t state[ 4 ] )
+double frand123Double_scalar( frand123State_t *state )
 {
    // assert validity of arguments
    assert( state != NULL );
@@ -27,7 +27,7 @@ double frand123Double_scalar( int64_t state[ 4 ] )
    return buffer;
 }
 // vectorial version
-void frand123Double( int64_t state[ 4 ], const int64_t lenRes, double *restrict res )
+void frand123Double( frand123State_t *state, const int64_t lenRes, double *restrict res )
 {
    int64_t i;
    double buffer[ 2 ];
@@ -69,7 +69,7 @@ void frand123Double( int64_t state[ 4 ], const int64_t lenRes, double *restrict 
  *                    length of array: lenRes
  */
 // scalar version returns one random number
-float frand123Single_scalar( int64_t state[ 4 ] )
+float frand123Single_scalar( frand123State_t *state )
 {
    // assert validity of arguments
    assert( state != NULL );
@@ -80,7 +80,7 @@ float frand123Single_scalar( int64_t state[ 4 ] )
    return buffer;
 }
 // vectorial version
-void frand123Single( int64_t state[ 4 ], const int64_t lenRes, float *restrict res )
+void frand123Single( frand123State_t *state, const int64_t lenRes, float *restrict res )
 {
    int64_t i, j;
    float buffer[ 4 ];
@@ -127,7 +127,7 @@ void frand123Single( int64_t state[ 4 ], const int64_t lenRes, float *restrict r
  *                    length of array: lenRes
  */
 // scalar version returns one random number
-double frand123NormDouble_scalar( int64_t state[ 4 ], const double mu, const double sigma )
+double frand123NormDouble_scalar( frand123State_t *state, const double mu, const double sigma )
 {
    // assert validity of arguments
    assert( state != NULL );
@@ -139,7 +139,7 @@ double frand123NormDouble_scalar( int64_t state[ 4 ], const double mu, const dou
    return buffer;
 }
 // vectorial version
-void frand123NormDouble( int64_t state[ 4 ], const double mu, const double sigma, const int64_t lenRes, double *restrict res )
+void frand123NormDouble( frand123State_t *state, const double mu, const double sigma, const int64_t lenRes, double *restrict res )
 {
    int64_t i;
    double buffer[ 2 ];
@@ -185,7 +185,7 @@ void frand123NormDouble( int64_t state[ 4 ], const double mu, const double sigma
  */
 // scalar version returns one random number
 // Note: utilize specialized version with lower #calls to RNG per random number
-float frand123NormSingle_scalar( int64_t state[ 4 ], const float mu, const float sigma )
+float frand123NormSingle_scalar( frand123State_t *state, const float mu, const float sigma )
 {
    // assert validity of arguments
    assert( state != NULL );
@@ -197,7 +197,7 @@ float frand123NormSingle_scalar( int64_t state[ 4 ], const float mu, const float
    return buffer[ 0 ];
 }
 // vectorial version
-void frand123NormSingle( int64_t state[ 4 ], const float mu, const float sigma, const int64_t lenRes, float *restrict res )
+void frand123NormSingle( frand123State_t *state, const float mu, const float sigma, const int64_t lenRes, float *restrict res )
 {
    int64_t i, j;
    float buffer[ 4 ];
@@ -235,7 +235,7 @@ void frand123NormSingle( int64_t state[ 4 ], const float mu, const float sigma, 
  *                    length of array: lenRes
  */
 // scalar version returns one random number
-int64_t frand123Integer64_scalar( int64_t state[ 4 ] )
+int64_t frand123Integer64_scalar( frand123State_t *state )
 {
    // assert validity of arguments
    assert( state != NULL );
@@ -246,7 +246,7 @@ int64_t frand123Integer64_scalar( int64_t state[ 4 ] )
    return buffer;
 }
 // vectorial version
-void frand123Integer64( int64_t state[ 4 ], const int64_t lenRes, int64_t *restrict res )
+void frand123Integer64( frand123State_t *state, const int64_t lenRes, int64_t *restrict res )
 {
    int64_t i;
    int64_t buffer[ 2 ];
@@ -288,7 +288,7 @@ void frand123Integer64( int64_t state[ 4 ], const int64_t lenRes, int64_t *restr
  *                    length of array: lenRes
  */
 // scalar version returns one random number
-int32_t frand123Integer32_scalar( int64_t state[ 4 ] )
+int32_t frand123Integer32_scalar( frand123State_t *state )
 {
    // assert validity of arguments
    assert( state != NULL );
@@ -299,7 +299,7 @@ int32_t frand123Integer32_scalar( int64_t state[ 4 ] )
    return buffer;
 }
 // vectorial version
-void frand123Integer32( int64_t state[ 4 ], const int64_t lenRes, int32_t *restrict res )
+void frand123Integer32( frand123State_t *state, const int64_t lenRes, int32_t *restrict res )
 {
    int64_t i, j;
    int32_t buffer[ 4 ];
@@ -344,7 +344,7 @@ void frand123Integer32( int64_t state[ 4 ], const int64_t lenRes, int32_t *restr
  *                    length of array: lenRes
  */
 // scalar version returns one random number
-uint64_t frand123UnsignedInteger64_scalar( int64_t state[ 4 ] )
+uint64_t frand123UnsignedInteger64_scalar( frand123State_t *state )
 {
    // assert validity of arguments
    assert( state != NULL );
@@ -355,7 +355,7 @@ uint64_t frand123UnsignedInteger64_scalar( int64_t state[ 4 ] )
    return buffer;
 }
 // vectorial version
-void frand123UnsignedInteger64( int64_t state[ 4 ], const int64_t lenRes, uint64_t *restrict res )
+void frand123UnsignedInteger64( frand123State_t *state, const int64_t lenRes, uint64_t *restrict res )
 {
    int64_t i;
    uint64_t buffer[ 2 ];
@@ -397,7 +397,7 @@ void frand123UnsignedInteger64( int64_t state[ 4 ], const int64_t lenRes, uint64
  *                    length of array: lenRes
  */
 // scalar version returns one random number
-uint32_t frand123UnsignedInteger32_scalar( int64_t state[ 4 ] )
+uint32_t frand123UnsignedInteger32_scalar( frand123State_t *state )
 {
    // assert validity of arguments
    assert( state != NULL );
@@ -408,7 +408,7 @@ uint32_t frand123UnsignedInteger32_scalar( int64_t state[ 4 ] )
    return buffer;
 }
 // vectorial version
-void frand123UnsignedInteger32( int64_t state[ 4 ], const int64_t lenRes, uint32_t *restrict res )
+void frand123UnsignedInteger32( frand123State_t *state, const int64_t lenRes, uint32_t *restrict res )
 {
    int64_t i, j;
    uint32_t buffer[ 4 ];
@@ -453,7 +453,7 @@ void frand123UnsignedInteger32( int64_t state[ 4 ], const int64_t lenRes, uint32
  *            threadID: id of the thread using this state with a random number generator (pthreads/OpenMP)
  *            seed:     
  */
-void frand123Init( int64_t state[ 4 ], const int64_t rank, const int64_t threadID, const int64_t *seed )
+void frand123Init( frand123State_t *state, const int64_t rank, const int64_t threadID, const int64_t *seed )
 {
    // test if state is not NULL -> allocate it
    if( state == NULL )
@@ -464,11 +464,11 @@ void frand123Init( int64_t state[ 4 ], const int64_t rank, const int64_t threadI
    if( seed != NULL )
    {
       // use the seed for the counter
-      state[ 0 ] = seed[ 0 ];
-      state[ 1 ] = seed[ 1 ];
+      state->state[ 0 ] = seed[ 0 ];
+      state->state[ 1 ] = seed[ 1 ];
    }
    // use rank and threadID to choose a random stream
-   state[ 2 ] = rank;
-   state[ 3 ] = threadID;
+   state->state[ 2 ] = rank;
+   state->state[ 3 ] = threadID;
    return;
 }

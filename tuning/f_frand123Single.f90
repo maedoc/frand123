@@ -1,10 +1,10 @@
 program f_frand123Single
    use, intrinsic :: iso_c_binding, only: c_int64_t, c_float
-   use :: frand123, only: frand123_state_kind, frand123_state_size, frand123Init
+   use :: frand123, only: frand123State_t, frand123Init
    implicit none
 
    ! the state
-   integer( kind = frand123_state_kind ), dimension( frand123_state_size ) :: state
+   type( frand123State_t ) :: state
 
    ! command line arguments
    integer :: maxLength
@@ -31,10 +31,10 @@ program f_frand123Single
 contains
    subroutine time_frand123Single_scalar( state, num, timeElapsed, resultSum )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_float, c_double
-      use :: frand123, only: frand123_state_kind, frand123_state_size, frand123Single
+      use :: frand123, only: frand123State_t, frand123Single
       use :: omp_lib
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int64_t ), intent( in ) :: num
       real( kind = c_double ), intent( out ) :: timeElapsed
       real( kind = c_float ), intent( out ) :: resultSum
@@ -59,7 +59,7 @@ contains
    subroutine time_frand123Single_scalar_runner( state, compileCombination )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_float, c_double
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       character( len = 100 ), intent( in ) :: compileCombination
 
       ! local parameters
@@ -112,10 +112,10 @@ contains
 
    subroutine time_frand123Single( state, num, chunksize, timeElapsed, resultSum )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_float, c_double
-      use :: frand123, only: frand123_state_kind, frand123_state_size, frand123Single
+      use :: frand123, only: frand123State_t, frand123Single
       use :: omp_lib
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       integer( kind = c_int64_t ), intent( in ) :: num
       integer( kind = c_int64_t ), intent( in ) :: chunksize
       real( kind = c_double ), intent( out ) :: timeElapsed
@@ -146,7 +146,7 @@ contains
    subroutine time_frand123Single_runner( state, compileCombination )
       use, intrinsic :: iso_c_binding, only: c_int64_t, c_float, c_double
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       character( len = 100 ), intent( in ) :: compileCombination
 
       ! local parameters
