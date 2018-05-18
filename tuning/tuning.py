@@ -6,8 +6,8 @@ import pprint
 pp = pprint.PrettyPrinter( depth = 6 )
 
 #compiler_names = [ "gcc", "intel" ]
-compiler_names = [ "intel" ]
-ars_switch = [ "n", "y" ]
+compiler_names = [ "gcc" ]
+rng_switch = [ "threefry", "arsRandom123", "arsMKL" ]
 fma_switch = [ "n", "y" ]
 polar_switch = [ "n", "y" ]
 
@@ -33,7 +33,7 @@ os.system( 'mkdir -p tuning/timings' )
 
 # start with uniformly distributed double-precision random numbers
 for compiler in compiler_names:
-   for ars in ars_switch:
+   for rng in rng_switch:
 
       # build make call and compileCombination
       make_cmd = "make"
@@ -43,9 +43,12 @@ for compiler in compiler_names:
          compileCombination += "_gcc"
       else:
          compileCombination += "_intel"
-      if ars == "y":
+      if rng_switch == "arsRandom123":
          make_cmd += " ars=y"
          compileCombination += "_ars=y"
+      elif rng_switch == "arsMKL":
+         make_cmd += " use_mkl=y"
+         compileCombination += "_mkl=y"
       make_cmd += " tuning/c_frand123Double.x tuning/f_frand123Double.x"
 
       # call make command
@@ -107,7 +110,7 @@ for compiler in compiler_names:
 
 # proceed with uniformly distributed single-precision random numbers
 for compiler in compiler_names:
-   for ars in ars_switch:
+   for ars in rng_switch:
       for fma in fma_switch:
          # build make call and compileCombination
          make_cmd = "make"
@@ -117,9 +120,12 @@ for compiler in compiler_names:
             compileCombination += "_gcc"
          else:
             compileCombination += "_intel"
-         if ars == "y":
+         if rng_switch == "arsRandom123":
             make_cmd += " ars=y"
             compileCombination += "_ars=y"
+         elif rng_switch == "arsMKL":
+            make_cmd += " use_mkl=y"
+            compileCombination += "_mkl=y"
          if fma == "y":
             make_cmd += " fma=y"
             compileCombination += "_fma=y"
@@ -181,7 +187,7 @@ for compiler in compiler_names:
 
 # start with uniformly distributed double-precision random numbers
 for compiler in compiler_names:
-   for ars in ars_switch:
+   for ars in rng_switch:
       for polar in polar_switch:
 
          # build make call and compileCombination
@@ -192,9 +198,12 @@ for compiler in compiler_names:
             compileCombination += "_gcc"
          else:
             compileCombination += "_intel"
-         if ars == "y":
+         if rng_switch == "arsRandom123":
             make_cmd += " ars=y"
             compileCombination += "_ars=y"
+         elif rng_switch == "arsMKL":
+            make_cmd += " use_mkl=y"
+            compileCombination += "_mkl=y"
          if polar == "y":
             make_cmd += " use_polar=y"
             compileCombination += "_use_polar=y"
@@ -258,7 +267,7 @@ for compiler in compiler_names:
 
 # proceed with uniformly distributed single-precision random numbers
 for compiler in compiler_names:
-   for ars in ars_switch:
+   for ars in rng_switch:
       for fma in fma_switch:
 
          # build make call and compileCombination
@@ -269,9 +278,12 @@ for compiler in compiler_names:
             compileCombination += "_gcc"
          else:
             compileCombination += "_intel"
-         if ars == "y":
+         if rng_switch == "arsRandom123":
             make_cmd += " ars=y"
             compileCombination += "_ars=y"
+         elif rng_switch == "arsMKL":
+            make_cmd += " use_mkl=y"
+            compileCombination += "_mkl=y"
          if fma == "y":
             make_cmd += " fma=y"
             compileCombination += "_fma=y"

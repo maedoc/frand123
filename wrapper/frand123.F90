@@ -1,11 +1,22 @@
+#ifndef USE_MKL
+! state type when not using the MKL
 module frand123State
    use, intrinsic :: iso_c_binding, only: c_int64_t
    implicit none
 
-   type :: frand123State_t
+   type, bind( C ) :: frand123State_t
       integer( kind = c_int64_t ), dimension( 4 ) :: state
    end type frand123State_t
 end module frand123State
+#else
+! state type when using the MKL
+module frand123State
+   use :: iso_c_binding, only: frand123State_t => c_ptr
+   implicit none
+
+   public :: frand123State_t
+end module frand123State
+#endif
 module frand123
    use, intrinsic :: iso_c_binding!, only: c_int64_t
    use :: frand123State
@@ -58,6 +69,8 @@ module frand123
          integer( kind = c_int64_t ), value, intent( in ) :: lenRes
          real( kind = c_float ), dimension( * ), intent( inout ) :: res
       end subroutine frand123NormSingle_C
+! integer RNGs not yet supported when using MKL
+#ifndef USE_MKL
       subroutine frand123Integer64_C( state, lenRes, res ) bind( C, name='frand123Integer64' )
          use, intrinsic :: iso_c_binding, only: c_int64_t
          use :: frand123State
@@ -74,6 +87,7 @@ module frand123
          integer( kind = c_int64_t ), value, intent( in ) :: lenRes
          integer( kind = c_int32_t ), dimension( * ), intent( inout ) :: res
       end subroutine frand123Integer32_C
+#endif
       subroutine frand123Init_C( state, rank, threadId, seed ) bind( C, name='frand123Init' )
          use, intrinsic :: iso_c_binding, only: c_int64_t, c_ptr
          use :: frand123State
@@ -106,6 +120,9 @@ module frand123
       module procedure frand123NormSingle_vector
    end interface frand123NormSingle
 
+! integer RNGs not yet supported when using MKL
+#ifndef USE_MKL
+
    interface frand123Integer64
       module procedure frand123Integer64_scalar
       module procedure frand123Integer64_vector
@@ -115,6 +132,8 @@ module frand123
       module procedure frand123Integer32_scalar
       module procedure frand123Integer32_vector
    end interface frand123Integer32
+
+#endif
 
    interface frand123Init
       module procedure frand123Init_int64_int64
@@ -133,10 +152,13 @@ module frand123
       module procedure frand123NormDouble_vector
       module procedure frand123NormSingle_scalar
       module procedure frand123NormSingle_vector
+! integer RNGs not yet supported when using MKL
+#ifndef USE_MKL
       module procedure frand123Integer32_scalar
       module procedure frand123Integer32_vector
       module procedure frand123Integer64_scalar
       module procedure frand123Integer64_vector
+#endif
    end interface frand123Rand
 
    ! make only generic interfaces public
@@ -145,8 +167,11 @@ module frand123
    public :: frand123Single
    public :: frand123NormDouble
    public :: frand123NormSingle
+! integer RNGs not yet supported when using MKL
+#ifndef USE_MKL
    public :: frand123Integer32
    public :: frand123Integer64
+#endif
    public :: frand123Init
    public :: frand123Rand
 
@@ -159,10 +184,13 @@ module frand123
    private :: frand123NormDouble_vector
    private :: frand123NormSingle_scalar
    private :: frand123NormSingle_vector
+! integer RNGs not yet supported when using MKL
+#ifndef USE_MKL
    private :: frand123Integer32_scalar
    private :: frand123Integer32_vector
    private :: frand123Integer64_scalar
    private :: frand123Integer64_vector
+#endif
    private :: frand123Init_int64_int64
    private :: frand123Init_int64_int32
    private :: frand123Init_int32_int64
@@ -343,6 +371,9 @@ contains
       call frand123NormSingle_C( state, mu, sigma, lenRes, res )
    end subroutine frand123NormSingle_vector
 
+! integer RNGs not yet supported when using MKL
+#ifndef USE_MKL
+
    ! generate single random 64 bit signed integers
    !
    ! Arguments: state: state of the random number generator
@@ -418,6 +449,8 @@ contains
       ! call C implementation
       call frand123Integer32_C( state, lenRes, res )
    end subroutine frand123Integer32_vector
+
+#endif
 
    ! initialization of the random number generators using 64 bit integers for rank and threadID
    ! initialize the state as follows:

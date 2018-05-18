@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include "frand123.h"
 
+// leave blank when using MKL
+#if !defined( USE_MKL )
+
 #if USE_ARS
    #include <ars.h>
 
@@ -217,7 +220,7 @@
       }
       return;
    }
-#else
+#else // USE_ARS
    #include <threefry.h>
 
    /*
@@ -736,3 +739,5 @@ void polar4x32_two( frand123State_t *state, const float mu, const float sigma, f
    }
    return;
 }
+
+#endif // USE_MKL

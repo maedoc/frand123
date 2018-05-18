@@ -5,6 +5,9 @@
 #include <assert.h>
 #include "rand123wrapper.h"
 #include "frand123.h"
+#ifdef USE_MKL
+#include <mkl_vsl.h>
+#endif
 
 /*
  * generate random double precision numbers uniformly distributed in (0,1)
@@ -37,25 +40,29 @@ void frand123Double( frand123State_t *state, const int64_t lenRes, double *restr
    assert( lenRes > 0 );
    assert( res != NULL );
 
+#ifndef USE_MKL
    // store directly to res while safe
    for( i = INT64_C( 0 ); ( i + UINT64_C( 1 ) ) < lenRes; i += UINT64_C( 2 ) )
    {
 #ifdef USE_ARS
       ars2x64_u01( state, &res[ i ] );
-#else
+#else // USE_ARS
       threefry2x64_u01( state, &res[ i ] );
-#endif
+#endif // USE_ARS
    }
    // catch a possible remainder
    if( i != lenRes )
    {
 #ifdef USE_ARS
       ars2x64_u01( state, buffer );
-#else
+#else // USE_ARS
       threefry2x64_u01( state, buffer );
-#endif
+#endif // USE_ARS
       res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
+#else // USE_MKL
+   vdRngUniform( VSL_RNG_METHOD_UNIFORM_STD, state, lenRes, res, 0., 1. );
+#endif // USE_MKL
    return;
 }
 
@@ -90,28 +97,32 @@ void frand123Single( frand123State_t *state, const int64_t lenRes, float *restri
    assert( lenRes > 0 );
    assert( res != NULL );
 
+#ifndef USE_MKL
    // store directly to res while safe
    for( i = INT64_C( 0 ); ( i + UINT64_C( 3 ) ) < lenRes; i += UINT64_C( 4 ) )
    {
 #ifdef USE_ARS
       ars4x32_u01( state, &res[ i ] );
-#else
+#else // USE_ARS
       threefry4x32_u01( state, &res[ i ] );
-#endif
+#endif // USE_ARS
    }
    // catch a possible remainder
    if( i != lenRes )
    {
 #ifdef USE_ARS
       ars4x32_u01( state, buffer );
-#else
+#else // USE_ARS
       threefry4x32_u01( state, buffer );
-#endif
+#endif // USE_ARS
       for( j = INT64_C( 0 ); i + j < lenRes; j++ )
       {
          res[ i + j ] = buffer[ j ];
       }
    }
+#else // USE_MKL
+   vsRngUniform( VSL_RNG_METHOD_UNIFORM_STD, state, lenRes, res, 0.f, 0.1f );
+#endif // USE_MKL
    return;
 }
 
@@ -150,25 +161,29 @@ void frand123NormDouble( frand123State_t *state, const double mu, const double s
    assert( lenRes > 0 );
    assert( res != NULL );
 
+#ifndef USE_MKL
    // store directly to res while safe
    for( i = INT64_C( 0 ); ( i + UINT64_C( 1 ) ) < lenRes; i += UINT64_C( 2 ) )
    {
 #ifdef USE_POLAR
       polar2x64( state, mu, sigma, &res[ i ] );
-#else
+#else // USE_POLAR
       wichura2x64( state, mu, sigma, &res[ i ] );
-#endif
+#endif // USE_POLAR
    }
    // catch a possible remainder
    if( i != lenRes )
    {
 #ifdef USE_POLAR
       polar2x64( state, mu, sigma, buffer );
-#else
+#else // USE_POLAR
       wichura2x64( state, mu, sigma, buffer );
-#endif
+#endif // USE_POLAR
       res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
+#else // USE_MKL
+   vdRngGaussian( VSL_RNG_METHOD_GAUSSIAN_ICDF, state, lenRes, res, mu, sigma );
+#endif // USE_MKL
    return;
 }
 
@@ -191,9 +206,14 @@ float frand123NormSingle_scalar( frand123State_t *state, const float mu, const f
    assert( state != NULL );
    assert( sigma > 0 );
 
+#ifndef USE_MKL
    // call vector-valued implementation
    float buffer[ 2 ];
    polar4x32_two( state, mu, sigma, buffer );
+#else // USE_MKL
+   float buffer[ 1 ];
+   frand123NormSingle( state, mu, sigma, 1, buffer );
+#endif // USE_MKL
    return buffer[ 0 ];
 }
 // vectorial version
@@ -208,6 +228,7 @@ void frand123NormSingle( frand123State_t *state, const float mu, const float sig
    assert( lenRes > 0 );
    assert( res != NULL );
 
+#ifndef USE_MKL
    // store directly to res while safe
    for( i = INT64_C( 0 ); ( i + UINT64_C( 3 ) ) < lenRes; i += UINT64_C( 4 ) )
    {
@@ -222,8 +243,13 @@ void frand123NormSingle( frand123State_t *state, const float mu, const float sig
          res[ i + j ] = buffer[ j ];
       }
    }
+#else // USE_MKL
+   vsRngGaussian( VSL_RNG_METHOD_GAUSSIAN_ICDF, state, lenRes, res, mu, sigma );
+#endif // USE_MKL
    return;
 }
+
+#ifndef USE_MKL
 
 /*
  * generate random 64-bit signed integers uniformly distributed over INT64_MIN,..,INT64_MAX
@@ -261,18 +287,18 @@ void frand123Integer64( frand123State_t *state, const int64_t lenRes, int64_t *r
    {
 #ifdef USE_ARS
       ars2x64_int( state, &res[ i ] );
-#else
+#else // USE_ARS
       threefry2x64_int( state, &res[ i ] );
-#endif
+#endif // USE_ARS
    }
    // catch a possible remainder
    if( i != lenRes )
    {
 #ifdef USE_ARS
       ars2x64_int( state, buffer );
-#else
+#else // USE_ARS
       threefry2x64_int( state, buffer );
-#endif
+#endif // USE_ARS
       res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
    return;
@@ -443,6 +469,8 @@ void frand123UnsignedInteger32( frand123State_t *state, const int64_t lenRes, ui
    return;
 }
 
+#endif // USE_MKL
+
 /*
  * initialize the state for the random number generators used (Threefry or ARS)
  * rank and threadID determine the stream of random numbers used (by determining the key used in Threefry or ARS)
@@ -455,6 +483,7 @@ void frand123UnsignedInteger32( frand123State_t *state, const int64_t lenRes, ui
  */
 void frand123Init( frand123State_t *state, const int64_t rank, const int64_t threadID, const int64_t *seed )
 {
+#ifndef USE_MKL
    // test if state is not NULL -> allocate it
    if( state == NULL )
    {
@@ -470,5 +499,19 @@ void frand123Init( frand123State_t *state, const int64_t rank, const int64_t thr
    // use rank and threadID to choose a random stream
    state->state[ 2 ] = rank;
    state->state[ 3 ] = threadID;
+#else // USE_MKL
+   unsigned int params[ 8 ];
+   int64_t *paramsAsInt64 = (int64_t*)&( params );
+   if( seed != NULL )
+   {
+      // use the seed for the counter
+      paramsAsInt64[ 2 ] = seed[ 0 ];
+      paramsAsInt64[ 3 ] = seed[ 1 ];
+   }
+   // use rank and threadID to choose a random stream
+   paramsAsInt64[ 0 ] = rank;
+   paramsAsInt64[ 1 ] = threadID;
+   vslNewStreamEx( state, VSL_BRNG_ARS5, 8, params );
+#endif // USE_MKL
    return;
 }

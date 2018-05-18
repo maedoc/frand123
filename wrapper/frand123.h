@@ -11,10 +11,17 @@ extern "C" {
  * Type holding the state of the RNG. The idea is to also support MKL which uses
  * a pointer type
  */
+#ifndef USE_MKL 
+// Random123 library version
 typedef struct 
 {
   int64_t state[ 4 ];
 } frand123State_t;
+#else // USE_MKL
+// MKL ILP64 version
+#include <mkl.h>
+typedef VSLStreamStatePtr frand123State_t;
+#endif // USE_MKL
 
 /*
  * generate random double precision numbers uniformly distributed in (0,1)
@@ -76,6 +83,8 @@ float frand123NormSingle_scalar( frand123State_t *state, const float mu, const f
 //vectorial version
 void frand123NormSingle( frand123State_t *state, const float mu, const float sigma, const int64_t lenRes, float *res );
 
+#ifndef USE_MKL
+
 /*
  * generate random 64-bit signed integers uniformly distributed over INT64_MIN,..,INT64_MAX
  *
@@ -131,6 +140,8 @@ void frand123UnsignedInteger64( frand123State_t *state, const int64_t lenRes, ui
 uint32_t frand123UnsignedInteger32_scalar( frand123State_t *state );
 // vectorial version
 void frand123UnsignedInteger32( frand123State_t *state, const int64_t lenRes, uint32_t *res );
+
+#endif // USE_MKL
 
 /*
  * initialize the state for the random number generators used (Threefry or ARS)

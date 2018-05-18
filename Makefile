@@ -18,11 +18,11 @@ ARFLAGS = rc
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX) -std=c99
-CFLAGS = -IRandom123 -Jlib64 -fPIC -flto -O3 -maes -mtune=native -march=native -fopenmp -lm -ffree-form -ffixed-line-length-none#-flto-report
+CFLAGS = -IRandom123 -Jlib64 -fPIC -O3 -maes -mtune=native -march=native -fopenmp -lm -ffree-form -ffixed-line-length-none#-flto-report
 FC = gfortran$(SUFFIX) -std=f2008
 FFLAGS = $(CFLAGS)
 LD = gcc$(SUFFIX)
-LDFLAGS = -shared -fPIC -flto -O2 -mtune=native -march=native #-flto-report
+LDFLAGS = -shared -fPIC -O2 -mtune=native -march=native #-flto-report
 AR = gcc-ar$(SUFFIX)
 ARFLAGS = rc
 endif
@@ -60,6 +60,13 @@ endif
 ifeq ($(use_assertions),y)
 else
 	CFLAGS += -DNDEBUG
+endif
+
+# decide whether to use MKL as backend
+ifeq ($(use_mkl),y)
+	CFLAGS += -DUSE_MKL -DMKL_ILP64 -lmkl_intel_ilp64
+	FFLGAS += -DUSE_MKL -i8 -fdefault-integer-8 -lmkl_intel_ilp64
+	LDFLAGS += -lmkl_intel_ilp64 -i8 -fdefault-integer-8
 endif
 
 
@@ -167,9 +174,9 @@ build/frand123_c.o: wrapper/frand123.c wrapper/rand123wrapper.h Makefile
 	mkdir -p build
 	$(CC) $(CFLAGS) -c wrapper/frand123.c -o build/frand123_c.o
 
-build/frand123.o lib64/frand123.mod: wrapper/frand123.f90 Makefile
+build/frand123.o lib64/frand123.mod: wrapper/frand123.F90 Makefile
 	mkdir -p build/ lib64/ 
-	$(FC) $(FFLAGS) -c wrapper/frand123.f90 -o build/frand123.o 
+	$(FC) $(FFLAGS) -c wrapper/frand123.F90 -o build/frand123.o 
 
 lib64/libfrand123.so: build/frand123.o lib64/frand123.mod build/frand123_c.o Makefile
 	$(LD) $(LDFLAGS) -o lib64/libfrand123.so build/frand123.o build/frand123_c.o
