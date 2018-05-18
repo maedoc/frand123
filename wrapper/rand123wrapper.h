@@ -5,7 +5,7 @@
 #include "frand123.h"
 
 // leave blank when using MKL
-#if !defined( USE_MKL )
+#ifndef USE_MKL
 
 #if USE_ARS
    #include <ars.h>

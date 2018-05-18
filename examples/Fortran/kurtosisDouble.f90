@@ -38,21 +38,21 @@ program kurtosisDouble
    varScalar = excessKurtosisScalar( state )
    endTime = omp_get_wtime()
    write(*, '( "Result generating  one random number at a time: ", ES11.4, &
-          " took ", ES11.4, " seconds" )' ) varScalar, endTime - startTime
+          & " took ", ES11.4, " seconds" )' ) varScalar, endTime - startTime
 
    ! use excessKurtosisTwo
    startTime = omp_get_wtime()
    varTwo = excessKurtosisTwo( state )
    endTime = omp_get_wtime()
    write(*, '( "Result generating  two random number at a time: ", ES11.4, &
-          " took ", ES11.4, " seconds" )' ) varTwo, endTime - startTime
+          & " took ", ES11.4, " seconds" )' ) varTwo, endTime - startTime
 
    ! use excessKurtosis1000
    startTime = omp_get_wtime()
    var1000 = excessKurtosis1000( state )
    endTime = omp_get_wtime()
    write(*, '( "Result generating 1000 random number at a time: ", ES11.4, &
-          " took ", ES11.4, " seconds" )' ) var1000, endTime - startTime
+          & " took ", ES11.4, " seconds" )' ) var1000, endTime - startTime
 
 contains
 

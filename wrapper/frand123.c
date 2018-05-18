@@ -61,7 +61,7 @@ void frand123Double( frand123State_t *state, const int64_t lenRes, double *restr
       res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
 #else // USE_MKL
-   vdRngUniform( VSL_RNG_METHOD_UNIFORM_STD, state, lenRes, res, 0., 1. );
+   vdRngUniform( VSL_RNG_METHOD_UNIFORM_STD, *state, lenRes, res, 0., 1. );
 #endif // USE_MKL
    return;
 }
@@ -121,7 +121,7 @@ void frand123Single( frand123State_t *state, const int64_t lenRes, float *restri
       }
    }
 #else // USE_MKL
-   vsRngUniform( VSL_RNG_METHOD_UNIFORM_STD, state, lenRes, res, 0.f, 0.1f );
+   vsRngUniform( VSL_RNG_METHOD_UNIFORM_STD, *state, lenRes, res, 0., 1. );
 #endif // USE_MKL
    return;
 }
@@ -182,7 +182,7 @@ void frand123NormDouble( frand123State_t *state, const double mu, const double s
       res[ lenRes - INT64_C( 1 ) ] = buffer[ 0 ];
    }
 #else // USE_MKL
-   vdRngGaussian( VSL_RNG_METHOD_GAUSSIAN_ICDF, state, lenRes, res, mu, sigma );
+   vdRngGaussian( VSL_RNG_METHOD_GAUSSIAN_ICDF, *state, lenRes, res, mu, sigma );
 #endif // USE_MKL
    return;
 }
@@ -244,7 +244,7 @@ void frand123NormSingle( frand123State_t *state, const float mu, const float sig
       }
    }
 #else // USE_MKL
-   vsRngGaussian( VSL_RNG_METHOD_GAUSSIAN_ICDF, state, lenRes, res, mu, sigma );
+   vsRngGaussian( VSL_RNG_METHOD_GAUSSIAN_ICDF, *state, lenRes, res, mu, sigma );
 #endif // USE_MKL
    return;
 }

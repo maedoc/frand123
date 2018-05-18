@@ -24,9 +24,9 @@ TESTNORMSINGLEPYFLAGS = --ars
 endif
 # MKL
 ifeq ($(rng),mkl)
-CFLAGS += -DUSE_MKL -DMKL_ILP64 -lmkl_intel_ilp64
-FFLAGS += -DUSE_MKL -i8 -lmkl_intel_ilp64
-LDFLAGS += -i8 -lmkl_intel_ilp64
+CFLAGS += -DUSE_MKL -DMKL_ILP64 -mkl
+FFLAGS += -DUSE_MKL -i8 -DMKL_ILP64 -mkl
+LDFLAGS += -i8 -DMKL_ILP64 -mkl
 endif
 
 # using Intel's FMA instructions?
@@ -39,7 +39,7 @@ endif
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX) -std=c99
-CFLAGS = -IRandom123 -Jlib64 -fPIC -O3 -maes -mtune=native -march=native -fopenmp -lm
+CFLAGS = -IRandom123 -Jlib64 -fPIC -O3 -flto -mtune=native -march=native -fopenmp -lm
 FC = gfortran$(SUFFIX) -std=f2008
 FFLAGS = $(CFLAGS)
 LD = gcc$(SUFFIX)
@@ -57,9 +57,9 @@ TESTNORMSINGLEPYFLAGS = --ars
 endif
 # MKL
 ifeq ($(rng),mkl)
-CFLAGS += -DUSE_MKL -DMKL_ILP64 -lmkl_intel_ilp64
-FFLAGS += -DUSE_MKL -fdefault-integer-8 -lmkl_intel_ilp64
-LDFLAGS += -fdefault-integer-8 -lmkl_intel_ilp64
+CFLAGS += -DUSE_MKL -DMKL_ILP64 -lmkl
+FFLAGS += -DUSE_MKL -fdefault-integer-8 -DMKL_ILP64 -lmkl
+LDFLAGS += -fdefault-integer-8 -DMKL_ILP64 -lmkl
 endif
 
 # using Intel's FMA instructions?

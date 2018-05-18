@@ -11,7 +11,7 @@ The Random123 C library (see [publication](http://dx.doi.org/10.1145/2063384.206
 * Permissive 3-clause BSD-type license (see file "License")
 
 The frand123 Fortran wrapper provides the following capabilities:
-* Perfect parallelization due to counter-based design with minimal state
+* Availability of large number of parallel streams due to counter-based design with minimal state
 * Generation of uniformly distributed:
     * signed 32-bit integers
     * signed 64-bit integers
@@ -19,6 +19,7 @@ The frand123 Fortran wrapper provides the following capabilities:
     * double precision reals in (0,1)
 * Comfortable interface for generating arbitrarily sized vectors of random numbers
 * Interface for initializing the state of the RNG
+* Possibility to use the Intel MKL (only for random real numbers)
 
 ## Reference Fortran
 
@@ -31,8 +32,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _frand123_state_size_
-    * kind: integer of kind _frand123_state_kind_
+    * kind: _frand123State_t_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
     * dimension: scalar or arbitrary length array
@@ -48,8 +48,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _frand123_state_size_
-    * kind: integer of kind _frand123_state_kind_
+    * kind: _frand123State_t_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
     * dimension: scalar or arbitrary length array
@@ -65,8 +64,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _frand123_state_size_
-    * kind: integer of kind _frand123_state_kind_
+    * kind: _frand123State_t_
     * intent: _inout_
 * __mu__: mean of the normal distribution
     * dimension: scalar
@@ -90,8 +88,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _frand123_state_size_
-    * kind: integer of kind _frand123_state_kind_
+    * kind: _frand123State_t_
     * intent: _inout_
 * __mu__: mean of the normal distribution
     * dimension: scalar
@@ -115,8 +112,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _frand123_state_size_
-    * kind: integer of kind _frand123_state_kind_
+    * kind: _frand123State_t_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
     * dimension: scalar or arbitrary length array
@@ -132,8 +128,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: state used by the RNG
-    * dimension: _frand123_state_size_
-    * kind: integer of kind _frand123_state_kind_
+    * kind: _frand123State_t_
     * intent: _inout_
 * __res__: memory to which random numbers are stored to
     * dimension: scalar or arbitrary length array
@@ -152,8 +147,7 @@ The frand123 Fortran wrapper provides the following capabilities:
 
 #### Arguments
 * __state__: memory in which to initialize state in
-    * dimension: _frand123_state_size_
-    * kind: integer of kind _frand123_state_kind_
+    * kind: _frand123State_t_
     * intent: _inout_
 * __rank__: MPI rank of the caller
     * dimension: scalar
@@ -373,8 +367,9 @@ The Makefile was tested with:
 * run tests: _make tests_
 
 ### Enabling features
-* use ARS: add _ars=y_ to _make_ command
-* use FMA3 in ARS: add _ars=y fma=y_ to _make_ command
+* use ARS: add _rng=ars_ to _make_ command
+* use FMA3 in ARS: add _rng=ars fma=y_ to _make_ command
+* use the Intel MKL: add _rng=mkl_ to _make_ command (no support for random integers)
 * use gcc: add _gcc=y_ to _make_ command
 * use Polar Box-Muller instead of Wichura''s AS 241 PPND16 algorithm for double precision normally distributed random numbers: add _use_polar=y_ to _make_ command
 

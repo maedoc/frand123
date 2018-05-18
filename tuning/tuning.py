@@ -5,9 +5,8 @@ import pprint
 
 pp = pprint.PrettyPrinter( depth = 6 )
 
-#compiler_names = [ "gcc", "intel" ]
-compiler_names = [ "gcc" ]
-rng_switch = [ "threefry", "arsRandom123", "arsMKL" ]
+compiler_names = [ "gcc", "intel" ]
+rng_switch = [ "threefry", "ars", "mkl" ]
 fma_switch = [ "n", "y" ]
 polar_switch = [ "n", "y" ]
 
@@ -43,12 +42,12 @@ for compiler in compiler_names:
          compileCombination += "_gcc"
       else:
          compileCombination += "_intel"
-      if rng_switch == "arsRandom123":
-         make_cmd += " ars=y"
-         compileCombination += "_ars=y"
-      elif rng_switch == "arsMKL":
-         make_cmd += " use_mkl=y"
-         compileCombination += "_mkl=y"
+      if rng_switch == "ars":
+         make_cmd += " rng=ars"
+         compileCombination += "_rng=ars"
+      elif rng_switch == "mkl":
+         make_cmd += " rng=mkl"
+         compileCombination += "_rng=mkl"
       make_cmd += " tuning/c_frand123Double.x tuning/f_frand123Double.x"
 
       # call make command
@@ -120,12 +119,12 @@ for compiler in compiler_names:
             compileCombination += "_gcc"
          else:
             compileCombination += "_intel"
-         if rng_switch == "arsRandom123":
-            make_cmd += " ars=y"
-            compileCombination += "_ars=y"
-         elif rng_switch == "arsMKL":
-            make_cmd += " use_mkl=y"
-            compileCombination += "_mkl=y"
+         if rng_switch == "ars":
+            make_cmd += " rng=ars"
+            compileCombination += "_rng=ars"
+         elif rng_switch == "mkl":
+            make_cmd += " rng=mkl"
+            compileCombination += "_rng=mkl"
          if fma == "y":
             make_cmd += " fma=y"
             compileCombination += "_fma=y"
@@ -198,12 +197,12 @@ for compiler in compiler_names:
             compileCombination += "_gcc"
          else:
             compileCombination += "_intel"
-         if rng_switch == "arsRandom123":
-            make_cmd += " ars=y"
-            compileCombination += "_ars=y"
-         elif rng_switch == "arsMKL":
-            make_cmd += " use_mkl=y"
-            compileCombination += "_mkl=y"
+         if rng_switch == "ars":
+            make_cmd += " rng=ars"
+            compileCombination += "_rng=ars"
+         elif rng_switch == "mkl":
+            make_cmd += " rng=mkl"
+            compileCombination += "_rng=mkl"
          if polar == "y":
             make_cmd += " use_polar=y"
             compileCombination += "_use_polar=y"
@@ -278,12 +277,12 @@ for compiler in compiler_names:
             compileCombination += "_gcc"
          else:
             compileCombination += "_intel"
-         if rng_switch == "arsRandom123":
-            make_cmd += " ars=y"
-            compileCombination += "_ars=y"
-         elif rng_switch == "arsMKL":
-            make_cmd += " use_mkl=y"
-            compileCombination += "_mkl=y"
+         if rng_switch == "ars":
+            make_cmd += " rng=ars"
+            compileCombination += "_rng=ars"
+         elif rng_switch == "mkl":
+            make_cmd += " rng=mkl"
+            compileCombination += "_rng=mkl"
          if fma == "y":
             make_cmd += " fma=y"
             compileCombination += "_fma=y"
