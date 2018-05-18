@@ -21,7 +21,7 @@ const double sigma = 1.6;
 
 // estimate excess kurtosis using calls to frand123NormDouble_scalar drawing a single double
 // precision sample at a time
-double excessKurtosisScalar( int64_t *state )
+double excessKurtosisScalar( frand123State_t *state )
 {
    double excessKurtosis = 0.;
 
@@ -40,7 +40,7 @@ double excessKurtosisScalar( int64_t *state )
 
 // estimate excess kurtosis using calls to frand123NormDouble drawing a two double
 // precision samples at a time
-double excessKurtosisTwo( int64_t *state )
+double excessKurtosisTwo( frand123State_t *state )
 {
    double excessKurtosis = 0.;
 
@@ -63,7 +63,7 @@ double excessKurtosisTwo( int64_t *state )
 
 // estimate excess kurtosis using calls to frand123NormDouble drawing a 1000 double
 // precision samples at a time
-double excessKurtosis1000( int64_t *state )
+double excessKurtosis1000( frand123State_t *state )
 {
    double excessKurtosis = 0.;
    double *draw = malloc( 1000 * sizeof( double ) );
@@ -95,24 +95,24 @@ int main()
    printf( "Approximating excess kurtosis using %" PRId64 " samples.\n", numberOfSamples );
 
    // initialize state (do not provide seed, instead use whats in the memory location already)
-   int64_t state[ 4 ];
-   frand123Init( state, 0, 0, NULL );
+   frand123State_t state;
+   frand123Init( &state, 0, 0, NULL );
 
    // use piScalar
    startTime = omp_get_wtime();
-   double varExcessKurtosisScalar = excessKurtosisScalar( state );
+   double varExcessKurtosisScalar = excessKurtosisScalar( &state );
    endTime = omp_get_wtime();
    printf( "Result generating one random number at a time:  %e took %e seconds\n", varExcessKurtosisScalar, endTime - startTime );
 
    // use piTwo
    startTime = omp_get_wtime();
-   double varExcessKurtosisTwo = excessKurtosisTwo( state );
+   double varExcessKurtosisTwo = excessKurtosisTwo( &state );
    endTime = omp_get_wtime();
    printf( "Result generating two random number at a time:  %e took %e seconds\n", varExcessKurtosisTwo, endTime - startTime );
 
    // use pi2000
    startTime = omp_get_wtime();
-   double varExcessKurtosis1000 = excessKurtosis1000( state );
+   double varExcessKurtosis1000 = excessKurtosis1000( &state );
    endTime = omp_get_wtime();
    printf( "Result generating 1000 random number at a time: %e took %e seconds\n", varExcessKurtosis1000, endTime - startTime );
 

@@ -20,7 +20,7 @@ const int64_t numberOfPoints = INT64_C( 1000 ) * INT64_C( 1000 ) * INT64_C( 100 
 
 // compute pi using calls to frand123Double_scalar drawing a single double precision
 // uniformly distributed random number at a time
-double piScalar( int64_t *state )
+double piScalar( frand123State_t *state )
 {
    // counter for points inside unit circle
    int64_t inside = 0;
@@ -44,7 +44,7 @@ double piScalar( int64_t *state )
 
 // compute pi using calls to frand123Double drawing both double precision coordinates
 // a time from the uniform distribution
-double piTwo( int64_t *state )
+double piTwo( frand123State_t *state )
 {
    // counter for points inside unit circle
    int64_t inside = 0;
@@ -70,7 +70,7 @@ double piTwo( int64_t *state )
 
 // compute pi using calls to frand123Double drawing 2000 double precision coordinates
 // a time from the uniform distribution
-double pi2000( int64_t *state )
+double pi2000( frand123State_t *state )
 {
    // counter for points inside unit circle
    int64_t inside = 0;
@@ -113,24 +113,24 @@ int main()
    printf( "Approximating pi using %" PRId64 " points in the unit square.\n", numberOfPoints );
 
    // initialize state (do not provide seed, instead use whats in the memory location already)
-   int64_t state[ 4 ];
-   frand123Init( state, 0, 0, NULL );
+   frand123State_t state;
+   frand123Init( &state, 0, 0, NULL );
 
    // use piScalar
    startTime = omp_get_wtime();
-   double varPiScalar = piScalar( state );
+   double varPiScalar = piScalar( &state );
    endTime = omp_get_wtime();
    printf( "Result generating one random number at a time:  %e took %e seconds\n", varPiScalar, endTime - startTime );
 
    // use piTwo
    startTime = omp_get_wtime();
-   double varPiTwo = piTwo( state );
+   double varPiTwo = piTwo( &state );
    endTime = omp_get_wtime();
    printf( "Result generating two random number at a time:  %e took %e seconds\n", varPiTwo, endTime - startTime );
 
    // use pi2000
    startTime = omp_get_wtime();
-   double varPi2000 = pi2000( state );
+   double varPi2000 = pi2000( &state );
    endTime = omp_get_wtime();
    printf( "Result generating 2000 random number at a time: %e took %e seconds\n", varPi2000, endTime - startTime );
 

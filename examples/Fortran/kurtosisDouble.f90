@@ -8,8 +8,7 @@
 program kurtosisDouble
    use, intrinsic :: iso_c_binding, only: c_double
    use omp_lib, only: omp_get_wtime
-   use frand123, only: frand123_state_kind, frand123_state_size, &
-                       frand123Init, frand123NormDouble
+   use frand123, only: frand123State_t, frand123Init, frand123NormDouble
    implicit none
 
    ! integer kind for large integers
@@ -23,7 +22,7 @@ program kurtosisDouble
    real( kind = c_double ), parameter :: sigma = real( 1.6, c_double )
 
    ! state for frand123
-   integer(kind=frand123_state_kind), dimension(frand123_state_size) :: state
+   type( frand123State_t ) :: state
 
    ! timing variables
    real( kind = c_double ) :: startTime, endTime
@@ -61,8 +60,7 @@ contains
    ! time
    real( kind = c_double ) function excessKurtosisScalar( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       real( kind = c_double ) :: excessKurtosis
@@ -87,8 +85,7 @@ contains
    ! estimate excess kurtosis by drawing two double precision sample at a time
    real( kind = c_double ) function excessKurtosisTwo( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       real( kind = c_double ) :: excessKurtosis
@@ -113,8 +110,7 @@ contains
    ! estimate excess kurtosis by drawing 1000 double precision sample at a time
    real( kind = c_double ) function excessKurtosis1000( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       real( kind = c_double ) :: excessKurtosis

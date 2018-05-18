@@ -11,8 +11,7 @@
 program piSingle
    use, intrinsic :: iso_c_binding, only: c_float, c_double
    use omp_lib, only: omp_get_wtime
-   use frand123, only: frand123_state_kind, frand123_state_size, &
-                       frand123Init, frand123Single
+   use frand123, only: frand123State_t, frand123Init, frand123Single
    implicit none
 
    ! integer kind for large integers
@@ -22,7 +21,7 @@ program piSingle
    integer( kind = ik ), parameter :: numberOfPoints = 1000 * 1000 * 100   
 
    ! state for frand123
-   integer(kind=frand123_state_kind), dimension(frand123_state_size) :: state
+   type( frand123State_t ) :: state
 
    ! timing variables
    real( kind = c_double ) :: startTime, endTime
@@ -67,8 +66,7 @@ contains
    ! number at a time
    real( kind = c_float ) function piScalar( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       integer( kind = ik ) :: inside ! counter for points inside unit circle
@@ -97,8 +95,7 @@ contains
    ! number at a time
    real( kind = c_float ) function piTwo( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       integer( kind = ik ) :: inside ! counter for points inside unit circle
@@ -126,8 +123,7 @@ contains
    ! number at a time
    real( kind = c_float ) function piFour( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       integer( kind = ik ) :: inside ! counter for points inside unit circle
@@ -161,8 +157,7 @@ contains
    ! number at a time
    real( kind = c_float ) function pi2000( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       integer( kind = ik ) :: inside ! counter for points inside unit circle

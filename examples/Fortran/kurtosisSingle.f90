@@ -8,8 +8,7 @@
 program kurtosisSingle
    use, intrinsic :: iso_c_binding, only: c_double, c_float
    use omp_lib, only: omp_get_wtime
-   use frand123, only: frand123_state_kind, frand123_state_size, &
-                       frand123Init, frand123NormSingle
+   use frand123, only: frand123State_t, frand123Init, frand123NormSingle
    implicit none
 
    ! integer kind for large integers
@@ -23,7 +22,7 @@ program kurtosisSingle
    real( kind = c_float ), parameter :: sigma = real( 1.6, c_float )
 
    ! state for frand123
-   integer(kind=frand123_state_kind), dimension(frand123_state_size) :: state
+   type( frand123State_t ) :: state
 
    ! timing variables
    real( kind = c_double ) :: startTime, endTime
@@ -68,8 +67,7 @@ contains
    ! time
    real( kind = c_float ) function excessKurtosisScalar( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       real( kind = c_float ) :: excessKurtosis
@@ -94,8 +92,7 @@ contains
    ! estimate excess kurtosis by drawing two single precision sample at a time
    real( kind = c_float ) function excessKurtosisTwo( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       real( kind = c_float ) :: excessKurtosis
@@ -120,8 +117,7 @@ contains
    ! estimate excess kurtosis by drawing four single precision sample at a time
    real( kind = c_float ) function excessKurtosisFour( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       real( kind = c_float ) :: excessKurtosis
@@ -146,8 +142,7 @@ contains
    ! estimate excess kurtosis by drawing 1000 single precision sample at a time
    real( kind = c_float ) function excessKurtosis1000( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! local variables
       real( kind = c_float ) :: excessKurtosis

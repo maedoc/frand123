@@ -6,12 +6,11 @@
 
 program integer64
    use, intrinsic :: iso_c_binding, only: c_int64_t
-   use frand123, only: frand123_state_kind, frand123_state_size, &
-                       frand123Init, frand123Integer64
+   use frand123, only: frand123State_t, frand123Init, frand123Integer64
    implicit none
 
    ! state for frand123
-   integer(kind=frand123_state_kind), dimension(frand123_state_size) :: state
+   type( frand123State_t ) :: state
 
    ! init state
    call frand123Init( state, 0, 0 )
@@ -29,8 +28,7 @@ contains
    ! simulate coin flip by generating one random number at a time
    subroutine coinFlipScalar( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! result of coin flip
       integer( kind = c_int64_t ) :: coin
@@ -59,8 +57,7 @@ contains
    ! simulate coin flip by generating all random numbers afront
    subroutine coinFlip10( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
       ! result of coin flip
       integer( kind = c_int64_t ), dimension( 10 ) :: coin

@@ -21,7 +21,7 @@ const float sigma = 1.6;
 
 // estimate excess kurtosis using calls to frand123NormSingle_scalar drawing a single single
 // precision sample at a time
-float excessKurtosisScalar( int64_t *state )
+float excessKurtosisScalar( frand123State_t *state )
 {
    float excessKurtosis = 0.f;
 
@@ -40,7 +40,7 @@ float excessKurtosisScalar( int64_t *state )
 
 // estimate excess kurtosis using calls to frand123NormSingle drawing a two single
 // precision samples at a time
-float excessKurtosisTwo( int64_t *state )
+float excessKurtosisTwo( frand123State_t *state )
 {
    float excessKurtosis = 0.;
 
@@ -63,7 +63,7 @@ float excessKurtosisTwo( int64_t *state )
 
 // estimate excess kurtosis using calls to frand123NormSingle drawing dour single
 // precision samples at a time
-float excessKurtosisFour( int64_t *state )
+float excessKurtosisFour( frand123State_t *state )
 {
    float excessKurtosis = 0.;
 
@@ -86,7 +86,7 @@ float excessKurtosisFour( int64_t *state )
 
 // estimate excess kurtosis using calls to frand123NormSingle drawing a 1000 single
 // precision samples at a time
-float excessKurtosis1000( int64_t *state )
+float excessKurtosis1000( frand123State_t *state )
 {
    float excessKurtosis = 0.f;
    float *draw = malloc( 1000 * sizeof( float ) );
@@ -118,32 +118,32 @@ int main()
    printf( "Approximating excess kurtosis using %" PRId64 " samples.\n", numberOfSamples );
 
    // initialize state (do not provide seed, instead use whats in the memory location already)
-   int64_t state[ 4 ];
-   frand123Init( state, 0, 0, NULL );
+   frand123State_t state;
+   frand123Init( &state, 0, 0, NULL );
 
    // use piScalar
    startTime = omp_get_wtime();
-   float varExcessKurtosisScalar = excessKurtosisScalar( state );
+   float varExcessKurtosisScalar = excessKurtosisScalar( &state );
    endTime = omp_get_wtime();
    printf( "Result generating one random number at a time:  %e took %e seconds\n", varExcessKurtosisScalar, endTime - startTime );
 
-//   // use piTwo
-//   startTime = omp_get_wtime();
-//   float varExcessKurtosisTwo = excessKurtosisTwo( state );
-//   endTime = omp_get_wtime();
-//   printf( "Result generating two random number at a time:  %e took %e seconds\n", varExcessKurtosisTwo, endTime - startTime );
-//
-//   // use piFour
-//   startTime = omp_get_wtime();
-//   float varExcessKurtosisFour = excessKurtosisFour( state );
-//   endTime = omp_get_wtime();
-//   printf( "Result generating four random number at a time: %e took %e seconds\n", varExcessKurtosisFour, endTime - startTime );
-//
-//   // use pi2000
-//   startTime = omp_get_wtime();
-//   float varExcessKurtosis1000 = excessKurtosis1000( state );
-//   endTime = omp_get_wtime();
-//   printf( "Result generating 1000 random number at a time: %e took %e seconds\n", varExcessKurtosis1000, endTime - startTime );
+   // use piTwo
+   startTime = omp_get_wtime();
+   float varExcessKurtosisTwo = excessKurtosisTwo( &state );
+   endTime = omp_get_wtime();
+   printf( "Result generating two random number at a time:  %e took %e seconds\n", varExcessKurtosisTwo, endTime - startTime );
+
+   // use piFour
+   startTime = omp_get_wtime();
+   float varExcessKurtosisFour = excessKurtosisFour( &state );
+   endTime = omp_get_wtime();
+   printf( "Result generating four random number at a time: %e took %e seconds\n", varExcessKurtosisFour, endTime - startTime );
+
+   // use pi2000
+   startTime = omp_get_wtime();
+   float varExcessKurtosis1000 = excessKurtosis1000( &state );
+   endTime = omp_get_wtime();
+   printf( "Result generating 1000 random number at a time: %e took %e seconds\n", varExcessKurtosis1000, endTime - startTime );
 
    return 0;
 }

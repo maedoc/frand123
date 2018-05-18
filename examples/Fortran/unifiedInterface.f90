@@ -6,11 +6,10 @@
 program unifiedInterface
    use, intrinsic :: iso_c_binding, only: c_int32_t, c_int64_t, &
                                           c_double, c_float
-   use frand123, only: frand123_state_kind, frand123_state_size, &
-                       frand123Init, frand123Rand
+   use frand123, only: frand123State_t, frand123Init, frand123Rand
 
    ! state
-   integer(kind=frand123_state_kind), dimension(frand123_state_size) :: state
+   type( frand123State_t ) :: state
 
    ! random numbers of different types
    integer( kind = c_int64_t ) :: scalarInt64

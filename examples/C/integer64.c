@@ -24,7 +24,7 @@ bool isBitSet( uint64_t bitset, short position )
 }
 
 // check whether certain bits are set in random unsigned 64-bit integers
-void checkBitSets( int64_t *state )
+void checkBitSets( frand123State_t *state )
 {
    // generate five uint64_t as containers for random bits
    uint64_t randomBits[ 5 ];
@@ -44,7 +44,7 @@ void checkBitSets( int64_t *state )
 // > 0 heads
 // < 0 tails
 // = 0 what a luck
-void naiveCoinFlip( int64_t *state )
+void naiveCoinFlip( frand123State_t *state )
 {
    char heads[ 6 ] = "heads";
    char tails[ 6 ] = "tails";
@@ -73,14 +73,14 @@ void naiveCoinFlip( int64_t *state )
 int main()
 {
    // build state
-   int64_t state[ 4 ];
-   frand123Init( state, 0, 0, NULL );
+   frand123State_t state;
+   frand123Init( &state, 0, 0, NULL );
 
-   checkBitSets( state );
+   checkBitSets( &state );
 
    printf( "\n\n" );
 
-   naiveCoinFlip( state );
+   naiveCoinFlip( &state );
 
    return 0;
 }
