@@ -4,7 +4,7 @@ program testEquivalence
    implicit none
 
    ! state
-   integer(kind=frand123_state_kind), dimension(frand123_state_size) :: state
+   type( frand123State_t ) :: state
 
    ! didTestPass
    logical :: passed
@@ -15,7 +15,7 @@ program testEquivalence
       write(*,*) 'Test frand123Double passed'
    else
       write(*,*) 'Test frand123Double failed'
-      exit( 1 )
+      stop 1
    endif
 
    ! test frand123Single
@@ -24,7 +24,7 @@ program testEquivalence
       write(*,*) 'Test frand123Single passed'
    else
       write(*,*) 'Test frand123Single failed'
-      exit( 1 )
+      stop 1
    endif
 
    ! test frand123NormDouble
@@ -33,7 +33,7 @@ program testEquivalence
       write(*,*) 'Test frand123NormDouble passed'
    else
       write(*,*) 'Test frand123NormDouble failed'
-      exit( 1 )
+      stop 1
    endif
 
    ! test frand123NormSingle
@@ -42,7 +42,7 @@ program testEquivalence
       write(*,*) 'Test frand123NormSingle passed'
    else
       write(*,*) 'Test frand123NormSingle failed'
-      exit( 1 )
+      stop 1
    endif
 
    ! test frand123Integer64
@@ -51,7 +51,7 @@ program testEquivalence
       write(*,*) 'Test frand123Integer64 passed'
    else
       write(*,*) 'Test frand123Integer64 failed'
-      exit( 1 )
+      stop 1
    endif
 
    ! test frand123Integer32
@@ -60,7 +60,7 @@ program testEquivalence
       write(*,*) 'Test frand123Integer32 passed'
    else
       write(*,*) 'Test frand123Integer32 failed'
-      exit( 1 )
+      stop 1
    endif
 
 contains
@@ -68,10 +68,9 @@ contains
    ! test equivalence of generating 10 x 2 doubles and 1 x 20 doubles
    logical function equivalenceDouble( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
-      integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+      integer( kind = c_int64_t ), dimension( 2 ) :: seed
       real( kind = c_double ), dimension( 20 ) :: r10x2, r1x20
       integer :: i
 
@@ -100,10 +99,9 @@ contains
    ! test equivalence of generating 5 x 4 singles and 1 x 20 singles
    logical function equivalenceSingle( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
-      integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+      integer( kind = c_int64_t ), dimension( 2 ) :: seed
       real( kind = c_float ), dimension( 20 ) :: r5x4, r1x20
       integer :: i
 
@@ -132,10 +130,9 @@ contains
    ! test equivalence of generating 10 x 2 normal doubles and 1 x 20 normal doubles
    logical function equivalenceNormDouble( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
-      integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+      integer( kind = c_int64_t ), dimension( 2 ) :: seed
       real( kind = c_double ), dimension( 20 ) :: r10x2, r1x20
       integer :: i
 
@@ -164,10 +161,9 @@ contains
    ! test equivalence of generating 5 x 4 normal singles and 1 x 20 normal singles
    logical function equivalenceNormSingle( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
-      integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+      integer( kind = c_int64_t ), dimension( 2 ) :: seed
       real( kind = c_float ), dimension( 20 ) :: r5x4, r1x20
       integer :: i
 
@@ -196,10 +192,9 @@ contains
    ! test equivalence of generating 10 x 2 64-bit integers and 1 x 20 64-bit integers
    logical function equivalenceInteger64( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
-      integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+      integer( kind = c_int64_t ), dimension( 2 ) :: seed
       integer( kind = c_int64_t ), dimension( 20 ) :: r10x2, r1x20
       integer :: i
 
@@ -228,10 +223,9 @@ contains
    ! test equivalence of generating 5 x 4 32-bit integers and 1 x 20 32-bit integers
    logical function equivalenceInteger32( state )
       implicit none
-      integer( kind = frand123_state_kind ), dimension( frand123_state_size ), &
-                                             intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
 
-      integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+      integer( kind = c_int64_t ), dimension( 2 ) :: seed
       integer( kind = c_int32_t ), dimension( 20 ) :: r5x4, r1x20
       integer :: i
 

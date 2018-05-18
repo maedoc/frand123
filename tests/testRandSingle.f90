@@ -4,8 +4,8 @@ program testRandSingle
    implicit none
    integer, parameter :: numRndNbrs = 1000 * 1000 * 100
 
-   integer( kind = frand123_state_kind ), dimension( frand123_state_size ) :: state
-   integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+   type( frand123State_t ) :: state
+   integer( kind = c_int64_t ), dimension( 2 ) :: seed
    real( kind = c_float ), dimension(:), allocatable :: res
 
    integer :: out_unit

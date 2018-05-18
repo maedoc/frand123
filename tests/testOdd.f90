@@ -4,10 +4,10 @@ program testOdd
    implicit none
 
    ! state
-   integer(kind=frand123_state_kind), dimension(frand123_state_size) :: state
+   type( frand123State_t ) :: state
 
    ! seed for frand123
-   integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+   integer( kind = c_int64_t ), dimension( 2 ) :: seed
 
    ! success variable
    logical :: passed
@@ -22,7 +22,7 @@ program testOdd
       write(*,*) 'oddDoubles passed'
    else
       write(*,*) 'oddDoubles failed'
-      stop( 1 )
+      stop 1
    endif
 
    ! test frand123Single
@@ -31,7 +31,7 @@ program testOdd
       write(*,*) 'oddSingle passed'
    else
       write(*,*) 'oddSingle failed'
-      stop( 1 )
+      stop 1
    endif
 
    ! test frand123NormDouble
@@ -40,7 +40,7 @@ program testOdd
       write(*,*) 'oddNormDoubles passed'
    else
       write(*,*) 'oddNormDoubles failed'
-      stop( 1 )
+      stop 1
    endif
 
    ! test frand123NormSingle
@@ -49,7 +49,7 @@ program testOdd
       write(*,*) 'oddNormSingle passed'
    else
       write(*,*) 'oddNormSingle failed'
-      stop( 1 )
+      stop 1
    endif
 
 contains
@@ -57,8 +57,7 @@ contains
    ! test odd number of doubles
    logical function oddDoubles( state )
       implicit none
-      integer(kind=frand123_state_kind), dimension(frand123_state_size), &
-                                         intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       
       real( kind = c_double ), dimension( 5 ) :: r
       integer :: i
@@ -84,8 +83,7 @@ contains
    ! test odd number of singles
    logical function oddSingles( state )
       implicit none
-      integer(kind=frand123_state_kind), dimension(frand123_state_size), &
-                                         intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       
       real( kind = c_float ), dimension( 5 ) :: r
       integer :: i
@@ -111,8 +109,7 @@ contains
    ! test odd number of normal doubles
    logical function oddNormDoubles( state )
       implicit none
-      integer(kind=frand123_state_kind), dimension(frand123_state_size), &
-                                         intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       
       real( kind = c_double ), dimension( 5 ) :: r
       integer :: i
@@ -138,8 +135,7 @@ contains
    ! test odd number of normal singles
    logical function oddNormSingles( state )
       implicit none
-      integer(kind=frand123_state_kind), dimension(frand123_state_size), &
-                                         intent( inout ) :: state
+      type( frand123State_t ), intent( inout ) :: state
       
       real( kind = c_float ), dimension( 5 ) :: r
       integer :: i

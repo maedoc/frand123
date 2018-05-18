@@ -13,62 +13,79 @@ LD = ifort$(SUFFIX)
 LDFLAGS = -shared -ipo -O3 -xHost -qopenmp -no-inline-min-size #-qopt-report=5
 AR = xiar
 ARFLAGS = rc
+
+# which rng to use?
+# Default: Threefry
+TESTNORMSINGLEPYFLAGS = --threefry
+# ARS
+ifeq ($(rng),ars)
+CFLAGS += -DUSE_ARS -DR123_USE_AES_NI
+TESTNORMSINGLEPYFLAGS = --ars
+endif
+# MKL
+ifeq ($(rng),mkl)
+CFLAGS += -DUSE_MKL -DMKL_ILP64 -lmkl_intel_ilp64
+FFLAGS += -DUSE_MKL -i8 -lmkl_intel_ilp64
+LDFLAGS += -i8 -lmkl_intel_ilp64
+endif
+
+# using Intel's FMA instructions?
+ifeq ($(fma),y)
+CFLAGS += -DUSE_FMA -fma
+endif
+
 #######################
 #### GNU Compilers ####
 #######################
 ifeq ($(gcc),y)
 CC = gcc$(SUFFIX) -std=c99
-CFLAGS = -IRandom123 -Jlib64 -fPIC -O3 -maes -mtune=native -march=native -fopenmp -lm -ffree-form -ffixed-line-length-none#-flto-report
+CFLAGS = -IRandom123 -Jlib64 -fPIC -O3 -maes -mtune=native -march=native -fopenmp -lm
 FC = gfortran$(SUFFIX) -std=f2008
 FFLAGS = $(CFLAGS)
 LD = gcc$(SUFFIX)
-LDFLAGS = -shared -fPIC -O2 -mtune=native -march=native #-flto-report
+LDFLAGS = -shared -fPIC -O2 -mtune=native -march=native
 AR = gcc-ar$(SUFFIX)
 ARFLAGS = rc
-endif
-############################
-#### For static library ####
-############################
 
-# decide whether to use ARS or not (requires Intel AES-NI support)
-ifeq ($(ars),y)
-	CFLAGS += -DUSE_ARS -DR123_USE_AES_NI
-	FFLAGS += -DUSE_ARS
-	TESTNORMSINGLEPYFLAGS = --ars
-else
-	TESTNORMSINGLEPYFLAGS = --threefry
+# which rng to use?
+# Default: Threefry
+TESTNORMSINGLEPYFLAGS = --threefry
+# ARS
+ifeq ($(rng),ars)
+CFLAGS += -DUSE_ARS -DR123_USE_AES_NI -maes
+TESTNORMSINGLEPYFLAGS = --ars
+endif
+# MKL
+ifeq ($(rng),mkl)
+CFLAGS += -DUSE_MKL -DMKL_ILP64 -lmkl_intel_ilp64
+FFLAGS += -DUSE_MKL -fdefault-integer-8 -lmkl_intel_ilp64
+LDFLAGS += -fdefault-integer-8 -lmkl_intel_ilp64
 endif
 
-# decide whether to use FMA instructions (requires Intel FMA3 support)
+# using Intel's FMA instructions?
 ifeq ($(fma),y)
-	CFLAGS += -DUSE_FMA -mfma
-	FFLAGS += -mfma -fma
+CFLAGS += -DUSE_FMA -mfma
 endif
+endif
+
+###########################
+#### Remaining options ####
+###########################
 
 # decide whether to use the Polar or Wichura's AS 241 method
 ifeq ($(use_polar),y)
-	FFLAGS += -DUSE_POLAR
-	CFLAGS += -DUSE_POLAR
-	TESTNORMDOUBLEPYFLAGS = --polar
+CFLAGS += -DUSE_POLAR
+TESTNORMDOUBLEPYFLAGS = --polar
 else
-	FFLAGS += -DUSE_WICHURA
-	CFLAGS += -DUSE_WICHURA
-	TESTNORMDOUBLEPYFLAGS = --wichura
+CFLAGS += -DUSE_WICHURA
+TESTNORMDOUBLEPYFLAGS = --wichura
 endif
 
 # decide whether to activate assertions in c functions
 ifeq ($(use_assertions),y)
 else
-	CFLAGS += -DNDEBUG
+CFLAGS += -DNDEBUG
 endif
-
-# decide whether to use MKL as backend
-ifeq ($(use_mkl),y)
-	CFLAGS += -DUSE_MKL -DMKL_ILP64 -lmkl_intel_ilp64
-	FFLGAS += -DUSE_MKL -i8 -fdefault-integer-8 -lmkl_intel_ilp64
-	LDFLAGS += -lmkl_intel_ilp64 -i8 -fdefault-integer-8
-endif
-
 
 .PHONY: all clean tests examples examplesC exampleFortran testAccuracyFloats testRandSingle testRandDouble testMomentsSingle testMomentsDouble testCentralMomentsSingle testCentralMomentsDouble testEquivalence testOdd
 

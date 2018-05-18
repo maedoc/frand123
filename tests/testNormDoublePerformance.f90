@@ -4,8 +4,8 @@ program testNormDoublePerformance
    use, intrinsic :: iso_c_binding, only: c_double
    implicit none
 
-   integer( kind = frand123_state_kind ), dimension( frand123_state_size ) :: state
-   integer( kind = frand123_state_kind ), dimension( 2 ) :: seed
+   type( frand123State_t ) :: state
+   integer( kind = c_int64_t ), dimension( 2 ) :: seed
    integer, parameter :: ctr_kind = selected_int_kind( 14 )
    integer( kind = ctr_kind ), parameter :: rounds = 1000 * 1000 * 100
    integer( kind = ctr_kind ) :: i
